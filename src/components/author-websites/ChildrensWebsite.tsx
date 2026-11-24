@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Sparkles, Smile, Star, Heart, Download, BookOpen, ShoppingBag, Check, ArrowRight, Music } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -174,7 +175,7 @@ export function ChildrensWebsite({ onBackToPortfolio, onBookWebsiteService, view
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#fbbf24]/20 bg-[#120a04] text-center text-xs text-[#b49060] space-y-2">
-        <p>© 2026 Amara & Leo Fox. Pip the Dragon Stories™. Designed with Madeline Joy.</p>
+        <p>© 2026 Amara & Leo Fox. Pip the Dragon Stories™. Designed with {brand.name}.</p>
         <p className="text-[11px] text-[#fbbf24]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

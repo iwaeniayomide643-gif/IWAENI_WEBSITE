@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { TrendingUp, DollarSign, Calculator, Mic, Video, BookOpen, ShoppingBag, Star, Check, ArrowRight, ShieldCheck } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -186,7 +187,7 @@ export function BusinessWebsite({ onBackToPortfolio, onBookWebsiteService, viewp
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#38bdf8]/20 bg-[#04070c] text-center text-xs text-[#475569] space-y-2">
-        <p>© 2026 Marcos Valdés. Zero to Market™. Representation: Madeline Joy.</p>
+        <p>© 2026 Marcos Valdés. Zero to Market™. Representation: {brand.name}.</p>
         <p className="text-[11px] text-[#38bdf8]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

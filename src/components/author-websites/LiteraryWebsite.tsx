@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Feather, BookOpen, Quote, Volume2, Star, Check, ArrowRight, Calendar, Sparkles } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -185,7 +186,7 @@ export function LiteraryWebsite({ onBackToPortfolio, onBookWebsiteService, viewp
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#c4a482]/15 bg-[#120e0c] text-center font-sans text-xs text-[#806f62] space-y-2">
-        <p>© 2026 Soraya Al-Mansoor. Representation: Madeline Joy Author Services.</p>
+        <p>© 2026 Soraya Al-Mansoor. Representation: {brand.name} Author Services.</p>
         <p className="text-[11px] text-[#c4a482]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

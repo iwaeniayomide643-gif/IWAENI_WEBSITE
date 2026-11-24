@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Terminal, ShieldAlert, Key, Eye, EyeOff, Radio, BookOpen, ShoppingBag, Check, ArrowRight, Lock, Activity } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -220,7 +221,7 @@ export function ThrillerWebsite({ onBackToPortfolio, onBookWebsiteService, viewp
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#4ade80]/20 bg-[#030605] text-center text-xs text-[#52796f] space-y-2">
-        <p>© 2026 Declan Cross. Tactical Publishing Network. Designed with Madeline Joy.</p>
+        <p>© 2026 Declan Cross. Tactical Publishing Network. Designed with {brand.name}.</p>
         <p className="text-[11px] text-[#4ade80]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

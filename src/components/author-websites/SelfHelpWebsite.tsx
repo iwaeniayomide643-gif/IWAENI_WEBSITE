@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { CheckCircle2, Target, Zap, Clock, BookOpen, ShoppingBag, Star, Check, ArrowRight, Activity } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -194,7 +195,7 @@ export function SelfHelpWebsite({ onBackToPortfolio, onBookWebsiteService, viewp
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#34d399]/20 bg-[#050f0d] text-center text-xs text-[#387565] space-y-2">
-        <p>© 2026 Dr. Julian O'Reilly. Mastering Focus™. Designed with Madeline Joy.</p>
+        <p>© 2026 Dr. Julian O'Reilly. Mastering Focus™. Designed with {brand.name}.</p>
         <p className="text-[11px] text-[#34d399]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

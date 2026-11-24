@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Brain, FileText, Download, BookOpen, ShoppingBag, Star, Check, ArrowRight, Mic, Award } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -174,7 +175,7 @@ export function NonFictionWebsite({ onBackToPortfolio, onBookWebsiteService, vie
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#38bdf8]/20 bg-[#040b12] text-center text-xs text-[#477a9e] space-y-2">
-        <p>© 2026 Dr. Aris Thorne. Research and Publishing. Designed with Madeline Joy.</p>
+        <p>© 2026 Dr. Aris Thorne. Research and Publishing. Designed with {brand.name}.</p>
         <p className="text-[11px] text-[#38bdf8]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

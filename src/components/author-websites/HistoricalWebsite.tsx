@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Landmark, Scroll, Clock, BookOpen, ShoppingBag, Star, Check, ArrowRight, Sparkles } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -205,7 +206,7 @@ export function HistoricalWebsite({ onBackToPortfolio, onBookWebsiteService, vie
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#dcb370]/20 bg-[#120a05] text-center font-sans text-xs text-[#8c6d59] space-y-2">
-        <p>© 2026 Helena Vane. Historical Fiction Archives. Represented by Madeline Joy.</p>
+        <p>© 2026 Helena Vane. Historical Fiction Archives. Represented by {brand.name}.</p>
         <p className="text-[11px] text-[#dcb370]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

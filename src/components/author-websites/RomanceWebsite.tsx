@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Heart, BookOpen, ShoppingBag, Sparkles, Check, Music, Star, ArrowRight, Mail, Compass, Share2 } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -318,7 +319,7 @@ export function RomanceWebsite({ onBackToPortfolio, onBookWebsiteService, viewpo
 
       {/* Footer */}
       <footer className="px-6 py-10 border-t border-[#f7c2d2]/15 bg-[#14070f] text-center text-xs text-[#a88a96] space-y-3">
-        <p>© 2026 Camille Laurent. All rights reserved. Represented by Madeline Joy Book Services.</p>
+        <p>© 2026 Camille Laurent. All rights reserved. Represented by {brand.name} Book Services.</p>
         <p className="text-[11px] text-[#e87898]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

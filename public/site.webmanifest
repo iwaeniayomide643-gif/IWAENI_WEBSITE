@@ -1,6 +1,6 @@
 {
-  "name": "Author Ledger",
-  "short_name": "Author Ledger",
+  "name": "Iwaeni Ayomide",
+  "short_name": "Iwaeni",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#140b19",
-  "background_color": "#140b19",
+  "theme_color": "#0f0810",
+  "background_color": "#0f0810",
   "display": "standalone"
 }

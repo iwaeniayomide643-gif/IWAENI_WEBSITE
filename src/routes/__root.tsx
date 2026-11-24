@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { brand } from "../data/brand";
 
 function NotFoundComponent() {
   return (
@@ -77,22 +78,32 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Madeline Joy — Book Marketing & Author Services" },
-      { name: "description", content: "Professional book promotion, trailers, author websites, editing, formatting, SEO, and marketing by Madeline Joy." },
-      { name: "author", content: "Madeline Joy" },
-      { property: "og:title", content: "Madeline Joy — Book Marketing & Author Services" },
-      { property: "og:description", content: "Helping authors present, promote, and grow their books." },
+      { title: `${brand.name} — Book Trailers & Author Services` },
+      { name: "description", content: "Cinematic book trailers, author websites, formatting, editing and launch promotion that help authors present, promote and grow their books." },
+      { name: "author", content: brand.name },
+      { property: "og:title", content: `${brand.name} — Book Trailers & Author Services` },
+      { property: "og:description", content: brand.tagline },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    scripts: [
+      {
+        // Lets the hero animate in without a flash. Skipped when the visitor prefers reduced motion.
+        children:
+          "try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion-ok')}catch(e){}",
+      },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
+      // Trailers and their stills come from Google Drive; opening the connection early saves time.
+      { rel: "preconnect", href: "https://drive.google.com" },
+      { rel: "preconnect", href: "https://www.gstatic.com", crossOrigin: "anonymous" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "icon", href: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { rel: "icon", href: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -109,7 +120,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>

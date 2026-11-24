@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Sparkles, Cog, Heart, BookOpen, ShoppingBag, Star, Check, ArrowRight, Zap, HelpCircle } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -198,7 +199,7 @@ export function YoungAdultWebsite({ onBackToPortfolio, onBookWebsiteService, vie
 
       {/* Footer */}
       <footer className="px-6 py-8 border-t border-[#c084fc]/20 bg-[#0c0514] text-center text-xs text-[#8b5cf6] space-y-2">
-        <p>© 2026 Beatrix Sterling. The Clockwork Kingdom Series. Designed with Madeline Joy.</p>
+        <p>© 2026 Beatrix Sterling. The Clockwork Kingdom Series. Designed with {brand.name}.</p>
         <p className="text-[11px] text-[#c084fc]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 

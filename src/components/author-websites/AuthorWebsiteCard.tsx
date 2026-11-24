@@ -251,7 +251,7 @@ export function AuthorWebsiteCard({ project, onOpen }: AuthorWebsiteCardProps) {
           <div className="flex items-center justify-between">
             <p className="text-xs uppercase tracking-[0.18em] text-gold font-bold">{project.projectType}</p>
             <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/5 text-muted-foreground border border-white/10">
-              Live Interactive Demo
+              Concept design
             </span>
           </div>
 

@@ -1,3 +1,4 @@
+import { brand } from "@/data/brand";
 import React, { useState } from "react";
 import { Shield, Sparkles, MapPin, BookOpen, ShoppingBag, Compass, Star, ChevronRight, Swords, Scroll, Check, ArrowRight } from "lucide-react";
 import type { MiniWebsiteProps } from "./types";
@@ -267,7 +268,7 @@ export function FantasyWebsite({ onBackToPortfolio, onBookWebsiteService, viewpo
 
       {/* Footer */}
       <footer className="px-6 py-10 border-t border-[#df8a6c]/20 bg-[#090302] text-center text-xs text-[#a37a6b] space-y-3">
-        <p>© 2026 Kofi Mensah. Sunfire Dynasty™ is a registered fantasy universe. Designed with Madeline Joy.</p>
+        <p>© 2026 Kofi Mensah. Sunfire Dynasty™ is a registered fantasy universe. Designed with {brand.name}.</p>
         <p className="text-[11px] text-[#df8a6c]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
       </footer>
 
