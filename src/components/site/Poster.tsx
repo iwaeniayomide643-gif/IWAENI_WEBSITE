@@ -4,26 +4,24 @@ import { driveThumb, type Trailer } from "@/data/trailers";
 
 interface PosterProps {
   trailer: Trailer;
-  /** Pixel width requested from Drive; pick roughly 2x the displayed width. */
+  /** Pixel width requested from Drive when it is used; pick roughly 2x the displayed width. */
   width?: number;
   eager?: boolean;
   className?: string;
 }
 
 /**
- * A trailer still. It asks Google Drive for the real frame of each video,
- * falls back to a local still, and finally to a plain dark gradient, so a
- * frame is never empty.
+ * A trailer still. It uses a real frame from the trailer's own video when we have
+ * one, then asks Google Drive for the frame, and finally shows a plain dark
+ * gradient, so a frame is never empty and never the wrong picture.
  */
 export function Poster({ trailer, width = 800, eager = false, className }: PosterProps) {
-  const [stage, setStage] = useState<"drive" | "local" | "none">("drive");
+  const [attempt, setAttempt] = useState(0);
 
-  const src =
-    stage === "drive"
-      ? driveThumb(trailer.driveId, width)
-      : stage === "local" && trailer.fallbackPoster
-        ? trailer.fallbackPoster
-        : null;
+  const candidates = [trailer.poster, driveThumb(trailer.driveId, width)].filter(
+    (src): src is string => Boolean(src),
+  );
+  const src = candidates[attempt] ?? null;
 
   if (!src) {
     return (
@@ -47,7 +45,7 @@ export function Poster({ trailer, width = 800, eager = false, className }: Poste
       decoding="async"
       referrerPolicy="no-referrer"
       draggable={false}
-      onError={() => setStage((s) => (s === "drive" && trailer.fallbackPoster ? "local" : "none"))}
+      onError={() => setAttempt((n) => n + 1)}
       className={cn("h-full w-full object-cover", className)}
     />
   );

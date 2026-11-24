@@ -1,4 +1,5 @@
 import { bookTrailers } from "./bookLaunchProjects";
+import { localVideos } from "./localVideos";
 import { youtubeIds } from "./trailerVideos";
 
 /**
@@ -15,7 +16,11 @@ export interface Trailer {
   driveId: string;
   /** Set in trailerVideos.ts. When present the trailer plays from YouTube, which starts much faster. */
   youtubeId: string | null;
-  /** Local still used if Google Drive does not return a thumbnail. */
+  /** Set in localVideos.ts. When present the trailer plays from this site's own files, which is fastest. */
+  videoSrc: string | null;
+  /** A real frame from the local video, used as the still everywhere (falls back to Google Drive's frame). */
+  poster: string | null;
+  /** Older stand-in still from the original data. No longer shown, because it did not match the videos. */
   fallbackPoster: string | null;
 }
 
@@ -40,9 +45,11 @@ const featured: Trailer = {
   genre: "Showreel pick",
   description:
     "A featured sample trailer. Press play to watch it, or use fullscreen for the full effect.",
-  duration: null,
+  duration: localVideos["featured"]?.duration ?? null,
   driveId: "1ZgGeS7-rhUve9H5NpJCcaeSpiPzAsu17",
   youtubeId: youtubeIds["featured"] ?? null,
+  videoSrc: localVideos["featured"]?.src ?? null,
+  poster: localVideos["featured"]?.poster ?? null,
   fallbackPoster: null,
 };
 
@@ -53,9 +60,12 @@ export const trailers: Trailer[] = [
     title: t.book,
     genre: t.genre,
     description: t.description,
-    duration: t.duration,
+    // The old data said "0:30" for everything, which was wrong. Only show a length we have measured.
+    duration: localVideos[t.id]?.duration ?? null,
     driveId: t.googleDriveId,
     youtubeId: youtubeIds[t.id] ?? null,
+    videoSrc: localVideos[t.id]?.src ?? null,
+    poster: localVideos[t.id]?.poster ?? null,
     fallbackPoster: t.thumbnail,
   })),
 ];

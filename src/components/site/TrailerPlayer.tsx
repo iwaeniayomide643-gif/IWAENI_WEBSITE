@@ -17,9 +17,16 @@ interface TrailerPlayerProps {
 export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: TrailerPlayerProps) {
   const trailer = index === null ? undefined : trailers[index];
   const [loaded, setLoaded] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const opener = useRef<HTMLElement | null>(null);
 
-  useEffect(() => setLoaded(false), [trailer?.id]);
+  useEffect(() => {
+    setLoaded(false);
+    setVideoFailed(false);
+  }, [trailer?.id]);
+
+  // Our own file plays first. If it cannot, the embedded player takes over.
+  const playLocal = Boolean(trailer?.videoSrc) && !videoFailed;
 
   const step = (direction: 1 | -1) => {
     if (index === null) return;
@@ -27,6 +34,8 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    // Arrow keys on the video itself seek; only use them to change trailer elsewhere.
+    if (event.target instanceof HTMLVideoElement) return;
     if (event.key === "ArrowRight") step(1);
     if (event.key === "ArrowLeft") step(-1);
   };
@@ -81,24 +90,43 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
                     >
                       <span className="size-11 animate-spin rounded-full border-2 border-gold border-t-transparent" />
                       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/80 sm:text-xs">
-                        {trailer.youtubeId
+                        {playLocal || trailer.youtubeId
                           ? "Loading trailer"
                           : "Loading from Google Drive. This can be slow"}
                       </span>
                     </div>
                   )}
-                  <iframe
-                    key={trailer.id}
-                    src={embedUrl(trailer)}
-                    title={trailer.title}
-                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-                    allowFullScreen
-                    onLoad={() => setLoaded(true)}
-                    className={cn(
-                      "absolute inset-0 h-full w-full border-0 transition-opacity duration-500",
-                      loaded ? "opacity-100" : "opacity-0",
-                    )}
-                  />
+                  {playLocal && trailer.videoSrc ? (
+                    <video
+                      key={trailer.id}
+                      src={trailer.videoSrc}
+                      poster={trailer.poster ?? undefined}
+                      controls
+                      autoPlay
+                      playsInline
+                      preload="auto"
+                      aria-label={trailer.title}
+                      onCanPlay={() => setLoaded(true)}
+                      onError={() => {
+                        setLoaded(false);
+                        setVideoFailed(true);
+                      }}
+                      className="absolute inset-0 h-full w-full bg-black object-contain"
+                    />
+                  ) : (
+                    <iframe
+                      key={trailer.id}
+                      src={embedUrl(trailer)}
+                      title={trailer.title}
+                      allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                      onLoad={() => setLoaded(true)}
+                      className={cn(
+                        "absolute inset-0 h-full w-full border-0 transition-opacity duration-500",
+                        loaded ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  )}
                 </div>
 
                 <div className="mt-5 flex flex-col gap-4 px-1 sm:flex-row sm:items-start sm:justify-between">
