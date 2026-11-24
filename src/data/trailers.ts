@@ -1,5 +1,6 @@
 import { bookTrailers } from "./bookLaunchProjects";
 import { localVideos } from "./localVideos";
+import { trailerDetails } from "./trailerDetails";
 import { youtubeIds } from "./trailerVideos";
 
 /**
@@ -41,9 +42,10 @@ export const watchUrl = (t: Trailer) =>
 
 const featured: Trailer = {
   id: "featured",
-  title: "Featured trailer",
-  genre: "Showreel pick",
+  title: trailerDetails["featured"]?.title ?? "Featured trailer",
+  genre: trailerDetails["featured"]?.genre ?? "Book trailer",
   description:
+    trailerDetails["featured"]?.description ??
     "A featured sample trailer. Press play to watch it, or use fullscreen for the full effect.",
   duration: localVideos["featured"]?.duration ?? null,
   driveId: "1ZgGeS7-rhUve9H5NpJCcaeSpiPzAsu17",
@@ -55,17 +57,23 @@ const featured: Trailer = {
 
 export const trailers: Trailer[] = [
   featured,
-  ...bookTrailers.map<Trailer>((t) => ({
-    id: t.id,
-    title: t.book,
-    genre: t.genre,
-    description: t.description,
-    // The old data said "0:30" for everything, which was wrong. Only show a length we have measured.
-    duration: localVideos[t.id]?.duration ?? null,
-    driveId: t.googleDriveId,
-    youtubeId: youtubeIds[t.id] ?? null,
-    videoSrc: localVideos[t.id]?.src ?? null,
-    poster: localVideos[t.id]?.poster ?? null,
-    fallbackPoster: t.thumbnail,
-  })),
+  ...bookTrailers.map<Trailer>((t, i) => {
+    const details = trailerDetails[t.id];
+    // The original titles and genres did not match the videos, so use neutral labels
+    // until a real title is added in trailerDetails.ts. The featured trailer is number 01.
+    const number = String(i + 2).padStart(2, "0");
+    return {
+      id: t.id,
+      title: details?.title ?? `Sample trailer ${number}`,
+      genre: details?.genre ?? "Book trailer",
+      description: details?.description ?? "A sample book trailer. Press play to watch it.",
+      // The old data said "0:30" for everything, which was wrong. Only show a length we have measured.
+      duration: localVideos[t.id]?.duration ?? null,
+      driveId: t.googleDriveId,
+      youtubeId: youtubeIds[t.id] ?? null,
+      videoSrc: localVideos[t.id]?.src ?? null,
+      poster: localVideos[t.id]?.poster ?? null,
+      fallbackPoster: t.thumbnail,
+    };
+  }),
 ];
