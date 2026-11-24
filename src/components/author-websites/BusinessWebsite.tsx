@@ -1,222 +1,616 @@
-import { brand } from "@/data/brand";
-import React, { useState } from "react";
-import { TrendingUp, DollarSign, Calculator, Mic, Video, BookOpen, ShoppingBag, Star, Check, ArrowRight, ShieldCheck } from "lucide-react";
-import type { MiniWebsiteProps } from "./types";
+import "@fontsource-variable/manrope/index.css";
+import { useEffect, useState, type FormEvent } from "react";
+import {
+  BookOpen,
+  Check,
+  ClipboardCheck,
+  Download,
+  Mic,
+  Package,
+  Rocket,
+  Target,
+  TrendingUp,
+} from "lucide-react";
+import {
+  Book3D,
+  Btn,
+  ConceptFooter,
+  Display,
+  Eyebrow,
+  Nav,
+  Reader,
+  Retailers,
+  Section,
+  Signup,
+  Site,
+  Wrap,
+  jump,
+  type Theme,
+} from "./kit";
 
-export function BusinessWebsite({ onBackToPortfolio, onBookWebsiteService, viewportMode = "desktop" }: MiniWebsiteProps) {
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [bulkCopies, setBulkCopies] = useState<number>(50);
-  const [newsletterSent, setNewsletterSent] = useState(false);
-  const [email, setEmail] = useState("");
+const ID = "business";
+const COVER = "/images/covers/zero-to-market.svg";
+const AUTHOR = "Marcos Valdés";
+const TITLE = "Zero to Market";
 
-  const scrollTo = (id: string) => {
-    document.getElementById(`biz-${id}`)?.scrollIntoView({ behavior: "smooth" });
-  };
+const theme: Theme = {
+  bg: "#080c15",
+  bg2: "#0f1626",
+  fg: "#eef4fb",
+  muted: "#93a4bd",
+  accent: "#38bdf8",
+  accent2: "#f59e0b",
+  card: "rgba(56,189,248,0.06)",
+  border: "rgba(56,189,248,0.22)",
+  on: "#04121c",
+  display: "'Manrope Variable', 'DM Sans Variable', system-ui, sans-serif",
+  body: "'DM Sans Variable', system-ui, sans-serif",
+};
 
-  const calculateDiscount = (qty: number) => {
-    if (qty >= 250) return { discount: 40, perBook: 18 };
-    if (qty >= 100) return { discount: 30, perBook: 21 };
-    if (qty >= 50) return { discount: 20, perBook: 24 };
-    return { discount: 10, perBook: 27 };
-  };
+const excerpt = [
+  "Most products do not fail because they are bad. They fail because nobody could say, in one sentence, who they were for.",
+  "Before you build a single feature, write down the person you are building for: what they do on a Monday morning, what annoys them by Tuesday, and what they would pay to never think about again.",
+  "If that person is “everyone,” you do not have a market. You have a hope.",
+];
 
-  const pricing = calculateDiscount(bulkCopies);
-  const totalPrice = bulkCopies * pricing.perBook;
+const stages = [
+  {
+    name: "Validate",
+    icon: Target,
+    points: [
+      "Describe your customer in one sentence",
+      "Talk to ten real people before you build",
+      "Write down the problem in their words, not yours",
+    ],
+  },
+  {
+    name: "Position",
+    icon: TrendingUp,
+    points: [
+      "Say what you do better than the alternatives",
+      "Pick one clear promise",
+      "Test your message with strangers",
+    ],
+  },
+  {
+    name: "Price",
+    icon: ClipboardCheck,
+    points: [
+      "Know your cost to serve one customer",
+      "Anchor on the value, not the effort",
+      "Run a price test before you commit",
+    ],
+  },
+  {
+    name: "Launch",
+    icon: Rocket,
+    points: [
+      "Choose a single first channel",
+      "Set a launch date that cannot slip",
+      "Write the day-one checklist",
+    ],
+  },
+  {
+    name: "Scale",
+    icon: Package,
+    points: [
+      "Double what already works",
+      "Remove what does not",
+      "Hire against a bottleneck, not a feeling",
+    ],
+  },
+] as const;
+
+const checks = [
+  "I can describe my customer in one sentence.",
+  "I have spoken to at least ten potential customers.",
+  "I know what my closest alternatives cost.",
+  "I have one clear first channel to reach customers.",
+  "I can explain why someone should buy now, not later.",
+  "I know what it costs me to serve one customer.",
+];
+
+const topics = [
+  "Finding your first ten customers",
+  "Positioning when you are the small player",
+  "Pricing without guessing",
+  "Why launches fail quietly",
+];
+
+function Chart() {
+  const [go, setGo] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setGo(true), 300);
+    return () => window.clearTimeout(id);
+  }, []);
+  return (
+    <svg
+      viewBox="0 0 400 260"
+      className="h-auto w-full"
+      role="img"
+      aria-label="An upward line, illustrating growth from zero to market"
+    >
+      <defs>
+        <linearGradient id="biz-fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#38bdf8" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[50, 100, 150, 200].map((y) => (
+        <line
+          key={y}
+          x1="0"
+          x2="400"
+          y1={y}
+          y2={y}
+          stroke="rgba(147,164,189,0.15)"
+          strokeDasharray="4 6"
+        />
+      ))}
+      <path
+        d="M10 235 C 70 232, 90 215, 130 200 S 190 170, 230 130 S 320 70, 390 22 L390 250 L10 250 Z"
+        fill="url(#biz-fill)"
+        opacity={go ? 1 : 0}
+        style={{ transition: "opacity 1.4s ease 0.6s" }}
+      />
+      <path
+        d="M10 235 C 70 232, 90 215, 130 200 S 190 170, 230 130 S 320 70, 390 22"
+        fill="none"
+        stroke="#38bdf8"
+        strokeWidth="4"
+        strokeLinecap="round"
+        pathLength={1}
+        strokeDasharray={1}
+        strokeDashoffset={go ? 0 : 1}
+        style={{ transition: "stroke-dashoffset 2.2s cubic-bezier(.3,.7,.2,1)" }}
+      />
+      {[
+        [10, 235, "0"],
+        [230, 130, "Launch"],
+        [390, 22, "Market"],
+      ].map(([x, y, label]) => (
+        <g
+          key={String(label)}
+          style={{ opacity: go ? 1 : 0, transition: "opacity 0.6s ease 1.6s" }}
+        >
+          <circle cx={x as number} cy={y as number} r="7" fill="#f59e0b" />
+          <text
+            x={Math.min(Math.max(x as number, 30), 370)}
+            y={(y as number) - 16}
+            textAnchor="middle"
+            fontSize="12"
+            fontWeight="700"
+            fill="#eef4fb"
+          >
+            {label}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+function Scorecard() {
+  const [yes, setYes] = useState<boolean[]>(() => checks.map(() => false));
+  const score = yes.filter(Boolean).length;
+  const result =
+    score <= 2
+      ? {
+          stage: 0,
+          title: "Start with validation",
+          text: "Before you spend money, talk to people. Stage one will save you the most time.",
+        }
+      : score <= 4
+        ? {
+            stage: 1,
+            title: "Sharpen your position",
+            text: "You have a foundation. Now make your promise clearer than the alternatives.",
+          }
+        : {
+            stage: 3,
+            title: "You are close to launch",
+            text: "Choose a first channel, set a date, and write the day-one checklist.",
+          };
 
   return (
-    <div className="min-h-full bg-[#080d16] text-[#e2e8f0] font-sans antialiased selection:bg-[#38bdf8] selection:text-[#080d16]">
-      {/* Executive Top Banner */}
-      <div className="bg-[#0f1d30] border-b border-[#38bdf8]/30 py-2.5 px-6 text-center text-xs tracking-widest text-[#7dd3fc] uppercase font-bold flex items-center justify-center gap-2">
-        <TrendingUp size={14} className="text-[#38bdf8]" />
-        <span>#1 WALL STREET JOURNAL BESTSELLER • ADOPTED BY OVER 150+ FAST-GROWING TECH ENTERPRISES</span>
-        <TrendingUp size={14} className="text-[#38bdf8]" />
+    <div className="grid gap-6 @3xl:grid-cols-[1.2fr_0.8fr]">
+      <ul className="space-y-2.5">
+        {checks.map((c, i) => (
+          <li key={c}>
+            <button
+              type="button"
+              role="checkbox"
+              aria-checked={yes[i]}
+              onClick={() => setYes((p) => p.map((v, j) => (j === i ? !v : v)))}
+              className={`flex min-h-14 w-full items-center gap-4 rounded-2xl border px-5 text-left text-sm transition duration-300 ${yes[i] ? "border-[var(--s-accent)] bg-[var(--s-accent)]/10" : "border-[var(--s-border)] bg-[var(--s-card)] hover:border-[var(--s-accent)]/60"}`}
+            >
+              <span
+                className={`grid size-6 shrink-0 place-items-center rounded-md border transition ${yes[i] ? "border-[var(--s-accent)] bg-[var(--s-accent)] text-[var(--s-on)]" : "border-[var(--s-muted)]"}`}
+              >
+                {yes[i] && <Check size={15} aria-hidden="true" />}
+              </span>
+              {c}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div
+        className="flex flex-col justify-between rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-7"
+        aria-live="polite"
+      >
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--s-accent)]">
+            Your readiness
+          </p>
+          <p className="mt-3 text-7xl font-extrabold tabular-nums [font-family:var(--s-display)]">
+            {score}
+            <span className="text-3xl text-[var(--s-muted)]"> / {checks.length}</span>
+          </p>
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[var(--s-accent)] to-[var(--s-accent2)] transition-all duration-700"
+              style={{ width: `${(score / checks.length) * 100}%` }}
+            />
+          </div>
+          <p className="mt-6 text-xl font-bold [font-family:var(--s-display)]">{result.title}</p>
+          <p className="mt-2 text-sm leading-7 text-[var(--s-muted)]">{result.text}</p>
+        </div>
+        <Btn variant="outline" className="mt-6" onClick={() => jump(ID, "stages")}>
+          See the {stages[result.stage]?.name ?? "first"} stage
+        </Btn>
       </div>
-
-      {/* Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[#38bdf8]/20 bg-[#080d16]/95 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-lg bg-gradient-to-br from-[#38bdf8] to-[#0284c7] flex items-center justify-center text-[#080d16] font-black text-base shadow-lg">
-            MV
-          </div>
-          <div>
-            <span className="font-bold text-lg text-white">Marcos Valdés</span>
-            <span className="block text-[10px] tracking-widest text-[#38bdf8] uppercase font-bold">Venture Strategy & Scaling</span>
-          </div>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-bold text-[#94a3b8]">
-          <button onClick={() => scrollTo("hero")} className="hover:text-white transition-colors">The Playbook</button>
-          <button onClick={() => scrollTo("bulk")} className="hover:text-white transition-colors">Corporate Bulk</button>
-          <button onClick={() => scrollTo("speaking")} className="hover:text-white transition-colors">Keynotes</button>
-          <button onClick={() => scrollTo("author")} className="hover:text-white transition-colors">About Marcos</button>
-        </nav>
-
-        <button
-          onClick={() => setBuyOpen(true)}
-          className="px-5 py-2.5 rounded-lg bg-[#38bdf8] hover:bg-[#0284c7] text-[#080d16] font-black text-xs uppercase tracking-wider shadow-lg shadow-[#38bdf8]/20 transition-all"
-        >
-          Order Book
-        </button>
-      </header>
-
-      {/* Hero Section */}
-      <section id="biz-hero" className="px-6 py-20 lg:py-28 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-7 space-y-6 text-left">
-            <span className="text-xs uppercase tracking-widest text-[#38bdf8] font-bold">The Strategic B2B Framework</span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white font-black leading-tight tracking-tight">
-              Zero to Market.
-            </h1>
-            <p className="text-sm sm:text-base text-[#94a3b8] leading-relaxed max-w-lg">
-              The battle-tested commercialization blueprint for building resilient product market fit, scalable enterprise revenue pipelines, and high-velocity go-to-market teams.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <button
-                onClick={() => setBuyOpen(true)}
-                className="px-7 py-4 rounded-lg bg-[#38bdf8] text-[#080d16] font-black text-xs uppercase tracking-wider hover:bg-[#0284c7] transition-all shadow-xl shadow-[#38bdf8]/25"
-              >
-                Order Zero to Market
-              </button>
-              <button
-                onClick={() => scrollTo("bulk")}
-                className="px-7 py-4 rounded-lg bg-[#0f1d30] border border-[#38bdf8]/40 text-white text-xs font-bold uppercase tracking-wider hover:bg-[#162a45] transition-colors"
-              >
-                Corporate Bulk Tiers (Up to 40% Off)
-              </button>
-            </div>
-          </div>
-
-          <div className="md:col-span-5 flex justify-center">
-            <div className="relative p-2 border border-[#38bdf8]/40 rounded-2xl bg-[#0e1826] shadow-2xl">
-              <img
-                src="/images/covers/zero-to-market.svg"
-                alt="Zero to Market"
-                className="w-64 sm:w-76 rounded-xl shadow-2xl border border-[#38bdf8]/30"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Corporate Bulk Order Calculator */}
-      <section id="biz-bulk" className="px-6 py-20 bg-[#0b1422] border-y border-[#38bdf8]/20">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div>
-            <span className="text-xs uppercase tracking-widest text-[#38bdf8] font-bold">Team & Leadership Distribution</span>
-            <h2 className="text-3xl sm:text-4xl text-white font-bold mt-1">Corporate Bulk Order Tier Calculator</h2>
-            <p className="text-sm text-[#94a3b8] max-w-xl mx-auto mt-2">
-              Equip your executive leadership, sales team, and management cohorts with direct volume discounts.
-            </p>
-          </div>
-
-          <div className="p-8 rounded-2xl bg-[#080d16] border border-[#38bdf8]/30 text-left grid md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-7 space-y-6">
-              <div>
-                <label className="text-xs uppercase tracking-wider text-[#94a3b8] font-bold block mb-2">
-                  Select Number of Hardcover Copies: <span className="text-white text-base font-black">{bulkCopies} Copies</span>
-                </label>
-                <input
-                  type="range"
-                  min="20"
-                  max="500"
-                  step="10"
-                  value={bulkCopies}
-                  onChange={(e) => setBulkCopies(Number(e.target.value))}
-                  className="w-full accent-[#38bdf8] cursor-pointer"
-                />
-                <div className="flex justify-between text-[11px] text-[#64748b] mt-1">
-                  <span>20 Copies (10% Off)</span>
-                  <span>100 Copies (30% Off)</span>
-                  <span>500 Copies (40% Off)</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-xl bg-[#0e1826] border border-[#38bdf8]/20">
-                  <span className="text-[11px] uppercase tracking-wider text-[#94a3b8]">Applied Discount</span>
-                  <div className="text-2xl font-black text-[#38bdf8] mt-0.5">{pricing.discount}% OFF</div>
-                </div>
-                <div className="p-4 rounded-xl bg-[#0e1826] border border-[#38bdf8]/20">
-                  <span className="text-[11px] uppercase tracking-wider text-[#94a3b8]">Per Copy Price</span>
-                  <div className="text-2xl font-black text-white mt-0.5">${pricing.perBook}.00 <span className="text-xs text-[#64748b] line-through">$30.00</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-5 p-6 rounded-2xl bg-[#0f1d30] border border-[#38bdf8]/40 text-center space-y-3">
-              <DollarSign size={32} className="mx-auto text-[#38bdf8]" />
-              <span className="text-xs uppercase tracking-wider text-[#94a3b8] font-bold">Estimated Order Total</span>
-              <div className="text-3xl font-black text-white">${totalPrice.toLocaleString()}.00</div>
-              <p className="text-[11px] text-[#94a3b8]">Includes free shipping and executive study companion slide deck.</p>
-              <button
-                onClick={() => alert(`Demo trigger: Corporate invoice request for ${bulkCopies} copies ($${totalPrice}) generated!`)}
-                className="w-full py-3 rounded-lg bg-[#38bdf8] hover:bg-[#0284c7] text-[#080d16] font-black text-xs uppercase tracking-wider transition-colors"
-              >
-                Request Corporate Invoice
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Author Bio */}
-      <section id="biz-author" className="px-6 py-20 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <div className="size-64 sm:size-72 rounded-2xl overflow-hidden border-2 border-[#38bdf8]/40 p-2 bg-[#0e1826] shadow-2xl">
-              <img
-                src="/images/authors/marcos-valdes.jpg"
-                alt="Marcos Valdés"
-                className="w-full h-full object-cover rounded-xl"
-              />
-            </div>
-          </div>
-          <div className="md:col-span-7 space-y-4 text-left">
-            <span className="text-xs uppercase tracking-widest text-[#38bdf8] font-bold">Venture Partner & Strategist</span>
-            <h2 className="text-3xl sm:text-4xl text-white font-bold">Marcos Valdés</h2>
-            <p className="text-sm sm:text-base text-[#94a3b8] leading-relaxed">
-              Marcos Valdés is a general partner at Horizon Ventures and former Chief Operating Officer who has scaled three B2B technology companies from seed stage to successful public listings.
-            </p>
-            <p className="text-sm sm:text-base text-[#94a3b8] leading-relaxed">
-              He keynotes major corporate conferences worldwide and writes the weekly newsletter <em>The Growth Architecture</em>.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-8 border-t border-[#38bdf8]/20 bg-[#04070c] text-center text-xs text-[#475569] space-y-2">
-        <p>© 2026 Marcos Valdés. Zero to Market™. Representation: {brand.name}.</p>
-        <p className="text-[11px] text-[#38bdf8]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
-      </footer>
-
-      {/* Buy Modal */}
-      {buyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#080d16] border border-[#38bdf8] max-w-md w-full rounded-2xl p-6 text-center">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs uppercase tracking-widest text-[#38bdf8] font-bold">Purchase Option</span>
-              <button onClick={() => setBuyOpen(false)} className="size-7 rounded-lg bg-[#0f1d30] text-[#38bdf8]">✕</button>
-            </div>
-            <img src="/images/covers/zero-to-market.svg" alt="Zero to Market" className="w-28 mx-auto rounded shadow-xl mb-4 border border-[#38bdf8]/40" />
-            <h3 className="text-xl text-white font-bold">Zero to Market</h3>
-            <p className="text-xs text-[#94a3b8] mb-4">Hardcover, Audio & Digital Editions</p>
-            <div className="space-y-2 text-left">
-              {["Amazon Business & Prime Delivery", "Barnes & Noble Executive Hardcover", "Audible Audio Production"].map((b, i) => (
-                <button
-                  key={i}
-                  onClick={() => { alert(`Demo trigger: Order via ${b}`); setBuyOpen(false); }}
-                  className="w-full p-3 rounded-lg bg-[#0f1d30] border border-[#38bdf8]/30 text-white flex items-center justify-between text-xs hover:bg-[#162a45]"
-                >
-                  <span className="font-bold">{b}</span>
-                  <ArrowRight size={14} className="text-[#38bdf8]" />
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
+  );
+}
+
+function downloadCanvas() {
+  const rows = [
+    ["Section", "Question", "Your answer"],
+    ["Customer", "Who exactly is this for, in one sentence?", ""],
+    ["Customer", "What do they do on a normal Monday?", ""],
+    ["Problem", "What annoys them most, in their own words?", ""],
+    ["Promise", "What is the one thing you do better than the alternatives?", ""],
+    ["Price", "What does it cost you to serve one customer?", ""],
+    ["Price", "What would the customer pay to stop thinking about this?", ""],
+    ["Channel", "Where will you find your first ten customers?", ""],
+    ["Launch", "What is the date, and what must be true by then?", ""],
+  ];
+  const csv = rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\r\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = Object.assign(document.createElement("a"), {
+    href: url,
+    download: "go-to-market-canvas.csv",
+  });
+  document.body.append(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function BulkOrder() {
+  const [qty, setQty] = useState(50);
+  const [email, setEmail] = useState("");
+  const [state, setState] = useState<"idle" | "error" | "sent">("idle");
+  const tier =
+    qty < 25
+      ? "Team order"
+      : qty < 100
+        ? "Department order"
+        : qty < 250
+          ? "Company order"
+          : "Enterprise order";
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    setState(/^\S+@\S+\.\S+$/.test(email.trim()) ? "sent" : "error");
+  };
+  return (
+    <form
+      onSubmit={submit}
+      noValidate
+      className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-7 @3xl:p-9"
+    >
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--s-accent)]">
+            {tier}
+          </p>
+          <p className="mt-1 text-6xl font-extrabold tabular-nums [font-family:var(--s-display)]">
+            {qty}
+          </p>
+          <p className="text-xs text-[var(--s-muted)]">copies</p>
+        </div>
+        <Package size={44} className="text-[var(--s-accent2)]" aria-hidden="true" />
+      </div>
+      <label className="mt-6 block">
+        <span className="sr-only">Number of copies</span>
+        <input
+          type="range"
+          min={10}
+          max={500}
+          step={5}
+          value={qty}
+          onChange={(e) => {
+            setQty(Number(e.target.value));
+            setState("idle");
+          }}
+          className="w-full accent-[var(--s-accent)]"
+        />
+      </label>
+      <div className="mt-1 flex justify-between text-[10px] uppercase tracking-widest text-[var(--s-muted)]">
+        <span>10</span>
+        <span>500</span>
+      </div>
+      <label htmlFor="biz-email" className="sr-only">
+        Work email
+      </label>
+      <input
+        id="biz-email"
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          setState("idle");
+        }}
+        type="email"
+        placeholder="Work email"
+        aria-invalid={state === "error"}
+        className="mt-6 min-h-12 w-full rounded-full border border-[var(--s-border)] bg-[var(--s-bg)]/70 px-5 text-sm text-[var(--s-fg)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-accent)]"
+      />
+      {state === "error" && (
+        <p
+          role="alert"
+          className="mt-2 px-2 text-xs text-[color-mix(in_oklab,#ff5d5d_70%,var(--s-fg))]"
+        >
+          Please enter a valid work email.
+        </p>
+      )}
+      <Btn type="submit" className="mt-4 w-full">
+        Request a quote
+      </Btn>
+      <p role="status" className="mt-4 min-h-5 text-xs leading-relaxed text-[var(--s-muted)]">
+        {state === "sent"
+          ? `Website concept: on a real site a quote for ${qty} copies would be sent to ${email.trim()}.`
+          : ""}
+      </p>
+    </form>
+  );
+}
+
+export function BusinessWebsite() {
+  const [reading, setReading] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [stage, setStage] = useState(0);
+  const [done, setDone] = useState(false);
+  const active = stages[stage] ?? stages[0];
+  const StageIcon = active.icon;
+
+  return (
+    <Site theme={theme} id={ID}>
+      <span id={`${ID}-top`} />
+      <Nav
+        site={ID}
+        name={AUTHOR}
+        sub="Business & strategy"
+        links={[
+          ["stages", "Framework"],
+          ["score", "Scorecard"],
+          ["toolkit", "Toolkit"],
+          ["speaking", "Speaking"],
+        ]}
+        cta="Get the book"
+        onCta={() => setBuying(true)}
+        mark={
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--s-accent)] text-[var(--s-on)]">
+            <TrendingUp size={20} aria-hidden="true" />
+          </span>
+        }
+      />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden px-5 pb-20 pt-14 @3xl:px-10 @3xl:pb-28 @3xl:pt-20">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(55% 55% at 85% 20%, rgba(56,189,248,0.22), transparent 70%), radial-gradient(40% 45% at 0% 100%, rgba(245,158,11,0.14), transparent 70%)",
+          }}
+        />
+        <Wrap className="relative grid items-center gap-14 @3xl:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <Eyebrow>A practical guide for founders</Eyebrow>
+            <Display
+              as="h1"
+              className="mt-5 text-[clamp(2.5rem,8cqi,5.6rem)] font-extrabold leading-[1] tracking-[-0.04em]"
+            >
+              Go from <span className="text-[var(--s-accent)]">zero</span> to a real market.
+            </Display>
+            <p className="mt-6 max-w-xl text-base leading-8 text-[var(--s-muted)] @3xl:text-lg">
+              Zero to Market is a plain-language playbook for finding your first customers, setting
+              a price you can defend, and launching without burning your runway.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => jump(ID, "score")}>
+                <ClipboardCheck size={16} aria-hidden="true" /> Check your readiness
+              </Btn>
+              <Btn variant="outline" onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read a chapter
+              </Btn>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-5 backdrop-blur">
+              <Chart />
+            </div>
+            <Book3D
+              cover={COVER}
+              title={TITLE}
+              width={150}
+              className="absolute -bottom-10 -left-6 hidden @3xl:block"
+            />
+          </div>
+        </Wrap>
+      </section>
+
+      {/* Stages */}
+      <Section site={ID} id="stages" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <Eyebrow>The framework</Eyebrow>
+          <Display className="mt-4 text-3xl font-extrabold @3xl:text-5xl">
+            Five stages, one at a time
+          </Display>
+          <div role="tablist" aria-label="Stages" className="mt-10 grid grid-cols-5 gap-2">
+            {stages.map((s, i) => (
+              <button
+                key={s.name}
+                role="tab"
+                type="button"
+                aria-selected={stage === i}
+                onClick={() => setStage(i)}
+                className="group text-left"
+              >
+                <span
+                  className={`block h-1.5 rounded-full transition-colors duration-500 ${i <= stage ? "bg-[var(--s-accent)]" : "bg-white/15"}`}
+                />
+                <span
+                  className={`mt-3 block text-[10px] font-bold uppercase tracking-[0.12em] transition @sm:text-xs ${stage === i ? "text-[var(--s-accent)]" : "text-[var(--s-muted)] group-hover:text-[var(--s-fg)]"}`}
+                >
+                  {i + 1}. {s.name}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div
+            role="tabpanel"
+            key={active.name}
+            className="mt-8 grid gap-6 rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-7 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 @3xl:grid-cols-[auto_1fr] @3xl:p-10"
+          >
+            <span className="grid size-16 place-items-center rounded-2xl bg-[var(--s-accent)] text-[var(--s-on)]">
+              <StageIcon size={30} aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-3xl font-extrabold [font-family:var(--s-display)]">
+                {active.name}
+              </p>
+              <ul className="mt-4 space-y-3">
+                {active.points.map((p) => (
+                  <li key={p} className="flex gap-3 text-base leading-7 text-[var(--s-muted)]">
+                    <Check
+                      size={18}
+                      className="mt-1 shrink-0 text-[var(--s-accent2)]"
+                      aria-hidden="true"
+                    />{" "}
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="score">
+        <Wrap>
+          <Eyebrow>Two-minute scorecard</Eyebrow>
+          <Display className="mt-4 max-w-2xl text-3xl font-extrabold @3xl:text-5xl">
+            How ready is your idea?
+          </Display>
+          <p className="mt-3 max-w-xl text-sm text-[var(--s-muted)]">
+            Tick every statement that is honestly true today.
+          </p>
+          <div className="mt-10">
+            <Scorecard />
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="toolkit" className="bg-[var(--s-bg2)]">
+        <Wrap className="grid gap-8 @3xl:grid-cols-2">
+          <div className="flex flex-col justify-between rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-7 @3xl:p-9">
+            <div>
+              <Eyebrow>Free toolkit</Eyebrow>
+              <Display className="mt-4 text-3xl font-extrabold">The go-to-market canvas</Display>
+              <p className="mt-3 text-sm leading-7 text-[var(--s-muted)]">
+                Eight questions that turn a vague idea into a plan. Download it as a spreadsheet and
+                fill it in with your team.
+              </p>
+            </div>
+            <Btn
+              className="mt-8 self-start"
+              onClick={() => {
+                downloadCanvas();
+                setDone(true);
+              }}
+            >
+              <Download size={16} aria-hidden="true" />{" "}
+              {done ? "Download again" : "Download the canvas"}
+            </Btn>
+          </div>
+          <div>
+            <Eyebrow>Bulk orders</Eyebrow>
+            <Display className="mb-5 mt-4 text-3xl font-extrabold">
+              Books for your whole team
+            </Display>
+            <BulkOrder />
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="speaking">
+        <Wrap className="grid items-start gap-10 @3xl:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <Eyebrow>Speaking</Eyebrow>
+            <Display className="mt-4 text-3xl font-extrabold @3xl:text-5xl">
+              Talks that leave a plan behind
+            </Display>
+            <p className="mt-4 text-base leading-8 text-[var(--s-muted)]">
+              Practical sessions for teams, accelerators, and conferences. Every talk ends with
+              something the audience can do on Monday.
+            </p>
+          </div>
+          <ul className="grid gap-3">
+            {topics.map((t, i) => (
+              <li
+                key={t}
+                className="flex items-center gap-4 rounded-2xl border border-[var(--s-border)] bg-[var(--s-card)] p-5 transition hover:border-[var(--s-accent)]"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--s-accent2)]/15 text-[var(--s-accent2)]">
+                  <Mic size={18} aria-hidden="true" />
+                </span>
+                <span className="text-base font-semibold">{t}</span>
+                <span className="ml-auto text-xs tabular-nums text-[var(--s-muted)]">0{i + 1}</span>
+              </li>
+            ))}
+          </ul>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="join" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <Signup
+            title="One useful idea, every other Thursday"
+            text="Short, practical notes on launching, pricing and growing a business. Unsubscribe whenever you like."
+            cta="Subscribe"
+          />
+        </Wrap>
+      </Section>
+
+      <ConceptFooter author={AUTHOR} line="Business author website concept" />
+      <Reader
+        open={reading}
+        onClose={() => setReading(false)}
+        title="Who Is It For?"
+        author={AUTHOR}
+        chapter="Chapter one"
+        paragraphs={excerpt}
+        onBuy={() => setBuying(true)}
+      />
+      <Retailers
+        open={buying}
+        onClose={() => setBuying(false)}
+        title={TITLE}
+        author={AUTHOR}
+        cover={COVER}
+      />
+    </Site>
   );
 }

@@ -1,418 +1,417 @@
-import { brand } from "@/data/brand";
-import React, { useState } from "react";
-import { Heart, BookOpen, ShoppingBag, Sparkles, Check, Music, Star, ArrowRight, Mail, Compass, Share2 } from "lucide-react";
-import type { MiniWebsiteProps } from "./types";
+import "@fontsource/cormorant-garamond/latin-500.css";
+import "@fontsource/cormorant-garamond/latin-500-italic.css";
+import "@fontsource/cormorant-garamond/latin-600.css";
+import { useState, type CSSProperties } from "react";
+import {
+  BookOpen,
+  Feather,
+  Heart,
+  Mail,
+  Music2,
+  Pause,
+  Play,
+  ShoppingBag,
+  Sparkles,
+} from "lucide-react";
+import {
+  Book3D,
+  Btn,
+  ConceptFooter,
+  Display,
+  Eyebrow,
+  Nav,
+  Reader,
+  Retailers,
+  Section,
+  Signup,
+  Site,
+  Wrap,
+  jump,
+  type Theme,
+} from "./kit";
 
-export function RomanceWebsite({ onBackToPortfolio, onBookWebsiteService, viewportMode = "desktop" }: MiniWebsiteProps) {
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [newsletterSent, setNewsletterSent] = useState(false);
-  const [email, setEmail] = useState("");
-  const [activeTab, setActiveTab] = useState<"book" | "playlist" | "tropes">("book");
+const ID = "romance";
+const COVER = "/images/covers/the-autumn-atelier.svg";
+const AUTHOR = "Camille Laurent";
+const TITLE = "The Autumn Atelier";
 
-  const scrollTo = (id: string) => {
-    document.getElementById(`romance-${id}`)?.scrollIntoView({ behavior: "smooth" });
-  };
+const theme: Theme = {
+  bg: "#170811",
+  bg2: "#26101c",
+  fg: "#f8ede6",
+  muted: "#c9aab4",
+  accent: "#e3b97a",
+  accent2: "#d4677f",
+  card: "rgba(255,255,255,0.05)",
+  border: "rgba(227,185,122,0.22)",
+  on: "#26101c",
+  display: "'Cormorant Garamond', Georgia, serif",
+  body: "'DM Sans Variable', system-ui, sans-serif",
+};
+
+const chapter = [
+  "The letter had been waiting for eighty years, folded small as a prayer and pressed between the pages of a ledger nobody wanted. Odile found it on a Tuesday in October, while the rain came down on the rue des Saules and the whole shop smelled of old glue and cold coffee.",
+  "She was not a woman who read other people's love. She restored bindings. She mended spines, lifted foxing, taught torn paper to hold again. But the ink on this page was still dark, and the first line was her own street.",
+  "“If you are reading this,” it began, “then the atelier survived, and so, I hope, did she.”",
+  "Behind her the bell above the door gave one bright note. Odile did not turn. She already knew that whoever had come in would want the ledger, and she already knew she would not sell it.",
+];
+
+const order = [
+  {
+    tag: "Free for readers",
+    name: "Letters in the Margin",
+    note: "A short prequel novella, sent when you join the list.",
+  },
+  {
+    tag: "Book one",
+    name: TITLE,
+    note: "Paris, October. A restorer, a hidden letter, a collector.",
+  },
+  { tag: "Coming next", name: "The Winter Binding", note: "Odile returns to the rue des Saules." },
+];
+
+const tracks = [
+  "Rain on the Rue des Saules",
+  "Candlelight Ledger",
+  "Last Train to Montmartre",
+  "Ink & Roses",
+  "The Collector’s Waltz",
+  "Morning, Unsent",
+];
+
+const moods = [
+  { name: "Candlelight", bg: "linear-gradient(135deg,#6b2740,#241018)" },
+  { name: "Old paper", bg: "linear-gradient(135deg,#d9c3a0,#8a6b4a)" },
+  { name: "Rain glass", bg: "linear-gradient(135deg,#34475e,#10151d)" },
+  { name: "Rose ink", bg: "linear-gradient(135deg,#d4677f,#5a1f34)" },
+  { name: "Gold leaf", bg: "linear-gradient(135deg,#f0d28f,#a9742a)" },
+  { name: "Midnight blue", bg: "linear-gradient(135deg,#1f2a52,#0a0e22)" },
+];
+
+export function RomanceWebsite() {
+  const [reading, setReading] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [playing, setPlaying] = useState(false);
 
   return (
-    <div className="min-h-full bg-[#1c0c16] text-[#f8ede3] font-sans antialiased selection:bg-[#c85a7e] selection:text-white">
-      {/* Editorial Announcement Bar */}
-      <div className="bg-gradient-to-r from-[#5a1c38] via-[#8c3258] to-[#5a1c38] px-4 py-2 text-center text-xs font-medium tracking-[0.2em] text-[#fde8ef] flex items-center justify-center gap-2">
-        <Sparkles size={13} className="text-[#f7c2d2]" />
-        <span>USA TODAY BESTSELLER • THE AUTUMN ATELIER IS NOW AVAILABLE WORLDWIDE</span>
-        <Sparkles size={13} className="text-[#f7c2d2]" />
-      </div>
-
-      {/* Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[#f7c2d2]/15 bg-[#1c0c16]/90 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-full bg-[#c85a7e]/20 border border-[#c85a7e] flex items-center justify-center font-serif text-[#f7c2d2] font-bold text-lg">
+    <Site theme={theme} id={ID}>
+      <span id={`${ID}-top`} />
+      <Nav
+        site={ID}
+        name={AUTHOR}
+        sub="Parisian romance"
+        links={[
+          ["story", "The story"],
+          ["order", "Reading order"],
+          ["chapter", "Chapter one"],
+          ["letters", "Letters"],
+        ]}
+        cta="Get the book"
+        onCta={() => setBuying(true)}
+        mark={
+          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--s-accent)]/50 bg-[var(--s-card)] text-sm italic [font-family:var(--s-display)] text-[var(--s-accent)]">
             CL
-          </div>
+          </span>
+        }
+      />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden px-5 pb-20 pt-14 @3xl:px-10 @3xl:pb-28 @3xl:pt-20">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 55% at 78% 40%, rgba(212,103,127,0.28), transparent 70%), radial-gradient(45% 45% at 10% 0%, rgba(227,185,122,0.18), transparent 70%)",
+          }}
+        />
+        {/* drifting petals */}
+        {Array.from({ length: 16 }).map((_, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            className="pointer-events-none absolute top-0 h-3.5 w-2.5 rounded-[100%_0_100%_0] bg-[var(--s-accent2)]/60"
+            style={
+              {
+                left: `${(i * 6.3 + 3) % 100}%`,
+                "--dx": `${(i % 2 ? 1 : -1) * (30 + (i % 4) * 20)}px`,
+                animation: `s-fall ${11 + (i % 5) * 2.2}s linear ${i * 0.8}s infinite`,
+              } as CSSProperties
+            }
+          />
+        ))}
+        <Wrap className="relative grid items-center gap-14 @3xl:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <span className="font-serif text-xl tracking-wide font-semibold text-[#fff5ea]">Camille Laurent</span>
-            <span className="block text-[10px] tracking-[0.25em] text-[#df8a9e] uppercase font-medium">Parisian Romance</span>
-          </div>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-7 text-xs uppercase tracking-[0.18em] font-medium text-[#f5d5de]">
-          <button onClick={() => scrollTo("hero")} className="hover:text-white transition-colors">Home</button>
-          <button onClick={() => scrollTo("books")} className="hover:text-white transition-colors">The Novel</button>
-          <button onClick={() => scrollTo("author")} className="hover:text-white transition-colors">About Camille</button>
-          <button onClick={() => scrollTo("extras")} className="hover:text-white transition-colors">Bonus & Playlist</button>
-          <button onClick={() => scrollTo("newsletter")} className="hover:text-white transition-colors">VIP Readers</button>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setBuyOpen(true)}
-            className="px-4 py-2 rounded-full bg-[#c85a7e] hover:bg-[#b04b6c] text-white text-xs font-semibold tracking-wider transition-all duration-300 shadow-lg shadow-[#c85a7e]/25 flex items-center gap-1.5"
-          >
-            <ShoppingBag size={14} />
-            <span>Order Novel</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Hero Section */}
-      <section id="romance-hero" className="relative px-6 py-16 lg:py-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_70%_30%,#c85a7e,transparent_60%)]" />
-        
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
-          <div className="space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c85a7e]/15 border border-[#c85a7e]/40 text-[#f7c2d2] text-xs uppercase tracking-[0.2em] font-medium">
-              <Heart size={12} className="fill-current text-[#e87898]" />
-              New Release Romance
-            </div>
-
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-[#fff5ea] leading-[1.12] font-semibold">
-              Love whispered along the banks of the Seine.
-            </h1>
-
-            <p className="text-[#e2cad4] text-sm sm:text-base leading-relaxed max-w-lg">
-              When an antique book restorer discovers an unsent wartime confession tucked inside an 1890s Parisian journal, she never expected the collector hunting for it would steal her heart.
+            <p className="inline-flex items-center gap-2 rounded-full border border-[var(--s-border)] bg-[var(--s-card)] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--s-accent)]">
+              <Heart size={12} aria-hidden="true" /> A Parisian love story
             </p>
-
-            <div className="flex flex-wrap gap-4 pt-2">
-              <button
-                onClick={() => setBuyOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#c85a7e] to-[#a3385c] text-white text-sm font-semibold tracking-wide shadow-xl shadow-[#c85a7e]/30 hover:scale-[1.02] transition-transform flex items-center gap-2"
-              >
-                <ShoppingBag size={16} />
-                <span>Buy The Autumn Atelier</span>
-              </button>
-              <button
-                onClick={() => setSampleOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-[#351627] hover:bg-[#461e34] border border-[#f7c2d2]/25 text-[#fde8ef] text-sm font-medium tracking-wide transition-colors flex items-center gap-2"
-              >
-                <BookOpen size={16} />
-                <span>Read Chapter One</span>
-              </button>
+            <Display as="h1" className="mt-6 text-[clamp(2.8rem,9cqi,5.8rem)] font-medium italic">
+              Love, whispered along the banks of the Seine.
+            </Display>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--s-muted)] @3xl:text-lg @3xl:leading-8">
+              When a restorer of antique books finds an unsent confession hidden in a 1940s ledger,
+              she never expects the collector hunting for it to rewrite her whole heart.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => setBuying(true)}>
+                <ShoppingBag size={16} aria-hidden="true" /> Get {TITLE}
+              </Btn>
+              <Btn variant="outline" onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read chapter one
+              </Btn>
             </div>
-
-            {/* Praise Pills */}
-            <div className="pt-4 flex items-center gap-4 text-xs text-[#d6b4c2]">
-              <div className="flex text-[#f472b6]">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} fill="currentColor" />
-                ))}
-              </div>
-              <span>"An intoxicating triumph." — Romance Today</span>
-            </div>
+            <p className="mt-6 flex items-center gap-2 text-sm text-[var(--s-muted)]">
+              <Mail size={15} className="text-[var(--s-accent)]" aria-hidden="true" />
+              Join the list and receive the prequel novella free.
+            </p>
           </div>
-
-          {/* Book Mockup 3D Presentation */}
-          <div className="flex justify-center relative">
-            <div className="relative group">
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-[#c85a7e]/40 to-transparent blur-2xl group-hover:blur-3xl transition-all" />
-              <img
-                src="/images/covers/the-autumn-atelier.svg"
-                alt="The Autumn Atelier by Camille Laurent"
-                className="relative w-64 sm:w-80 rounded-2xl shadow-2xl border border-[#f7c2d2]/30 transform rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
-              />
-              <div className="absolute -bottom-4 -left-4 bg-[#2e1222] border border-[#c85a7e]/50 px-4 py-2 rounded-xl text-xs font-serif text-[#fde8ef] shadow-xl backdrop-blur-md">
-                ★ 4.9 Stars on Goodreads
-              </div>
-            </div>
+          <div className="relative">
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 top-1/2 h-[112%] w-[88%] -translate-x-1/2 -translate-y-1/2 rounded-t-[999px] border border-[var(--s-accent)]/40"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute left-1/2 top-1/2 h-[100%] w-[74%] -translate-x-1/2 -translate-y-1/2 rounded-t-[999px] bg-gradient-to-b from-[var(--s-accent2)]/25 to-transparent"
+            />
+            <Book3D cover={COVER} title={TITLE} width={270} className="my-10" />
           </div>
-        </div>
+        </Wrap>
       </section>
 
-      {/* Featured Book Details & Tropes */}
-      <section id="romance-books" className="px-6 py-16 bg-[#250f1d] border-y border-[#f7c2d2]/10">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex rounded-full bg-[#180812] p-1 border border-[#f7c2d2]/15">
-              <button
-                onClick={() => setActiveTab("book")}
-                className={`px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors ${
-                  activeTab === "book" ? "bg-[#c85a7e] text-white" : "text-[#d6b4c2] hover:text-white"
-                }`}
-              >
-                Book Synopsis
-              </button>
-              <button
-                onClick={() => setActiveTab("tropes")}
-                className={`px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors ${
-                  activeTab === "tropes" ? "bg-[#c85a7e] text-white" : "text-[#d6b4c2] hover:text-white"
-                }`}
-              >
-                Story Tropes
-              </button>
-              <button
-                onClick={() => setActiveTab("playlist")}
-                className={`px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-colors ${
-                  activeTab === "playlist" ? "bg-[#c85a7e] text-white" : "text-[#d6b4c2] hover:text-white"
-                }`}
-              >
-                Parisian Playlist
-              </button>
-            </div>
-          </div>
-
-          {activeTab === "book" && (
-            <div className="max-w-3xl mx-auto text-center space-y-4">
-              <span className="text-xs uppercase tracking-[0.25em] text-[#e87898] font-medium">Bilingual Contemporary Romance</span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#fff5ea]">An Autumn They Would Never Forget</h2>
-              <p className="text-sm sm:text-base text-[#d6b4c2] leading-relaxed">
-                Set in the winding cobblestones of Montmartre and private historic libraries, <em>The Autumn Atelier</em> explores the electric tension between rival archivists tasked with uncovering a century-old secret. With dual perspectives, slow-burn romantic tension, and rich descriptions of Parisian bistros and rare manuscripts.
-              </p>
-              <div className="pt-4 flex justify-center gap-3">
-                <button
-                  onClick={() => setSampleOpen(true)}
-                  className="text-xs font-semibold uppercase tracking-wider text-[#f7c2d2] border-b border-[#f7c2d2] pb-0.5 hover:text-white transition-colors"
-                >
-                  Read Excerpt Online →
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "tropes" && (
-            <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
-              {[
-                { title: "Rivals to Lovers", desc: "Two fiercely competitive book collectors forced into a shared restoration grant." },
-                { title: "Forced Proximity", desc: "A rainy November trapped in a 19th-century private attic archive." },
-                { title: "Dual POV & Epistolary", desc: "Modern passion interwoven with historic handwritten letters." },
-              ].map((t, i) => (
-                <div key={i} className="p-5 rounded-2xl bg-[#1d0b16] border border-[#f7c2d2]/15 text-left">
-                  <Heart size={16} className="text-[#e87898] mb-2 fill-current" />
-                  <h3 className="font-serif text-lg text-[#fff5ea] font-semibold">{t.title}</h3>
-                  <p className="text-xs text-[#d6b4c2] mt-1 leading-relaxed">{t.desc}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {activeTab === "playlist" && (
-            <div className="max-w-xl mx-auto p-6 rounded-2xl bg-[#1d0b16] border border-[#f7c2d2]/20 text-center space-y-3">
-              <Music size={28} className="mx-auto text-[#e87898]" />
-              <h3 className="font-serif text-2xl text-[#fff5ea]">Official Story Atmosphere</h3>
-              <p className="text-xs text-[#d6b4c2]">Acoustic accordion, melancholic French indie folk, and gentle rainy cello pieces curated by Camille Laurent.</p>
-              <div className="pt-2 flex justify-center gap-2 text-xs">
-                <span className="px-3 py-1 rounded-full bg-[#351627] text-[#f7c2d2]">1. Claude Debussy — Clair de Lune</span>
-                <span className="px-3 py-1 rounded-full bg-[#351627] text-[#f7c2d2]">2. Pomme — Ceux que l'on aime</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Author Bio Section */}
-      <section id="romance-author" className="px-6 py-20 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <div className="relative">
-              <div className="size-60 sm:size-72 rounded-3xl overflow-hidden border-2 border-[#c85a7e]/40 shadow-2xl">
-                <img
-                  src="/images/authors/camille-laurent.jpg"
-                  alt="Camille Laurent"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-3 -right-3 bg-[#c85a7e] text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow-lg">
-                Paris, France
-              </div>
-            </div>
-          </div>
-
-          <div className="md:col-span-7 space-y-4 text-left">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#e87898] font-semibold">About The Author</span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#fff5ea] font-semibold">Camille Laurent</h2>
-            <p className="text-sm sm:text-base text-[#d6b4c2] leading-relaxed">
-              Camille Laurent is an internationally bestselling author of contemporary European romance. A former curator of antique bindings in the Marais district, her novels capture the sensual atmosphere of old Europe, slow-burning passion, and witty banter.
+      {/* Story */}
+      <Section site={ID} id="story" className="bg-[var(--s-bg2)]">
+        <Wrap className="grid gap-12 @3xl:grid-cols-[0.9fr_1.1fr] @3xl:items-center">
+          <div>
+            <Eyebrow>The story</Eyebrow>
+            <Display className="mt-4 text-4xl font-medium @3xl:text-6xl">
+              Some letters wait a lifetime to be read.
+            </Display>
+            <p className="mt-6 text-base leading-8 text-[var(--s-muted)]">
+              Set between a rain-soaked October and a candlelit December, {TITLE} is a slow-burn
+              romance about second chances, quiet crafts, and the courage it takes to answer a
+              message from the past.
             </p>
-            <p className="text-sm sm:text-base text-[#d6b4c2] leading-relaxed">
-              When not writing in light-filled cafés, she can be found hunting for first editions along the Seine or brewing Earl Grey tea for her Persian cat, Marcel.
-            </p>
-            <div className="pt-2 flex items-center gap-6 text-xs text-[#f7c2d2]">
-              <div><strong>12</strong> Published Romances</div>
-              <div><strong>3x</strong> USA Today Bestseller</div>
-              <div><strong>18</strong> Translated Languages</div>
-            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Reader Reviews */}
-      <section className="px-6 py-16 bg-[#250f1d] border-t border-[#f7c2d2]/10">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#e87898] font-semibold">Critical Acclaim</span>
-            <h2 className="font-serif text-3xl text-[#fff5ea] mt-1">What Readers Are Saying</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-6">
+          <div className="grid gap-4 @lg:grid-cols-3">
             {[
               {
-                quote: "Unputdownable. Camille Laurent has penned the definitive romantic love letter to Paris.",
-                source: "The Paris Book Gazette",
-                rating: 5,
+                icon: Feather,
+                t: "Hidden letters",
+                d: "A confession tucked inside a ledger for eighty years.",
               },
               {
-                quote: "The chemistry between Sophie and Henri practically caught my Kindle on fire.",
-                source: "Romance Reader Society",
-                rating: 5,
+                icon: Heart,
+                t: "Slow-burn romance",
+                d: "Two people who handle fragile things carefully.",
               },
               {
-                quote: "Exquisite prose, breathless emotional tension, and the most satisfying final chapter of the year.",
-                source: "Literary Hearts Blog",
-                rating: 5,
+                icon: Sparkles,
+                t: "Second chances",
+                d: "Paris in autumn, and a shop worth saving.",
               },
-            ].map((rev, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-[#1c0c16] border border-[#f7c2d2]/15 flex flex-col justify-between text-left">
-                <div className="flex text-[#f472b6] mb-3">
-                  {[...Array(rev.rating)].map((_, idx) => (
-                    <Star key={idx} size={14} fill="currentColor" />
-                  ))}
-                </div>
-                <p className="font-serif text-sm sm:text-base italic text-[#fde8ef] leading-relaxed">“{rev.quote}”</p>
-                <p className="text-xs font-semibold text-[#e87898] mt-4 uppercase tracking-wider">{rev.source}</p>
+            ].map(({ icon: Icon, t, d }) => (
+              <div
+                key={t}
+                className="rounded-3xl border border-[var(--s-border)] bg-[var(--s-card)] p-6 transition duration-300 hover:-translate-y-1 hover:border-[var(--s-accent)]"
+              >
+                <Icon size={22} className="text-[var(--s-accent)]" aria-hidden="true" />
+                <p className="mt-4 text-2xl [font-family:var(--s-display)]">{t}</p>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--s-muted)]">{d}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </Wrap>
+      </Section>
 
-      {/* VIP Reader Magnet / Newsletter */}
-      <section id="romance-newsletter" className="px-6 py-20 max-w-4xl mx-auto text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#381628] to-[#200c17] border border-[#c85a7e]/40 shadow-2xl relative overflow-hidden">
-          <div className="relative z-10 space-y-4">
-            <Heart size={32} className="mx-auto text-[#f472b6] fill-current" />
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#fff5ea] font-semibold">Join Camille’s Parisian Salon</h2>
-            <p className="text-sm text-[#d6b4c2] max-w-md mx-auto leading-relaxed">
-              Sign up today and instantly receive the prequel novella, <em>A Weekend in Provence</em>, plus exclusive deleted scenes and advance reader copies.
-            </p>
-
-            {newsletterSent ? (
-              <div className="p-4 rounded-2xl bg-[#1d0b16] border border-[#c85a7e] text-[#f7c2d2] text-sm flex items-center justify-center gap-2">
-                <Check size={18} className="text-[#f472b6]" />
-                <span>Merci! Your free prequel novella has been dispatched to your inbox.</span>
-              </div>
-            ) : (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (email) setNewsletterSent(true);
-                }}
-                className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto pt-2"
-              >
-                <input
-                  type="email"
-                  required
-                  placeholder="Enter your email address..."
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-5 py-3 rounded-full bg-[#160710] border border-[#f7c2d2]/30 text-white placeholder:text-[#a88a96] text-xs focus:outline-none focus:border-[#c85a7e]"
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-full bg-[#c85a7e] hover:bg-[#b04b6c] text-white text-xs font-semibold uppercase tracking-wider transition-colors shadow-lg"
-                >
-                  Send My Novella
-                </button>
-              </form>
-            )}
+      {/* Reading order */}
+      <Section site={ID} id="order">
+        <Wrap>
+          <div className="mx-auto max-w-2xl text-center">
+            <Eyebrow>Reading order</Eyebrow>
+            <Display className="mt-4 text-4xl font-medium @3xl:text-6xl">Where to begin</Display>
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-10 border-t border-[#f7c2d2]/15 bg-[#14070f] text-center text-xs text-[#a88a96] space-y-3">
-        <p>© 2026 Camille Laurent. All rights reserved. Represented by {brand.name} Book Services.</p>
-        <p className="text-[11px] text-[#e87898]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
-      </footer>
-
-      {/* Interactive Sample Modal */}
-      {sampleOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#1c0c16] border border-[#c85a7e]/50 max-w-2xl w-full max-h-[85vh] rounded-3xl p-6 sm:p-8 overflow-y-auto shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-[#f7c2d2]/15 pb-4 mb-4">
-              <div>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#e87898] font-bold">Free Sample Preview</span>
-                <h3 className="font-serif text-2xl text-[#fff5ea]">The Autumn Atelier — Chapter One</h3>
-              </div>
-              <button
-                onClick={() => setSampleOpen(false)}
-                className="size-8 rounded-full bg-[#351627] text-[#f7c2d2] hover:text-white flex items-center justify-center"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-4 font-serif text-sm sm:text-base leading-relaxed text-[#edd6df]">
-              <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-[#f472b6] first-letter:float-left first-letter:mr-3 first-letter:leading-none">
-                The rain over Montmartre smelled of wet cobblestones and roasted chestnuts. Inside Atelier Valmont, Sophie adjusted her brass loupe over the water-stained vellum of an 1892 journal.
-              </p>
-              <p>
-                "It isn't for sale, Monsieur Laurent," she murmured without looking up from the binding.
-              </p>
-              <p>
-                The man in the charcoal cashmere coat stepped closer, bringing with him the scent of cedar and autumn wind. "Everything in Paris has a price, Mademoiselle. But this journal isn't inventory. It belonged to my great-grandfather."
-              </p>
-              <p>
-                Sophie paused her scalpel, her breath catching as their eyes met across the mahogany workbench.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#f7c2d2]/15 flex justify-between items-center">
-              <span className="text-xs text-[#d6b4c2]">Want to read all 380 pages?</span>
-              <button
-                onClick={() => { setSampleOpen(false); setBuyOpen(true); }}
-                className="px-5 py-2.5 rounded-full bg-[#c85a7e] text-white text-xs font-semibold uppercase tracking-wider"
-              >
-                Order Full Book Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Interactive Buy Modal */}
-      {buyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#1c0c16] border border-[#c85a7e]/50 max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl text-center">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs uppercase tracking-[0.2em] text-[#e87898] font-bold">Select Your Retailer</span>
-              <button
-                onClick={() => setBuyOpen(false)}
-                className="size-8 rounded-full bg-[#351627] text-[#f7c2d2] hover:text-white flex items-center justify-center"
-              >
-                ✕
-              </button>
-            </div>
-            <img
-              src="/images/covers/the-autumn-atelier.svg"
-              alt="The Autumn Atelier"
-              className="w-32 mx-auto rounded-xl shadow-xl mb-4 border border-[#f7c2d2]/30"
+          <ol className="relative mt-14 grid gap-5 @3xl:grid-cols-3">
+            <span
+              aria-hidden="true"
+              className="absolute left-[16%] right-[16%] top-7 hidden h-px bg-gradient-to-r from-transparent via-[var(--s-accent)]/50 to-transparent @3xl:block"
             />
-            <h3 className="font-serif text-xl text-[#fff5ea] font-semibold">The Autumn Atelier</h3>
-            <p className="text-xs text-[#d6b4c2] mb-6">Available in Hardcover, Paperback, Kindle & Audiobook</p>
+            {order.map((item, i) => (
+              <li key={item.name} className="relative text-center">
+                <span className="relative z-10 mx-auto grid size-14 place-items-center rounded-full border border-[var(--s-accent)] bg-[var(--s-bg)] text-xl italic text-[var(--s-accent)] [font-family:var(--s-display)]">
+                  {i + 1}
+                </span>
+                <div className="mt-5 rounded-3xl border border-[var(--s-border)] bg-[var(--s-card)] p-6">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--s-accent2)]">
+                    {item.tag}
+                  </p>
+                  <p className="mt-2 text-2xl [font-family:var(--s-display)]">{item.name}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--s-muted)]">{item.note}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Wrap>
+      </Section>
 
-            <div className="space-y-2.5 text-left">
-              {[
-                { name: "Amazon Kindle & Paperback", tag: "Prime 1-Day Delivery", color: "bg-[#2d1221] hover:bg-[#3d1a2f]" },
-                { name: "Barnes & Noble Hardcover", tag: "Special Edition with Sprayed Edges", color: "bg-[#2d1221] hover:bg-[#3d1a2f]" },
-                { name: "Apple Books & Kobo", tag: "Immediate Digital Download", color: "bg-[#2d1221] hover:bg-[#3d1a2f]" },
-                { name: "Audible Audiobook", tag: "Narrated in English & French", color: "bg-[#2d1221] hover:bg-[#3d1a2f]" },
-              ].map((ret, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    alert(`Demo trigger: In a live author website, this seamlessly directs the reader to ${ret.name}.`);
-                    setBuyOpen(false);
-                  }}
-                  className={`w-full p-3.5 rounded-xl border border-[#f7c2d2]/20 ${ret.color} text-white flex items-center justify-between transition-colors`}
-                >
-                  <div>
-                    <p className="text-xs font-semibold text-[#fde8ef]">{ret.name}</p>
-                    <p className="text-[10px] text-[#e87898]">{ret.tag}</p>
-                  </div>
-                  <ArrowRight size={14} className="text-[#f7c2d2]" />
-                </button>
-              ))}
+      {/* Chapter one + narration */}
+      <Section site={ID} id="chapter" className="bg-[var(--s-bg2)]">
+        <Wrap className="grid items-start gap-10 @3xl:grid-cols-[1.2fr_0.8fr]">
+          <article className="rounded-[2rem] bg-[#f6ecdc] p-7 text-[#2b1a1f] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.8)] @3xl:p-12">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.26em] text-[#a35468]">
+              Chapter one &middot; Preview
+            </p>
+            <h3 className="mt-3 text-4xl font-medium italic leading-tight [font-family:var(--s-display)]">
+              The Ledger
+            </h3>
+            <p className="mt-5 text-[1.08rem] leading-[1.9] [font-family:var(--s-display)] first-letter:float-left first-letter:mr-3 first-letter:text-6xl first-letter:leading-[0.85] first-letter:text-[#a35468]">
+              {chapter[0]}
+            </p>
+            <p className="mt-4 text-[1.08rem] leading-[1.9] [font-family:var(--s-display)]">
+              {chapter[1]}
+            </p>
+            <Btn className="mt-7 !bg-[#2b1a1f] !text-[#f6ecdc]" onClick={() => setReading(true)}>
+              Keep reading <BookOpen size={16} aria-hidden="true" />
+            </Btn>
+          </article>
+          <aside className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-6 @3xl:p-8">
+            <Eyebrow>Narration preview</Eyebrow>
+            <div className="mt-4 flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => setPlaying((p) => !p)}
+                aria-label={playing ? "Pause narration preview" : "Play narration preview"}
+                className="grid size-14 shrink-0 place-items-center rounded-full bg-[var(--s-accent)] text-[var(--s-on)] shadow-[0_12px_30px_-10px_var(--s-accent)] transition hover:scale-105"
+              >
+                {playing ? (
+                  <Pause size={20} aria-hidden="true" />
+                ) : (
+                  <Play size={20} className="ml-0.5" aria-hidden="true" />
+                )}
+              </button>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-lg [font-family:var(--s-display)]">
+                  Chapter one, read aloud
+                </p>
+                <div className="mt-2 flex h-8 items-end gap-[3px]" aria-hidden="true">
+                  {Array.from({ length: 26 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className="w-full rounded-full bg-[var(--s-accent)]/70 transition-[height]"
+                      style={{
+                        height: `${28 + ((i * 37) % 70)}%`,
+                        animation: playing
+                          ? `s-twinkle ${0.7 + (i % 5) * 0.15}s ease-in-out ${i * 0.04}s infinite`
+                          : "none",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
+            <p className="mt-4 text-xs leading-relaxed text-[var(--s-muted)]">
+              Website concept: this is where a short audio sample, in English and French, would
+              play.
+            </p>
+            <div className="my-6 h-px bg-[var(--s-border)]" />
+            <Eyebrow>Playlist</Eyebrow>
+            <ul className="mt-3 divide-y divide-[var(--s-border)]">
+              {tracks.map((track, i) => (
+                <li key={track} className="flex items-center gap-3 py-2.5 text-sm">
+                  <Music2
+                    size={14}
+                    className="shrink-0 text-[var(--s-accent2)]"
+                    aria-hidden="true"
+                  />
+                  <span className="min-w-0 flex-1 truncate">{track}</span>
+                  <span className="text-xs text-[var(--s-muted)]">
+                    0{(i % 4) + 2}:{["14", "47", "31", "58", "09", "26"][i]}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        </Wrap>
+      </Section>
+
+      {/* Moodboard */}
+      <Section site={ID} id="mood">
+        <Wrap>
+          <Eyebrow>Moodboard</Eyebrow>
+          <Display className="mt-4 max-w-xl text-4xl font-medium @3xl:text-5xl">
+            The colours of the book
+          </Display>
+          <div className="mt-10 grid grid-cols-2 gap-3 @3xl:grid-cols-6">
+            {moods.map((m, i) => (
+              <div
+                key={m.name}
+                className="group relative aspect-[3/4] overflow-hidden rounded-2xl border border-[var(--s-border)] transition duration-500 hover:-translate-y-1.5"
+                style={{ background: m.bg, marginTop: i % 2 ? "1.25rem" : 0 }}
+              >
+                <span className="absolute inset-x-3 bottom-3 text-lg italic text-white/90 [font-family:var(--s-display)]">
+                  {m.name}
+                </span>
+              </div>
+            ))}
           </div>
-        </div>
-      )}
-    </div>
+        </Wrap>
+      </Section>
+
+      {/* Sign-up */}
+      <Section site={ID} id="letters" className="pt-4">
+        <Wrap>
+          <Signup
+            title="Letters from Paris"
+            text="One note a month: new chapters, behind-the-scenes from the atelier, and the free prequel novella as a welcome gift."
+            cta="Send me the prequel"
+            gift="the prequel novella "
+          />
+        </Wrap>
+      </Section>
+
+      {/* Author */}
+      <Section
+        site={ID}
+        id="author"
+        className="border-t border-[var(--s-border)] bg-[var(--s-bg2)]"
+      >
+        <Wrap className="grid items-center gap-8 @3xl:grid-cols-[auto_1fr]">
+          <span className="mx-auto grid size-36 place-items-center rounded-full border border-[var(--s-accent)]/50 bg-gradient-to-br from-[var(--s-accent2)]/30 to-[var(--s-accent)]/20 text-6xl italic text-[var(--s-accent)] [font-family:var(--s-display)] @3xl:size-44">
+            CL
+          </span>
+          <div className="text-center @3xl:text-left">
+            <Eyebrow>About the author</Eyebrow>
+            <Display className="mt-3 text-3xl font-medium @3xl:text-5xl">{AUTHOR}</Display>
+            <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--s-muted)]">
+              Camille writes slow, sensory love stories about people who work with their hands. She
+              divides her time between a narrow flat in Paris and a desk by the sea, and keeps a
+              drawer of ribbon, thread and half-finished letters.
+            </p>
+            <Btn variant="outline" className="mt-5" onClick={() => jump(ID, "letters")}>
+              <Mail size={15} aria-hidden="true" /> Join the letters
+            </Btn>
+          </div>
+        </Wrap>
+      </Section>
+
+      <ConceptFooter author={AUTHOR} line="Romance author website concept" />
+
+      <Reader
+        open={reading}
+        onClose={() => setReading(false)}
+        title="The Ledger"
+        author={AUTHOR}
+        chapter="Chapter one"
+        paragraphs={chapter}
+        onBuy={() => setBuying(true)}
+      />
+      <Retailers
+        open={buying}
+        onClose={() => setBuying(false)}
+        title={TITLE}
+        author={AUTHOR}
+        cover={COVER}
+      />
+    </Site>
   );
 }

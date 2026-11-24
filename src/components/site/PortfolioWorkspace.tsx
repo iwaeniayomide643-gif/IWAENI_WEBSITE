@@ -21,9 +21,12 @@ const websiteGenres = [
   "Fantasy",
   "Thriller",
   "Literary",
+  "Historical",
+  "Young Adult",
   "Business",
   "Self-Help",
   "Children's",
+  "Non-Fiction",
 ];
 
 /** Some covers are hosted on Contra as well; use them if a local file ever goes missing. */

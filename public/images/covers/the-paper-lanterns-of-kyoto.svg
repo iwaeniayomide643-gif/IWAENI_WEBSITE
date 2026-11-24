@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#fda4af" text-anchor="middle" letter-spacing="0.3em">
-        ★ HISTORICAL FICTION GUILD PICK ★
+        ★ A HISTORICAL NOVEL ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#fda4af" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “Breathtaking historical fidelity and emotional grace.”
+        Lantern-light, silk, and a secret in old Kyoto.
       </text>
     </g>
 

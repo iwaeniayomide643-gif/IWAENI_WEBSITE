@@ -1,17 +1,89 @@
-import React, { useState } from "react";
-import { ArrowLeft, ArrowRight, Laptop, Tablet, Smartphone, ExternalLink, X, ChevronDown, Sparkles } from "lucide-react";
+import { lazy, Suspense, useEffect, useState, type ComponentType } from "react";
+import {
+  ArrowLeft,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Globe,
+  Laptop,
+  Smartphone,
+  Sparkles,
+  Tablet,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { RomanceWebsite } from "./RomanceWebsite";
-import { FantasyWebsite } from "./FantasyWebsite";
-import { ThrillerWebsite } from "./ThrillerWebsite";
-import { LiteraryWebsite } from "./LiteraryWebsite";
-import { HistoricalWebsite } from "./HistoricalWebsite";
-import { YoungAdultWebsite } from "./YoungAdultWebsite";
-import { NonFictionWebsite } from "./NonFictionWebsite";
-import { SelfHelpWebsite } from "./SelfHelpWebsite";
-import { ChildrensWebsite } from "./ChildrensWebsite";
-import { BusinessWebsite } from "./BusinessWebsite";
+import { cn } from "@/lib/utils";
 import { authorWebsites, type AuthorWebsiteProject } from "@/data/authorWebsites";
+
+/** Each concept loads on its own, with its own fonts, only when it is opened. */
+const sites: Record<string, ComponentType> = {
+  "camille-laurent-website": lazy(() =>
+    import("./RomanceWebsite").then((m) => ({ default: m.RomanceWebsite })),
+  ),
+  "kofi-mensah-website": lazy(() =>
+    import("./FantasyWebsite").then((m) => ({ default: m.FantasyWebsite })),
+  ),
+  "declan-cross-website": lazy(() =>
+    import("./ThrillerWebsite").then((m) => ({ default: m.ThrillerWebsite })),
+  ),
+  "soraya-al-mansoor-website": lazy(() =>
+    import("./LiteraryWebsite").then((m) => ({ default: m.LiteraryWebsite })),
+  ),
+  "helena-vane-website": lazy(() =>
+    import("./HistoricalWebsite").then((m) => ({ default: m.HistoricalWebsite })),
+  ),
+  "beatrix-sterling-website": lazy(() =>
+    import("./YoungAdultWebsite").then((m) => ({ default: m.YoungAdultWebsite })),
+  ),
+  "tariq-vance-website": lazy(() =>
+    import("./NonFictionWebsite").then((m) => ({ default: m.NonFictionWebsite })),
+  ),
+  "dr-julian-oreilly-website": lazy(() =>
+    import("./SelfHelpWebsite").then((m) => ({ default: m.SelfHelpWebsite })),
+  ),
+  "amara-leo-fox-website": lazy(() =>
+    import("./ChildrensWebsite").then((m) => ({ default: m.ChildrensWebsite })),
+  ),
+  "marcos-valdes-website": lazy(() =>
+    import("./BusinessWebsite").then((m) => ({ default: m.BusinessWebsite })),
+  ),
+};
+
+type Viewport = "desktop" | "tablet" | "mobile";
+
+const viewports: { id: Viewport; label: string; icon: typeof Laptop; frame: string }[] = [
+  { id: "desktop", label: "Desktop", icon: Laptop, frame: "max-w-[1280px]" },
+  { id: "tablet", label: "Tablet, 768 pixels wide", icon: Tablet, frame: "max-w-[768px]" },
+  {
+    id: "mobile",
+    label: "Phone, 390 pixels wide",
+    icon: Smartphone,
+    frame: "max-w-[390px] rounded-[2.2rem] ring-[7px] ring-[#1d1a26]",
+  },
+];
+
+/** ".example" is reserved and can never belong to a real person, so the demo address is safe. */
+const addressFor = (project: AuthorWebsiteProject) =>
+  `${project.authorName
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z]+/g, "-")
+    .replace(/^-|-$/g, "")}.example`;
+
+function Loading() {
+  return (
+    <div className="grid h-full min-h-[60vh] place-items-center bg-[#0b0710]" role="status">
+      <div className="text-center">
+        <span className="mx-auto block size-10 animate-spin rounded-full border-2 border-white/15 border-t-gold" />
+        <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-white/50">
+          Loading the concept
+        </p>
+      </div>
+    </div>
+  );
+}
 
 interface MiniWebsiteViewerProps {
   project: AuthorWebsiteProject;
@@ -26,212 +98,236 @@ export function MiniWebsiteViewer({
   onSelectProject,
   onBookService,
 }: MiniWebsiteViewerProps) {
-  const [viewport, setViewport] = useState<"desktop" | "tablet" | "mobile">("desktop");
+  const [viewport, setViewport] = useState<Viewport>("desktop");
   const [selectorOpen, setSelectorOpen] = useState(false);
 
-  // Map project ID to simulated live domain
-  const domainMap: Record<string, string> = {
-    "camille-laurent-website": "https://camillelaurent-romance.com",
-    "kofi-mensah-website": "https://kofimensah-fantasy.realm",
-    "declan-cross-website": "https://declancross-thrillers.net",
-    "soraya-al-mansoor-website": "https://soraya-almansoor.poetry",
-    "helena-vane-website": "https://helenavane-historical.archives",
-    "beatrix-sterling-website": "https://beatrixsterling-ya.club",
-    "tariq-vance-website": "https://dr-aristhorne-neuro.lab",
-    "dr-julian-oreilly-website": "https://drjulianoreilly-focus.io",
-    "amara-leo-fox-website": "https://amara-leo-fox.kids",
-    "marcos-valdes-website": "https://marcosvaldes-strategy.ventures",
+  const index = authorWebsites.findIndex((w) => w.id === project.id);
+  const go = (step: number) => {
+    const next = authorWebsites[(index + step + authorWebsites.length) % authorWebsites.length];
+    if (next) onSelectProject(next);
   };
+  const Site = sites[project.id] ?? sites["camille-laurent-website"];
+  const frame = viewports.find((v) => v.id === viewport) ?? viewports[0];
 
-  const currentDomain = domainMap[project.id] || `https://${project.id}.com`;
-
-  // Render the specific custom mini website
-  const renderWebsiteContent = () => {
-    const props = {
-      onBackToPortfolio: onClose,
-      onBookWebsiteService: onBookService,
-      viewportMode: viewport,
+  // Escape closes the open list first; only then does it close the whole preview.
+  useEffect(() => {
+    if (!selectorOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        setSelectorOpen(false);
+      }
     };
-
-    switch (project.id) {
-      case "camille-laurent-website":
-        return <RomanceWebsite {...props} />;
-      case "kofi-mensah-website":
-        return <FantasyWebsite {...props} />;
-      case "declan-cross-website":
-        return <ThrillerWebsite {...props} />;
-      case "soraya-al-mansoor-website":
-        return <LiteraryWebsite {...props} />;
-      case "helena-vane-website":
-        return <HistoricalWebsite {...props} />;
-      case "beatrix-sterling-website":
-        return <YoungAdultWebsite {...props} />;
-      case "tariq-vance-website":
-        return <NonFictionWebsite {...props} />;
-      case "dr-julian-oreilly-website":
-        return <SelfHelpWebsite {...props} />;
-      case "amara-leo-fox-website":
-        return <ChildrensWebsite {...props} />;
-      case "marcos-valdes-website":
-        return <BusinessWebsite {...props} />;
-      default:
-        return <RomanceWebsite {...props} />;
-    }
-  };
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
+  }, [selectorOpen]);
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="mini-website-title"
-      className="fixed inset-0 z-[80] flex flex-col bg-black/95 backdrop-blur-2xl animate-fade-in text-foreground"
+      className="fixed inset-0 z-[80] flex animate-fade-in flex-col bg-[#06030a] text-foreground"
     >
-      {/* Top Global Navigation Bar & Browser Controls */}
-      <header className="h-16 shrink-0 border-b border-white/10 bg-[#0d0611] px-4 sm:px-6 flex items-center justify-between gap-4 z-50">
-        {/* Left: Back button + Title */}
-        <div className="flex items-center gap-3 min-w-0">
+      <header className="z-50 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-[#0d0611] px-3 sm:h-16 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <Button
             variant="glass"
             size="sm"
             onClick={onClose}
-            className="flex items-center gap-1.5 shrink-0 bg-white/5 hover:bg-white/10 text-xs text-white border-white/15"
+            className="flex shrink-0 items-center gap-1.5 border-white/15 bg-white/5 text-xs text-white hover:bg-white/10"
           >
-            <ArrowLeft size={14} />
+            <ArrowLeft size={14} aria-hidden="true" />
             <span className="hidden sm:inline">Back to Portfolio</span>
+            <span className="sr-only sm:hidden">Back to portfolio</span>
           </Button>
 
-          {/* Quick Concept Switcher Dropdown */}
-          <div className="relative">
+          <div className="flex min-w-0 items-center gap-1">
             <button
-              onClick={() => setSelectorOpen(!selectorOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/15 hover:border-gold/50 text-xs font-medium text-white transition-colors"
+              type="button"
+              onClick={() => go(-1)}
+              aria-label="Previous concept"
+              className="hidden size-9 shrink-0 place-items-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white md:grid"
             >
-              <span className="text-gold font-semibold uppercase tracking-wider text-[10px] hidden md:inline">
-                {project.genre}:
-              </span>
-              <span className="font-serif truncate max-w-[140px] sm:max-w-[200px]">{project.authorName}</span>
-              <ChevronDown size={14} className="text-muted-foreground" />
+              <ChevronLeft size={18} aria-hidden="true" />
             </button>
+            <div className="relative min-w-0">
+              <button
+                type="button"
+                onClick={() => setSelectorOpen((open) => !open)}
+                aria-expanded={selectorOpen}
+                aria-haspopup="true"
+                className="flex min-h-9 max-w-full items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:border-gold/50"
+              >
+                <span id="mini-website-title" className="sr-only">
+                  {project.authorName} author website concept
+                </span>
+                <span className="hidden text-[10px] font-semibold uppercase tracking-wider text-gold md:inline">
+                  {project.genre}
+                </span>
+                <span className="truncate font-serif sm:max-w-[200px]">{project.authorName}</span>
+                <ChevronDown
+                  size={14}
+                  className={cn(
+                    "shrink-0 text-muted-foreground transition-transform",
+                    selectorOpen && "rotate-180",
+                  )}
+                  aria-hidden="true"
+                />
+              </button>
 
-            {selectorOpen && (
-              <div className="absolute left-0 top-full mt-2 w-72 max-h-96 overflow-y-auto rounded-2xl bg-[#140b19] border border-glass-border p-2 shadow-2xl z-50 backdrop-blur-xl">
-                <div className="px-3 py-1.5 text-[10px] uppercase font-bold tracking-widest text-gold border-b border-white/10 mb-1">
-                  10 Interactive Mini Websites
-                </div>
-                {authorWebsites.map((item, idx) => (
+              {selectorOpen && (
+                <>
                   <button
-                    key={item.id}
-                    onClick={() => {
-                      onSelectProject(item);
-                      setSelectorOpen(false);
-                    }}
-                    className={`w-full p-2.5 rounded-xl text-left text-xs flex items-center justify-between transition-colors ${
-                      item.id === project.id ? "bg-primary/20 text-primary font-bold" : "text-white/80 hover:bg-white/5"
-                    }`}
-                  >
-                    <div>
-                      <p className="font-serif">{item.authorName}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase">{item.genre} • {item.bookTitle}</p>
-                    </div>
-                    <span className="text-[10px] text-gold">{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+                    type="button"
+                    aria-label="Close the list"
+                    className="fixed inset-0 z-40 cursor-default"
+                    onClick={() => setSelectorOpen(false)}
+                  />
+                  <div className="absolute left-0 top-full z-50 mt-2 max-h-[70vh] w-[min(20rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl border border-glass-border bg-[#140b19] p-2 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
+                    <p className="mb-1 border-b border-white/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-gold">
+                      {authorWebsites.length} author website concepts
+                    </p>
+                    {authorWebsites.map((item, i) => {
+                      const active = item.id === project.id;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => {
+                            onSelectProject(item);
+                            setSelectorOpen(false);
+                          }}
+                          aria-current={active}
+                          className={cn(
+                            "flex w-full items-center gap-3 rounded-xl p-2.5 text-left text-xs transition-colors",
+                            active
+                              ? "bg-primary/20 text-primary"
+                              : "text-white/80 hover:bg-white/5",
+                          )}
+                        >
+                          <span className="flex shrink-0 -space-x-1.5" aria-hidden="true">
+                            <span
+                              className="size-4 rounded-full ring-2 ring-[#140b19]"
+                              style={{ background: item.colorPalette.primary }}
+                            />
+                            <span
+                              className="size-4 rounded-full ring-2 ring-[#140b19]"
+                              style={{ background: item.colorPalette.secondary }}
+                            />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-serif text-sm">
+                              {item.authorName}
+                            </span>
+                            <span className="block truncate text-[10px] uppercase text-muted-foreground">
+                              {item.genre} &middot; {item.bookTitle}
+                            </span>
+                          </span>
+                          {active ? (
+                            <Check size={15} aria-hidden="true" />
+                          ) : (
+                            <span className="text-[10px] text-gold">
+                              {String(i + 1).padStart(2, "0")}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => go(1)}
+              aria-label="Next concept"
+              className="hidden size-9 shrink-0 place-items-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white md:grid"
+            >
+              <ChevronRight size={18} aria-hidden="true" />
+            </button>
           </div>
         </div>
 
-        {/* Center: Simulated Browser Address Bar */}
-        <div className="hidden lg:flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/60 border border-white/10 text-xs text-white/70 max-w-md w-full justify-center shadow-inner">
-          <span className="text-emerald-400 text-xs">🔒</span>
-          <span className="truncate font-mono text-[11px] text-white/90">{currentDomain}</span>
-          <span className="text-[9px] px-2 py-0.5 rounded-full bg-gold/20 text-gold uppercase tracking-wider font-bold">
-            Interactive Live Demo
+        <div className="hidden w-full max-w-sm items-center justify-center gap-2 rounded-full border border-white/10 bg-black/60 px-4 py-1.5 text-xs shadow-inner xl:flex">
+          <Globe size={13} className="shrink-0 text-emerald-400" aria-hidden="true" />
+          <span className="truncate font-mono text-[11px] text-white/90">
+            {addressFor(project)}
+          </span>
+          <span className="shrink-0 rounded-full bg-gold/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold">
+            Concept
           </span>
         </div>
 
-        {/* Right: Viewport Mode Switcher + Contact CTA */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Viewport switcher */}
-          <div className="hidden sm:flex items-center rounded-lg bg-white/5 p-1 border border-white/10">
-            <button
-              onClick={() => setViewport("desktop")}
-              title="Desktop View (100%)"
-              className={`p-1.5 rounded-md transition-colors ${
-                viewport === "desktop" ? "bg-primary text-primary-foreground shadow" : "text-white/60 hover:text-white"
-              }`}
-            >
-              <Laptop size={15} />
-            </button>
-            <button
-              onClick={() => setViewport("tablet")}
-              title="Tablet View (768px)"
-              className={`p-1.5 rounded-md transition-colors ${
-                viewport === "tablet" ? "bg-primary text-primary-foreground shadow" : "text-white/60 hover:text-white"
-              }`}
-            >
-              <Tablet size={15} />
-            </button>
-            <button
-              onClick={() => setViewport("mobile")}
-              title="Mobile View (390px)"
-              className={`p-1.5 rounded-md transition-colors ${
-                viewport === "mobile" ? "bg-primary text-primary-foreground shadow" : "text-white/60 hover:text-white"
-              }`}
-            >
-              <Smartphone size={15} />
-            </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <div
+            className="hidden items-center rounded-lg border border-white/10 bg-white/5 p-1 sm:flex"
+            role="group"
+            aria-label="Preview size"
+          >
+            {viewports.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setViewport(id)}
+                aria-label={label}
+                aria-pressed={viewport === id}
+                title={label}
+                className={cn(
+                  "rounded-md p-1.5 transition-colors",
+                  viewport === id
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "text-white/60 hover:text-white",
+                )}
+              >
+                <Icon size={15} aria-hidden="true" />
+              </button>
+            ))}
           </div>
 
           <Button
             size="sm"
             onClick={onBookService}
-            className="text-xs bg-gold hover:bg-gold-light text-[#140b19] font-bold shadow-lg shadow-gold/20"
+            className="bg-gold text-xs font-bold text-[#140b19] shadow-lg shadow-gold/20 hover:bg-gold-light"
           >
-            <Sparkles size={13} className="mr-1.5" />
+            <Sparkles size={13} className="mr-1.5" aria-hidden="true" />
             <span className="hidden sm:inline">Book a Website Like This</span>
-            <span className="sm:hidden">Book Now</span>
+            <span className="sm:hidden">Book</span>
           </Button>
 
           <Button
             variant="icon"
             size="icon"
             onClick={onClose}
-            className="size-9 rounded-full bg-white/10 hover:bg-white/20 text-white"
+            className="size-9 rounded-full bg-white/10 text-white hover:bg-white/20"
             aria-label="Close website preview"
           >
-            <X size={18} />
+            <X size={18} aria-hidden="true" />
           </Button>
         </div>
       </header>
 
-      {/* Main Interactive Viewport Canvas */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden bg-[#0a050d] p-0 sm:p-4 md:p-6 flex items-start justify-center">
+      <div className="flex min-h-0 flex-1 justify-center bg-[radial-gradient(60%_50%_at_50%_0%,rgba(255,255,255,0.05),transparent)] p-0 sm:p-5">
         <div
-          className={`w-full transition-all duration-300 ease-out shadow-2xl rounded-none sm:rounded-2xl border-0 sm:border border-white/10 overflow-hidden bg-black ${
-            viewport === "desktop"
-              ? "max-w-7xl"
-              : viewport === "tablet"
-              ? "max-w-[768px]"
-              : "max-w-[390px] border-4 border-white/20 rounded-3xl my-2"
-          }`}
+          className={cn(
+            "flex h-full w-full flex-col overflow-hidden bg-black shadow-2xl transition-[max-width] duration-300 ease-out sm:rounded-2xl sm:ring-1 sm:ring-white/15",
+            frame?.frame,
+          )}
         >
-          {/* Simulated Browser Header Bar inside Canvas */}
-          <div className="h-7 bg-[#1b1022] border-b border-white/10 px-4 flex items-center justify-between text-[11px] text-white/50 select-none">
-            <div className="flex items-center gap-1.5">
+          <div className="flex h-8 shrink-0 select-none items-center justify-between border-b border-white/10 bg-[#171020] px-4 text-[11px] text-white/50">
+            <span className="flex items-center gap-1.5" aria-hidden="true">
               <span className="size-2.5 rounded-full bg-red-500/80" />
               <span className="size-2.5 rounded-full bg-amber-500/80" />
               <span className="size-2.5 rounded-full bg-emerald-500/80" />
-            </div>
-            <div className="font-mono text-[10px] text-white/70 truncate max-w-xs">
-              {project.authorName} — Official Author Platform ({project.genre})
-            </div>
-            <div className="text-[10px] uppercase tracking-widest text-gold">DEMO</div>
+            </span>
+            <span className="max-w-[60%] truncate font-mono text-[10px] text-white/70">
+              {addressFor(project)}
+            </span>
+            <span className="text-[10px] uppercase tracking-widest text-gold">Concept</span>
           </div>
 
-          {/* Interactive Mini Website Content */}
-          <div className="h-full w-full overflow-y-auto">
-            {renderWebsiteContent()}
+          <div key={project.id} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            <Suspense fallback={<Loading />}>{Site ? <Site /> : null}</Suspense>
           </div>
         </div>
       </div>

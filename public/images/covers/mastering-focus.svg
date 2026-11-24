@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#34d399" text-anchor="middle" letter-spacing="0.3em">
-        ★ EXECUTIVE PRODUCTIVITY GUIDE ★
+        ★ A GUIDE TO FOCUS ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#34d399" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “The definitive manual on reclaiming your concentration and output.”
+        A calm, practical guide to doing one thing at a time.
       </text>
     </g>
 
@@ -110,10 +110,10 @@
         BEHAVIORAL SCIENCE GUIDE BY
       </text>
       <text font-family="'Playfair Display', Georgia, serif" font-size="28" font-weight="700" fill="#ffffff" text-anchor="middle" y="28">
-        Dr. Julian O'Reilly
+        Julian O'Reilly
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="10" font-weight="500" fill="#a7f3d0" text-anchor="middle" letter-spacing="0.12em" y="48">
-        Self-Help & Productivity
+        Self-Help &amp; Productivity
       </text>
     </g>
 

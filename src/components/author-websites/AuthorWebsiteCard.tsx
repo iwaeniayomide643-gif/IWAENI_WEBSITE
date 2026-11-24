@@ -1,5 +1,19 @@
-import React from "react";
-import { Sparkles, ArrowRight, Star, Heart, Swords, Terminal, Feather, Landmark, Zap, Brain, Target, Smile, TrendingUp, Check } from "lucide-react";
+import type { CSSProperties } from "react";
+import {
+  ArrowRight,
+  Feather,
+  Heart,
+  Landmark,
+  Orbit,
+  Smile,
+  Sparkles,
+  Swords,
+  Target,
+  Terminal,
+  TrendingUp,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 import type { AuthorWebsiteProject } from "@/data/authorWebsites";
 
 interface AuthorWebsiteCardProps {
@@ -7,282 +21,282 @@ interface AuthorWebsiteCardProps {
   onOpen: () => void;
 }
 
+interface Look {
+  bg: string;
+  accent: string;
+  glow: string;
+  light?: boolean;
+  icon: LucideIcon;
+  label: string;
+  title: string;
+  blurb: string;
+  cover: string;
+  feature: string;
+}
+
+/** What each card shows. It follows the colours of the concept it opens. */
+const looks: Record<string, Look> = {
+  "camille-laurent-website": {
+    bg: "#170811",
+    accent: "#e3b97a",
+    glow: "#d4677f",
+    icon: Heart,
+    label: "Parisian romance",
+    title: "The Parisian Atelier",
+    blurb: "A floating 3D book, a chapter reader and a free prequel sign-up.",
+    cover: "the-autumn-atelier",
+    feature: "Chapter reader",
+  },
+  "kofi-mensah-website": {
+    bg: "#120b1c",
+    accent: "#e8ac3d",
+    glow: "#e0835f",
+    icon: Swords,
+    label: "Epic fantasy",
+    title: "Realm Atlas & Lore Vault",
+    blurb: "A clickable realm map, a lore codex and a launch countdown.",
+    cover: "chronicles-of-the-solar-king",
+    feature: "Realm map",
+  },
+  "declan-cross-website": {
+    bg: "#070b10",
+    accent: "#4ade80",
+    glow: "#38bdf8",
+    icon: Terminal,
+    label: "Techno-thriller",
+    title: "The Command Ops Terminal",
+    blurb: "Declassify the excerpt and talk to a working console.",
+    cover: "terminal-protocol",
+    feature: "Console",
+  },
+  "soraya-al-mansoor-website": {
+    bg: "#f5f0e8",
+    accent: "#9a5b3a",
+    glow: "#4d5b4a",
+    light: true,
+    icon: Feather,
+    label: "Literary salon",
+    title: "Dust and Jasmine",
+    blurb: "Essays, a poem that lights up line by line, and a reading room.",
+    cover: "dust-and-jasmine",
+    feature: "Reading room",
+  },
+  "helena-vane-website": {
+    bg: "#1b110b",
+    accent: "#dcb370",
+    glow: "#b4673f",
+    icon: Landmark,
+    label: "Historical fiction",
+    title: "The Manor Archives",
+    blurb: "An interactive 1890s timeline and a signed-copy inscription preview.",
+    cover: "whispers-of-the-gilded-coast",
+    feature: "1890s timeline",
+  },
+  "beatrix-sterling-website": {
+    bg: "#120f2b",
+    accent: "#f472b6",
+    glow: "#c084fc",
+    icon: Zap,
+    label: "Young adult",
+    title: "Clockwork Academy",
+    blurb: "A guild-sorting quiz that readers can share with friends.",
+    cover: "the-clockwork-kingdom",
+    feature: "Guild quiz",
+  },
+  "tariq-vance-website": {
+    bg: "#050714",
+    accent: "#818cf8",
+    glow: "#c084fc",
+    icon: Orbit,
+    label: "Popular science",
+    title: "The Deep Space Observatory",
+    blurb: "A moving solar system and a light-travel explorer.",
+    cover: "echoes-of-nova-prime",
+    feature: "Live orbits",
+  },
+  "dr-julian-oreilly-website": {
+    bg: "#f2faf6",
+    accent: "#0b8a5d",
+    glow: "#2f6fdd",
+    light: true,
+    icon: Target,
+    label: "Focus & habits",
+    title: "Mastering Focus Hub",
+    blurb: "A focus check, a working focus timer and a habit chain.",
+    cover: "mastering-focus",
+    feature: "Focus timer",
+  },
+  "amara-leo-fox-website": {
+    bg: "#fff6e4",
+    accent: "#f59e0b",
+    glow: "#ef4f7b",
+    light: true,
+    icon: Smile,
+    label: "Picture book",
+    title: "The Dragon's Spark",
+    blurb: "A read-along story, a hide-and-seek game and a colouring page.",
+    cover: "the-dragon-who-lost-his-spark",
+    feature: "Storybook",
+  },
+  "marcos-valdes-website": {
+    bg: "#080c15",
+    accent: "#38bdf8",
+    glow: "#f59e0b",
+    icon: TrendingUp,
+    label: "Business book",
+    title: "Zero to Market Platform",
+    blurb: "A readiness scorecard, a free canvas and a bulk-order request.",
+    cover: "zero-to-market",
+    feature: "Scorecard",
+  },
+};
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter((w) => /[A-Za-z]/.test(w))
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
+
 export function AuthorWebsiteCard({ project, onOpen }: AuthorWebsiteCardProps) {
-  // Return custom bespoke visual preview header for each of the 10 distinct projects
-  const renderBespokePreview = () => {
-    switch (project.id) {
-      case "camille-laurent-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[#2a0f1e] via-[#481832] to-[#1c0a14] p-5 flex items-center justify-between border-b border-[#f7c2d2]/20">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#c85a7e]/30 text-[#f7c2d2] text-[10px] font-semibold tracking-wider uppercase border border-[#c85a7e]/40">
-                <Heart size={10} className="fill-current text-[#f472b6]" /> Parisian Romance
-              </span>
-              <h4 className="font-serif text-lg sm:text-xl text-white font-bold leading-tight">The Parisian Atelier</h4>
-              <p className="text-[11px] text-[#f5d5de] line-clamp-2 italic font-serif">"Love whispered along the banks of the Seine."</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/camille-laurent.jpg" alt="Camille Laurent" className="size-8 rounded-full object-cover border border-[#f7c2d2]/40 shadow" />
-                <span className="text-[11px] text-[#fde8ef] font-medium">Camille Laurent</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/the-autumn-atelier.svg" alt="The Autumn Atelier" className="w-24 sm:w-28 rounded-lg border border-[#f7c2d2]/30 shadow-2xl" />
-              <span className="absolute -bottom-2 -left-2 bg-[#c85a7e] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow">4.9 ★</span>
-            </div>
-          </div>
-        );
+  const look = looks[project.id];
+  const ink = look?.light ? "#241d17" : "#ffffff";
 
-      case "kofi-mensah-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[#1b0803] via-[#3b1207] to-[#0f0402] p-5 flex items-center justify-between border-b border-[#df8a6c]/25">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#df8a6c]/20 text-[#fed7aa] text-[10px] font-bold tracking-wider uppercase border border-[#df8a6c]/40">
-                <Swords size={10} className="text-[#df8a6c]" /> Epic Fantasy Realm
-              </span>
-              <h4 className="font-serif text-lg sm:text-xl text-[#fff7ed] font-bold leading-tight">Sunfire Dynasty Atlas</h4>
-              <p className="text-[11px] text-[#e2c1b4] line-clamp-2">Interactive world maps, solar codex & character lineage trees.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/kofi-mensah.jpg" alt="Kofi Mensah" className="size-8 rounded-full object-cover border border-[#df8a6c]/40 shadow" />
-                <span className="text-[11px] text-[#fed7aa] font-bold">Kofi Mensah</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform -rotate-2 group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/chronicles-of-the-solar-king.svg" alt="Chronicles of the Solar King" className="w-24 sm:w-28 rounded-lg border border-[#df8a6c]/40 shadow-2xl" />
-              <span className="absolute -bottom-2 -right-2 bg-[#df8a6c] text-[#0d0604] text-[9px] font-black px-2 py-0.5 rounded-md shadow">4K MAP</span>
-            </div>
-          </div>
-        );
-
-      case "declan-cross-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#050b09] p-5 flex items-center justify-between border-b border-[#4ade80]/25 font-mono">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#102a21] text-[#4ade80] text-[10px] font-bold tracking-widest uppercase border border-[#4ade80]/40">
-                <Terminal size={10} /> OPS_TERMINAL
-              </span>
-              <h4 className="font-sans text-lg sm:text-xl text-white font-black leading-tight">Terminal Protocol Ops</h4>
-              <p className="text-[11px] text-[#86efac] line-clamp-2 font-sans">Encrypted surveillance dossier with interactive de-redaction.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/declan-cross.jpg" alt="Declan Cross" className="size-8 rounded object-cover border border-[#4ade80]/40 shadow" />
-                <span className="text-[11px] text-white font-bold font-sans">Declan Cross</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/terminal-protocol.svg" alt="Terminal Protocol" className="w-24 sm:w-28 rounded border border-[#4ade80]/40 shadow-2xl" />
-              <span className="absolute top-1 right-1 bg-[#050b09] text-[#4ade80] text-[8px] font-bold px-1.5 py-0.5 rounded border border-[#4ade80]">LIVE</span>
-            </div>
-          </div>
-        );
-
-      case "soraya-al-mansoor-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#171310] p-5 flex items-center justify-between border-b border-[#c4a482]/25 font-serif">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#2a221d] text-[#c4a482] text-[10px] font-medium tracking-widest uppercase font-sans border border-[#c4a482]/30">
-                <Feather size={10} /> Literary Salon
-              </span>
-              <h4 className="text-lg sm:text-xl text-[#fff9f4] font-normal leading-tight">Dust and Jasmine</h4>
-              <p className="text-[11px] text-[#d1beaf] line-clamp-2 italic">Minimalist typography, bilingual recitations & essays.</p>
-              <div className="flex items-center gap-2 pt-1 font-sans">
-                <img src="/images/authors/soraya-al-mansoor.jpg" alt="Soraya Al-Mansoor" className="size-8 rounded-full object-cover border border-[#c4a482]/40 shadow" />
-                <span className="text-[11px] text-[#f4eae1]">Soraya Al-Mansoor</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/dust-and-jasmine.svg" alt="Dust and Jasmine" className="w-24 sm:w-28 rounded-lg border border-[#c4a482]/30 shadow-2xl" />
-            </div>
-          </div>
-        );
-
-      case "helena-vane-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[#24140b] via-[#381f13] to-[#180c06] p-5 flex items-center justify-between border-b border-[#dcb370]/25 font-serif">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#2e190e] text-[#dcb370] text-[10px] font-bold tracking-widest uppercase font-sans border border-[#dcb370]/40">
-                <Landmark size={10} /> Victorian Archives
-              </span>
-              <h4 className="text-lg sm:text-xl text-[#fff7ec] font-bold leading-tight">The Newport Archives</h4>
-              <p className="text-[11px] text-[#d8bead] line-clamp-2 font-sans">1890s timeline, book club kit & Gilded Age research vault.</p>
-              <div className="flex items-center gap-2 pt-1 font-sans">
-                <img src="/images/authors/helena-vane.jpg" alt="Helena Vane" className="size-8 rounded-full object-cover border border-[#dcb370]/40 shadow" />
-                <span className="text-[11px] text-[#e8ca95] font-bold">Helena Vane</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform rotate-2 group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/whispers-of-the-gilded-coast.svg" alt="Whispers of the Gilded Coast" className="w-24 sm:w-28 rounded-lg border border-[#dcb370]/40 shadow-2xl" />
-            </div>
-          </div>
-        );
-
-      case "beatrix-sterling-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[#2a1045] via-[#4c1d95] to-[#1e0838] p-5 flex items-center justify-between border-b border-[#c084fc]/25">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#c084fc]/20 text-[#f5e8ff] text-[10px] font-bold tracking-wider uppercase border border-[#c084fc]/40">
-                <Zap size={10} className="text-amber-300" /> BookTok Sensation
-              </span>
-              <h4 className="font-sans text-lg sm:text-xl text-white font-black leading-tight">Clockwork Academy</h4>
-              <p className="text-[11px] text-[#d8b4fe] line-clamp-2">Interactive sky-guild quiz, character playlists & VIP ARC squad.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/beatrix-sterling.jpg" alt="Beatrix Sterling" className="size-8 rounded-full object-cover border border-[#c084fc]/40 shadow" />
-                <span className="text-[11px] text-white font-bold">Beatrix Sterling</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform -rotate-3 group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/the-clockwork-kingdom.svg" alt="The Clockwork Kingdom" className="w-24 sm:w-28 rounded-xl border border-[#c084fc]/40 shadow-2xl" />
-              <span className="absolute -bottom-2 -left-2 bg-gradient-to-r from-[#9333ea] to-[#db2777] text-white text-[9px] font-bold px-2 py-0.5 rounded-md shadow">12M+ TOK</span>
-            </div>
-          </div>
-        );
-
-      case "tariq-vance-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#08131d] p-5 flex items-center justify-between border-b border-[#38bdf8]/25">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#0f283d] text-[#38bdf8] text-[10px] font-bold tracking-wider uppercase border border-[#38bdf8]/40">
-                <Brain size={10} /> Neuroscience Lab
-              </span>
-              <h4 className="text-lg sm:text-xl text-white font-bold leading-tight">The Cognitive Horizon</h4>
-              <p className="text-[11px] text-[#93c5fd] line-clamp-2">Executive cognitive frameworks, downloadable toolkit & keynote portal.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/dr-aris-thorne.jpg" alt="Dr. Aris Thorne" className="size-8 rounded-full object-cover border border-[#38bdf8]/40 shadow" />
-                <span className="text-[11px] text-[#e0f2fe] font-bold">Dr. Aris Thorne</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/the-cognitive-horizon.svg" alt="The Cognitive Horizon" className="w-24 sm:w-28 rounded-lg border border-[#38bdf8]/40 shadow-2xl" />
-            </div>
-          </div>
-        );
-
-      case "dr-julian-oreilly-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#0a1916] p-5 flex items-center justify-between border-b border-[#34d399]/25">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#13332c] text-[#34d399] text-[10px] font-bold tracking-wider uppercase border border-[#34d399]/40">
-                <Target size={10} /> Habit Engineering
-              </span>
-              <h4 className="text-lg sm:text-xl text-white font-black leading-tight">Mastering Focus Hub</h4>
-              <p className="text-[11px] text-[#a7f3d0] line-clamp-2">Interactive 2-minute diagnostic focus score test & 7-day challenge.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/dr-julian-oreilly.jpg" alt="Dr. Julian O'Reilly" className="size-8 rounded-full object-cover border border-[#34d399]/40 shadow" />
-                <span className="text-[11px] text-white font-bold">Dr. Julian O'Reilly</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/mastering-focus.svg" alt="Mastering Focus" className="w-24 sm:w-28 rounded-xl border border-[#34d399]/40 shadow-2xl" />
-              <span className="absolute -bottom-2 -right-2 bg-[#34d399] text-[#0a1916] text-[9px] font-black px-2 py-0.5 rounded-md shadow">+3h Focus</span>
-            </div>
-          </div>
-        );
-
-      case "amara-leo-fox-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-gradient-to-br from-[#2d1b0b] via-[#42250d] to-[#1e1308] p-5 flex items-center justify-between border-b border-[#fbbf24]/25">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#fbbf24]/20 text-[#fde68a] text-[10px] font-black tracking-wider uppercase border border-[#fbbf24]/40">
-                <Smile size={10} /> Storybook World
-              </span>
-              <h4 className="text-lg sm:text-xl text-white font-black leading-tight">The Dragon's Spark</h4>
-              <p className="text-[11px] text-[#fde68a] line-clamp-2">Interactive character sounds, coloring pack download & school visits.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <div className="size-8 rounded-full bg-[#fbbf24] text-[#1e1308] font-black flex items-center justify-center text-xs shadow">🐉</div>
-                <span className="text-[11px] text-white font-bold">Amara & Leo Fox</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform rotate-2 group-hover:rotate-0 group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/the-dragon-who-lost-his-spark.svg" alt="The Dragon Who Lost His Spark" className="w-24 sm:w-28 rounded-xl border border-[#fbbf24]/50 shadow-2xl" />
-            </div>
-          </div>
-        );
-
-      case "marcos-valdes-website":
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#080d16] p-5 flex items-center justify-between border-b border-[#38bdf8]/25">
-            <div className="space-y-2 max-w-[55%] text-left z-10">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#0f1d30] text-[#38bdf8] text-[10px] font-bold tracking-wider uppercase border border-[#38bdf8]/40">
-                <TrendingUp size={10} /> Venture Strategy
-              </span>
-              <h4 className="text-lg sm:text-xl text-white font-black leading-tight">Zero to Market Platform</h4>
-              <p className="text-[11px] text-[#94a3b8] line-clamp-2">Corporate bulk order tier calculator, keynote reels & WSJ press hub.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <img src="/images/authors/marcos-valdes.jpg" alt="Marcos Valdés" className="size-8 rounded-full object-cover border border-[#38bdf8]/40 shadow" />
-                <span className="text-[11px] text-white font-bold">Marcos Valdés</span>
-              </div>
-            </div>
-            <div className="relative z-10 shrink-0 transform group-hover:scale-105 transition-all duration-500 shadow-2xl">
-              <img src="/images/covers/zero-to-market.svg" alt="Zero to Market" className="w-24 sm:w-28 rounded-xl border border-[#38bdf8]/40 shadow-2xl" />
-              <span className="absolute -bottom-2 -left-2 bg-[#38bdf8] text-[#080d16] text-[9px] font-black px-2 py-0.5 rounded-md shadow">40% Bulk</span>
-            </div>
-          </div>
-        );
-
-      default:
-        return (
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-ink/60">
-            <img src={project.previewImage} alt={project.conceptTitle} className="h-full w-full object-cover" />
-          </div>
-        );
-    }
-  };
+  const preview = look ? (
+    <div
+      className="relative flex aspect-[16/10] w-full items-center justify-between overflow-hidden border-b border-white/10 p-5"
+      style={
+        {
+          background: `radial-gradient(70% 90% at 90% 20%, ${look.glow}55, transparent 70%), radial-gradient(60% 70% at 0% 100%, ${look.accent}33, transparent 70%), ${look.bg}`,
+          color: ink,
+        } as CSSProperties
+      }
+    >
+      <div className="z-10 max-w-[56%] space-y-2 text-left">
+        <span
+          className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          style={{
+            background: `${look.accent}26`,
+            color: look.light ? look.accent : look.accent,
+            border: `1px solid ${look.accent}66`,
+          }}
+        >
+          <look.icon size={11} aria-hidden="true" /> {look.label}
+        </span>
+        <h4 className="font-display text-xl leading-tight sm:text-2xl">{look.title}</h4>
+        <p
+          className="line-clamp-3 text-[11px] leading-relaxed"
+          style={{ color: look.light ? "#5b5148" : "rgba(255,255,255,0.72)" }}
+        >
+          {look.blurb}
+        </p>
+        <div className="flex items-center gap-2 pt-1">
+          <span
+            className="grid size-8 place-items-center rounded-full text-[11px] font-bold"
+            style={{ background: look.accent, color: look.light ? "#fff" : look.bg }}
+            aria-hidden="true"
+          >
+            {initials(project.authorName)}
+          </span>
+          <span className="text-[11px] font-semibold">{project.authorName}</span>
+        </div>
+      </div>
+      <div className="relative z-10 shrink-0 rotate-3 shadow-2xl transition-all duration-500 group-hover:rotate-0 group-hover:scale-105">
+        <img
+          src={`/images/covers/${look.cover}.svg`}
+          alt={`Cover of ${project.bookTitle}`}
+          width={112}
+          height={168}
+          loading="lazy"
+          className="w-24 rounded-lg shadow-2xl sm:w-28"
+          style={{ border: `1px solid ${look.accent}55` }}
+        />
+        <span
+          className="absolute -bottom-2 -left-2 rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider shadow"
+          style={{ background: look.accent, color: look.light ? "#fff" : look.bg }}
+        >
+          {look.feature}
+        </span>
+      </div>
+    </div>
+  ) : (
+    <div className="relative aspect-[16/10] w-full overflow-hidden bg-ink/60">
+      <img
+        src={project.previewImage}
+        alt={project.conceptTitle}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
 
   return (
     <article
       onClick={onOpen}
-      className="glass-card group flex flex-col justify-between overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-1.5 hover:border-gold/60 cursor-pointer shadow-xl relative"
+      className="glass-card group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl shadow-xl transition-all duration-300 hover:-translate-y-1.5 hover:border-gold/60"
     >
       <div>
-        {/* Dynamic Bespoke Case Study Header */}
         <div className="relative overflow-hidden">
-          {renderBespokePreview()}
-
-          {/* Polished Interactive Hover Overlay */}
-          <div className="absolute inset-0 bg-ink/75 backdrop-blur-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-4 text-center z-20">
-            <span className="grid size-12 place-items-center rounded-full bg-gold text-[#140b19] font-bold shadow-2xl mb-2 group-hover:scale-110 transition-transform">
-              <Sparkles size={20} />
+          {preview}
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-ink/75 p-4 text-center opacity-0 backdrop-blur-[3px] transition-opacity duration-300 group-hover:opacity-100">
+            <span className="mb-2 grid size-12 place-items-center rounded-full bg-gold font-bold text-[#140b19] shadow-2xl transition-transform group-hover:scale-110">
+              <Sparkles size={20} aria-hidden="true" />
             </span>
-            <p className="font-serif text-lg text-white font-bold">Explore Live Mini Website</p>
-            <p className="text-[11px] text-gold mt-0.5">Click to enter complete interactive experience</p>
+            <p className="font-serif text-lg font-bold text-white">Open the website concept</p>
+            <p className="mt-0.5 text-[11px] text-gold">Click, scroll and try everything on it</p>
           </div>
         </div>
 
-        {/* Card Body & Architecture Breakdown */}
         <div className="p-6">
-          <div className="flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.18em] text-gold font-bold">{project.projectType}</p>
-            <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-white/5 text-muted-foreground border border-white/10">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-gold">
+              {project.projectType}
+            </p>
+            <span className="shrink-0 rounded border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[10px] uppercase text-muted-foreground">
               Concept design
             </span>
           </div>
 
-          <h3 className="mt-1 font-display text-2xl group-hover:text-gold transition-colors">{project.conceptTitle}</h3>
-          <p className="mt-1 text-xs text-primary font-medium">Author: {project.authorName} • Book: {project.bookTitle}</p>
+          <h3 className="mt-1 font-display text-2xl transition-colors group-hover:text-gold">
+            {project.conceptTitle}
+          </h3>
+          <p className="mt-1 text-xs font-medium text-primary">
+            Sample author: {project.authorName} &bull; Book: {project.bookTitle}
+          </p>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{project.tagline}</p>
 
           <div className="mt-4 flex flex-wrap gap-1.5">
-            {project.keyFeatures.slice(0, 3).map((feature, fIdx) => (
-              <span key={fIdx} className="text-[11px] bg-glass border border-glass-border px-2.5 py-1 rounded-md text-foreground/90 font-medium">
-                ✓ {feature}
+            {project.keyFeatures.slice(0, 3).map((feature) => (
+              <span
+                key={feature}
+                className="rounded-md border border-glass-border bg-glass px-2.5 py-1 text-[11px] font-medium text-foreground/90"
+              >
+                &check; {feature}
               </span>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Action CTA Button */}
       <div className="p-6 pt-0">
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
-          className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-gold/20 via-gold/30 to-gold/20 hover:from-gold hover:to-gold-light border border-gold/40 text-gold hover:text-[#140b19] font-bold text-xs uppercase tracking-wider flex items-center justify-between transition-all duration-300 shadow-md group-hover:shadow-gold/20"
+          className="flex w-full items-center justify-between rounded-xl border border-gold/40 bg-gradient-to-r from-gold/20 via-gold/30 to-gold/20 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-gold shadow-md transition-all duration-300 hover:from-gold hover:to-gold-light hover:text-[#140b19] group-hover:shadow-gold/20"
         >
           <span className="flex items-center gap-2">
-            <Sparkles size={14} />
-            <span>Launch Live Mini Website</span>
+            <Sparkles size={14} aria-hidden="true" />
+            <span>Open the concept</span>
           </span>
-          <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+          <ArrowRight
+            size={15}
+            className="transition-transform group-hover:translate-x-1"
+            aria-hidden="true"
+          />
         </button>
       </div>
     </article>

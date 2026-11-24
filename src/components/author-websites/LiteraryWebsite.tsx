@@ -1,249 +1,508 @@
-import { brand } from "@/data/brand";
-import React, { useState } from "react";
-import { Feather, BookOpen, Quote, Volume2, Star, Check, ArrowRight, Calendar, Sparkles } from "lucide-react";
-import type { MiniWebsiteProps } from "./types";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { BookOpen, Check, ChevronDown, Moon, Pause, Play, Sun } from "lucide-react";
+import {
+  Book3D,
+  Btn,
+  ConceptFooter,
+  Display,
+  Eyebrow,
+  Nav,
+  Reader,
+  Retailers,
+  Section,
+  Signup,
+  Site,
+  Wrap,
+  jump,
+  type Theme,
+} from "./kit";
 
-export function LiteraryWebsite({ onBackToPortfolio, onBookWebsiteService, viewportMode = "desktop" }: MiniWebsiteProps) {
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [newsletterSent, setNewsletterSent] = useState(false);
-  const [email, setEmail] = useState("");
+const ID = "literary";
+const COVER = "/images/covers/dust-and-jasmine.svg";
+const AUTHOR = "Soraya Al-Mansoor";
+const TITLE = "Dust and Jasmine";
 
-  const scrollTo = (id: string) => {
-    document.getElementById(`lit-${id}`)?.scrollIntoView({ behavior: "smooth" });
+const theme: Theme = {
+  bg: "#f5f0e8",
+  bg2: "#ece4d6",
+  fg: "#221d1a",
+  muted: "#6b5f55",
+  accent: "#9a5b3a",
+  accent2: "#4d5b4a",
+  card: "rgba(34,29,26,0.04)",
+  border: "rgba(34,29,26,0.16)",
+  on: "#fff8ee",
+  display: "'Instrument Serif', Georgia, serif",
+  body: "'DM Sans Variable', system-ui, sans-serif",
+};
+
+const excerpt = [
+  "My grandmother kept her jasmine in a cracked blue bowl, and every evening she watered it with what was left of the tea.",
+  "She said a house should smell of someone who intends to stay.",
+  "We stayed, for a while. Then the road widened, and the courtyard was taken, and the jasmine went into a plastic bag on my lap, travelling west at the speed of everything we owned.",
+  "Dust, my mother told me, is only the memory of rooms.",
+];
+
+const essays = [
+  { title: "The weight of a borrowed language", tag: "Craft", min: 9 },
+  { title: "What the courtyard knew", tag: "Place", min: 6 },
+  { title: "Notes on carrying a smell across a border", tag: "Memory", min: 5 },
+  { title: "Why I write the ending first", tag: "Craft", min: 7 },
+  { title: "Tea, and the long afternoon", tag: "Memory", min: 4 },
+  { title: "Streets I can only walk at night", tag: "Place", min: 8 },
+] as const;
+
+const tags = ["All", "Memory", "Place", "Craft"] as const;
+
+const poem = [
+  "Every house I have loved",
+  "has been a little too small",
+  "for the sound of my mother's name.",
+  "I carry the doorframes anyway,",
+  "folded like letters,",
+  "and wait for a wall to say yes.",
+];
+
+const questions = [
+  {
+    q: "The jasmine travels with the narrator. What does each object that is carried tell us about what was left behind?",
+    a: "Look for how the book decides what is worth the weight of a journey, and who gets to choose.",
+  },
+  {
+    q: "Dust appears in the title and again in the closing pages. Does its meaning change?",
+    a: "Consider the difference between dust as loss and dust as proof that something once stood there.",
+  },
+  {
+    q: "Who is the book written for: the people who stayed, the people who left, or the people who will never know?",
+    a: "There is no right answer. The best conversations tend to begin with a disagreement.",
+  },
+  {
+    q: "The narrator rarely names the city. Why might the author leave it unnamed?",
+    a: "Think about what a name fixes in place, and what a silence allows.",
+  },
+];
+
+function PoemPlayer() {
+  const [playing, setPlaying] = useState(false);
+  const [line, setLine] = useState(-1);
+
+  useEffect(() => {
+    if (!playing) return;
+    const id = window.setInterval(() => {
+      setLine((current) => {
+        if (current >= poem.length - 1) {
+          setPlaying(false);
+          return -1;
+        }
+        return current + 1;
+      });
+    }, 2300);
+    return () => window.clearInterval(id);
+  }, [playing]);
+
+  const toggle = () => {
+    if (!playing && line < 0) setLine(0);
+    setPlaying((p) => !p);
   };
 
   return (
-    <div className="min-h-full bg-[#171310] text-[#f4eae1] font-serif antialiased selection:bg-[#c4a482] selection:text-[#171310]">
-      {/* Top Archival Header */}
-      <div className="border-b border-[#c4a482]/20 py-2.5 px-6 text-center text-xs tracking-[0.25em] text-[#d4b99b] uppercase font-sans font-medium flex items-center justify-center gap-2">
-        <Sparkles size={12} className="text-[#c4a482]" />
-        <span>LONGLISTED FOR THE 2025 INTERNATIONAL LITERARY MEDAL</span>
-        <Sparkles size={12} className="text-[#c4a482]" />
-      </div>
-
-      {/* Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[#c4a482]/15 bg-[#171310]/95 backdrop-blur-md px-6 py-5 flex items-center justify-between font-sans">
-        <div>
-          <span className="font-serif text-2xl tracking-wide font-normal text-[#fff9f4]">Soraya Al-Mansoor</span>
-          <span className="block text-[10px] tracking-[0.25em] text-[#c4a482] uppercase">Poetry & Literary Essays</span>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.2em] font-medium text-[#d4b99b]">
-          <button onClick={() => scrollTo("hero")} className="hover:text-white transition-colors">Collection</button>
-          <button onClick={() => scrollTo("poetry")} className="hover:text-white transition-colors">Verse & Audio</button>
-          <button onClick={() => scrollTo("bio")} className="hover:text-white transition-colors">Biography</button>
-          <button onClick={() => scrollTo("press")} className="hover:text-white transition-colors">Critical Praise</button>
-          <button onClick={() => scrollTo("letters")} className="hover:text-white transition-colors">The Journal</button>
-        </nav>
-
+    <div className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-bg)] p-7 @3xl:p-10">
+      <div className="flex items-center gap-4">
         <button
-          onClick={() => setBuyOpen(true)}
-          className="px-5 py-2.5 rounded-full border border-[#c4a482] hover:bg-[#c4a482] hover:text-[#171310] text-[#f4eae1] text-xs uppercase tracking-widest transition-all duration-300"
+          type="button"
+          onClick={toggle}
+          aria-label={playing ? "Pause the poem" : "Play the poem"}
+          className="grid size-14 shrink-0 place-items-center rounded-full bg-[var(--s-accent)] text-[var(--s-on)] transition hover:scale-105 active:scale-95"
         >
-          Acquire Volume
-        </button>
-      </header>
-
-      {/* Hero Section */}
-      <section id="lit-hero" className="px-6 py-20 lg:py-28 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-12 items-center">
-          <div className="md:col-span-7 space-y-6 text-left">
-            <span className="font-sans text-xs uppercase tracking-[0.3em] text-[#c4a482] font-semibold">Featured Volume</span>
-            <h1 className="text-4xl sm:text-6xl text-[#fff9f4] font-normal leading-[1.12]">
-              Dust and Jasmine
-            </h1>
-            <p className="font-sans text-sm sm:text-base text-[#d1beaf] leading-relaxed max-w-lg font-light">
-              A luminous bilingual collection of poetry and autobiographical vignettes exploring displacement, fragrance, Mediterranean shorelines, and the architecture of memory.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2 font-sans">
-              <button
-                onClick={() => setBuyOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-[#c4a482] text-[#171310] font-semibold text-xs uppercase tracking-widest hover:bg-[#d6bba0] transition-colors"
-              >
-                Purchase Clothbound Edition
-              </button>
-              <button
-                onClick={() => setSampleOpen(true)}
-                className="px-6 py-3.5 rounded-full border border-[#c4a482]/30 text-[#f4eae1] text-xs uppercase tracking-widest hover:border-[#c4a482] transition-colors"
-              >
-                Read Selected Stanzas
-              </button>
-            </div>
-          </div>
-
-          <div className="md:col-span-5 flex justify-center">
-            <div className="relative p-3 border border-[#c4a482]/30 rounded-2xl bg-[#1f1915] shadow-2xl">
-              <img
-                src="/images/covers/dust-and-jasmine.svg"
-                alt="Dust and Jasmine"
-                className="w-64 sm:w-76 rounded-xl shadow-xl border border-[#c4a482]/20"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Audio Verse Section */}
-      <section id="lit-poetry" className="px-6 py-16 bg-[#1f1a16] border-y border-[#c4a482]/15">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <Feather size={28} className="mx-auto text-[#c4a482]" />
-          <h2 className="text-3xl sm:text-4xl text-[#fff9f4]">An Excerpt in Two Tongues</h2>
-          <blockquote className="italic text-lg sm:text-xl text-[#f4eae1] leading-relaxed max-w-xl mx-auto">
-            “We carry the dust of our grandparents' orchards in the lining of our coat pockets, hoping the wind will mistake us for home.”
-          </blockquote>
-
-          <div className="pt-2 font-sans">
-            <button
-              onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2a221d] border border-[#c4a482]/40 text-[#c4a482] text-xs uppercase tracking-wider hover:bg-[#382d27] transition-colors"
-            >
-              <Volume2 size={15} />
-              <span>{isPlayingAudio ? "Pause Recitation (0:45)" : "Listen to Author's Recitation (0:45)"}</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Author Bio */}
-      <section id="lit-bio" className="px-6 py-20 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <div className="size-64 sm:size-72 rounded-2xl overflow-hidden border border-[#c4a482]/40 p-2 bg-[#1f1915]">
-              <img
-                src="/images/authors/soraya-al-mansoor.jpg"
-                alt="Soraya Al-Mansoor"
-                className="w-full h-full object-cover rounded-xl"
-              />
-            </div>
-          </div>
-          <div className="md:col-span-7 space-y-4 text-left font-sans">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#c4a482] font-semibold">About the Poet</span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#fff9f4]">Soraya Al-Mansoor</h2>
-            <p className="text-sm sm:text-base text-[#d1beaf] leading-relaxed font-light">
-              Soraya Al-Mansoor is a poet, essayist, and translator born in Beirut and currently living between Oxford and Athens. Her work has appeared in <em>The Paris Review</em>, <em>Granta</em>, and <em>The Poetry Review</em>.
-            </p>
-            <p className="text-sm sm:text-base text-[#d1beaf] leading-relaxed font-light">
-              She holds the Chair of Comparative Poetics and regularly keynotes international literary colloquia on translation and migration poetics.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Critical Acclaim */}
-      <section id="lit-press" className="px-6 py-16 bg-[#1f1a16] border-t border-[#c4a482]/15">
-        <div className="max-w-4xl mx-auto grid sm:grid-cols-2 gap-6 text-left">
-          <div className="p-6 rounded-2xl bg-[#171310] border border-[#c4a482]/20 space-y-3">
-            <p className="italic text-base text-[#f4eae1]">“Devastatingly precise and breathtakingly gentle. A collection destined to become an heirloom.”</p>
-            <p className="font-sans text-xs uppercase tracking-widest text-[#c4a482] font-semibold">— The Times Literary Supplement</p>
-          </div>
-          <div className="p-6 rounded-2xl bg-[#171310] border border-[#c4a482]/20 space-y-3">
-            <p className="italic text-base text-[#f4eae1]">“Al-Mansoor handles memory like spun glass. An essential voice in contemporary world literature.”</p>
-            <p className="font-sans text-xs uppercase tracking-widest text-[#c4a482] font-semibold">— Guardian Books</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section id="lit-letters" className="px-6 py-20 max-w-3xl mx-auto text-center font-sans">
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#231d18] border border-[#c4a482]/30">
-          <h2 className="font-serif text-3xl text-[#fff9f4]">Letters from Soraya</h2>
-          <p className="text-xs sm:text-sm text-[#d1beaf] mt-2 max-w-md mx-auto leading-relaxed">
-            A quarterly private essay on translation, books, and quiet observations from coastal Greece.
-          </p>
-
-          {newsletterSent ? (
-            <div className="mt-6 p-4 rounded-full bg-[#171310] border border-[#c4a482] text-[#d4b99b] text-xs">
-              Thank you. You will receive the next seasonal dispatch.
-            </div>
+          {playing ? (
+            <Pause size={20} aria-hidden="true" />
           ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (email) setNewsletterSent(true);
-              }}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mt-6"
-            >
-              <input
-                type="email"
-                required
-                placeholder="Your email address..."
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-5 py-3 rounded-full bg-[#171310] border border-[#c4a482]/30 text-white text-xs placeholder:text-[#806f62] focus:outline-none focus:border-[#c4a482]"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-full bg-[#c4a482] hover:bg-[#d6bba0] text-[#171310] text-xs font-semibold uppercase tracking-widest transition-colors"
-              >
-                Subscribe
-              </button>
-            </form>
+            <Play size={20} className="translate-x-0.5" aria-hidden="true" />
           )}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-8 border-t border-[#c4a482]/15 bg-[#120e0c] text-center font-sans text-xs text-[#806f62] space-y-2">
-        <p>© 2026 Soraya Al-Mansoor. Representation: {brand.name} Author Services.</p>
-        <p className="text-[11px] text-[#c4a482]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
-      </footer>
-
-      {/* Sample Modal */}
-      {sampleOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#171310] border border-[#c4a482] max-w-2xl w-full max-h-[85vh] rounded-3xl p-6 sm:p-8 overflow-y-auto shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-[#c4a482]/20 pb-3 mb-4 font-sans">
-              <span className="text-xs uppercase tracking-widest text-[#c4a482]">Selected Stanzas</span>
-              <button onClick={() => setSampleOpen(false)} className="size-7 rounded-full bg-[#2a221d] text-[#c4a482]">✕</button>
-            </div>
-            <div className="space-y-4 text-base sm:text-lg leading-loose text-[#f4eae1]">
-              <p className="italic">
-                The sea at dusk does not remember the names of fleets,<br />
-                only the salt they surrendered.<br />
-                In the orchard, the orange blossoms open like quiet hands<br />
-                asking nothing of the night.
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#c4a482]/20 flex justify-end font-sans">
-              <button
-                onClick={() => { setSampleOpen(false); setBuyOpen(true); }}
-                className="px-5 py-2 rounded-full bg-[#c4a482] text-[#171310] text-xs font-bold uppercase tracking-wider"
-              >
-                Order Book
-              </button>
-            </div>
+        </button>
+        <div className="min-w-0 flex-1">
+          <p className="text-2xl leading-tight [font-family:var(--s-display)]">Doorframes</p>
+          <div
+            className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--s-border)]"
+            aria-hidden="true"
+          >
+            <div
+              className="h-full rounded-full bg-[var(--s-accent)] transition-all duration-[2300ms] ease-linear"
+              style={{ width: `${((line + 1) / poem.length) * 100}%` }}
+            />
           </div>
         </div>
-      )}
+      </div>
+      <div
+        className="mt-8 space-y-1.5 text-2xl leading-snug [font-family:var(--s-display)] @3xl:text-3xl"
+        aria-live="polite"
+      >
+        {poem.map((text, i) => (
+          <p
+            key={text}
+            className={`transition-all duration-700 ${i === line ? "translate-x-2 text-[var(--s-accent)]" : i < line ? "text-[var(--s-fg)]/70" : "text-[var(--s-fg)]/30"}`}
+          >
+            {text}
+          </p>
+        ))}
+      </div>
+      <p className="mt-6 text-xs leading-relaxed text-[var(--s-muted)]">
+        Website concept: the lines light up as a recording would play. Sample poem written for this
+        concept.
+      </p>
+    </div>
+  );
+}
 
-      {/* Buy Modal */}
-      {buyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 font-sans">
-          <div className="bg-[#171310] border border-[#c4a482] max-w-md w-full rounded-2xl p-6 text-center">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs uppercase tracking-widest text-[#c4a482] font-semibold">Clothbound Edition</span>
-              <button onClick={() => setBuyOpen(false)} className="size-7 rounded-full bg-[#2a221d] text-[#c4a482]">✕</button>
+function ReadingRoom() {
+  const [size, setSize] = useState(20);
+  const [serif, setSerif] = useState(true);
+  const [night, setNight] = useState(false);
+  return (
+    <div
+      className={`overflow-hidden rounded-[2rem] border border-[var(--s-border)] transition-colors duration-500 ${night ? "bg-[#17130f] text-[#eadfce]" : "bg-[var(--s-bg)] text-[var(--s-fg)]"}`}
+    >
+      <div className="flex flex-wrap items-center gap-4 border-b border-current/10 px-6 py-4 text-xs">
+        <label className="flex items-center gap-3">
+          <span className="uppercase tracking-[0.18em] opacity-70">Size</span>
+          <input
+            type="range"
+            min={16}
+            max={28}
+            value={size}
+            onChange={(e) => setSize(Number(e.target.value))}
+            className="w-28 accent-[var(--s-accent)]"
+            aria-label="Text size"
+          />
+        </label>
+        <div className="flex rounded-full border border-current/20 p-0.5">
+          {([true, false] as const).map((isSerif) => (
+            <button
+              key={String(isSerif)}
+              type="button"
+              onClick={() => setSerif(isSerif)}
+              aria-pressed={serif === isSerif}
+              className={`min-h-8 rounded-full px-3 transition ${serif === isSerif ? "bg-[var(--s-accent)] text-[var(--s-on)]" : "opacity-70"}`}
+            >
+              {isSerif ? "Serif" : "Sans"}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setNight((n) => !n)}
+          aria-pressed={night}
+          className="ml-auto inline-flex min-h-8 items-center gap-2 rounded-full border border-current/20 px-3 transition hover:border-[var(--s-accent)]"
+        >
+          {night ? <Sun size={14} aria-hidden="true" /> : <Moon size={14} aria-hidden="true" />}{" "}
+          {night ? "Paper" : "Night"}
+        </button>
+      </div>
+      <div
+        className="mx-auto max-w-xl space-y-5 px-6 py-10 leading-[1.85] @3xl:py-14"
+        style={{ fontSize: size, fontFamily: serif ? "var(--s-display)" : "var(--s-body)" }}
+      >
+        <p className="first-letter:float-left first-letter:mr-3 first-letter:text-[3.4em] first-letter:leading-[0.8] first-letter:text-[var(--s-accent)]">
+          {excerpt[0]}
+        </p>
+        {excerpt.slice(1, 3).map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Invite() {
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
+  const name = useRef<HTMLInputElement>(null);
+  const email = useRef<HTMLInputElement>(null);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!name.current?.value.trim()) {
+      setError("Please add your name.");
+      return name.current?.focus();
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email.current?.value.trim() ?? "")) {
+      setError("Please enter a valid email address.");
+      return email.current?.focus();
+    }
+    setError("");
+    setDone(true);
+  };
+  const field =
+    "mt-2 min-h-12 w-full rounded-2xl border border-[var(--s-border)] bg-[var(--s-bg)] px-4 text-sm text-[var(--s-fg)] outline-none transition focus:border-[var(--s-accent)]";
+  if (done) {
+    return (
+      <div
+        className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-bg)] p-10 text-center"
+        role="status"
+      >
+        <span className="mx-auto grid size-14 place-items-center rounded-full bg-[var(--s-accent)] text-[var(--s-on)]">
+          <Check size={26} aria-hidden="true" />
+        </span>
+        <p className="mt-4 text-3xl [font-family:var(--s-display)]">Thank you.</p>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-[var(--s-muted)]">
+          Website concept: on a real site this message would reach the author&rsquo;s inbox.
+        </p>
+      </div>
+    );
+  }
+  return (
+    <form
+      onSubmit={submit}
+      noValidate
+      className="grid gap-4 rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-bg)] p-7 @3xl:grid-cols-2 @3xl:p-10"
+    >
+      <label className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--s-muted)]">
+        Your name
+        <input ref={name} className={field} autoComplete="name" />
+      </label>
+      <label className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--s-muted)]">
+        Email
+        <input ref={email} type="email" className={field} autoComplete="email" />
+      </label>
+      <label className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--s-muted)]">
+        Event type
+        <select className={field} defaultValue="Festival">
+          {["Festival", "Library", "University", "Book club", "Bookshop"].map((o) => (
+            <option key={o}>{o}</option>
+          ))}
+        </select>
+      </label>
+      <label className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--s-muted)]">
+        Preferred date
+        <input type="date" className={field} />
+      </label>
+      <label className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--s-muted)] @3xl:col-span-2">
+        A few words
+        <textarea rows={3} className={`${field} py-3`} />
+      </label>
+      {error && (
+        <p
+          role="alert"
+          className="text-xs text-[color-mix(in_oklab,#ff5d5d_70%,var(--s-fg))] @3xl:col-span-2"
+        >
+          {error}
+        </p>
+      )}
+      <Btn type="submit" className="@3xl:col-span-2 @3xl:justify-self-start">
+        Send the invitation
+      </Btn>
+    </form>
+  );
+}
+
+export function LiteraryWebsite() {
+  const [reading, setReading] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [tag, setTag] = useState<(typeof tags)[number]>("All");
+  const [openQ, setOpenQ] = useState<number | null>(0);
+  const list = essays.filter((e) => tag === "All" || e.tag === tag);
+
+  return (
+    <Site theme={theme} id={ID}>
+      <span id={`${ID}-top`} />
+      <Nav
+        site={ID}
+        name={AUTHOR}
+        sub="Literary fiction & essays"
+        links={[
+          ["essays", "Essays"],
+          ["poem", "Poem"],
+          ["room", "Reading room"],
+          ["invite", "Invite me"],
+        ]}
+        cta="The novel"
+        onCta={() => setBuying(true)}
+        mark={
+          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--s-fg)]/30 text-xl italic [font-family:var(--s-display)]">
+            S
+          </span>
+        }
+      />
+
+      {/* Hero */}
+      <section className="px-5 pb-16 pt-14 @3xl:px-10 @3xl:pb-24 @3xl:pt-24">
+        <Wrap className="grid items-center gap-14 @3xl:grid-cols-[1.2fr_0.8fr]">
+          <div>
+            <Eyebrow className="text-[var(--s-accent)]">A novel in fragments</Eyebrow>
+            <Display
+              as="h1"
+              className="mt-6 text-[clamp(3rem,11cqi,8rem)] font-normal leading-[0.92] tracking-[-0.02em]"
+            >
+              Dust <span className="italic text-[var(--s-accent)]">and</span> Jasmine
+            </Display>
+            <p className="mt-8 max-w-lg text-lg leading-9 text-[var(--s-muted)]">
+              Three generations, one blue bowl, and the smell of a house that no longer exists. A
+              quiet, exact book about what we carry when we cannot carry anything.
+            </p>
+            <div className="mt-9 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read the opening
+              </Btn>
+              <Btn variant="outline" onClick={() => jump(ID, "essays")}>
+                Browse the essays
+              </Btn>
             </div>
-            <img src="/images/covers/dust-and-jasmine.svg" alt="Dust and Jasmine" className="w-28 mx-auto rounded shadow-xl mb-4 border border-[#c4a482]/30" />
-            <h3 className="font-serif text-xl text-[#fff9f4]">Dust and Jasmine</h3>
-            <p className="text-xs text-[#d1beaf] mb-4">Faber & Faber / Independent Bookshops</p>
-            <div className="space-y-2 text-left">
-              {["Bookshop.org (Supports Local Indie Stores)", "Waterstones & Blackwell's", "Amazon Worldwide"].map((b, i) => (
+          </div>
+          <Book3D cover={COVER} title={TITLE} width={250} float={false} className="my-6" />
+        </Wrap>
+      </section>
+
+      {/* Essays */}
+      <Section site={ID} id="essays" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <div className="flex flex-col gap-6 @3xl:flex-row @3xl:items-end @3xl:justify-between">
+            <div>
+              <Eyebrow>The archive</Eyebrow>
+              <Display className="mt-4 text-4xl font-normal @3xl:text-6xl">Essays, slowly</Display>
+            </div>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter essays">
+              {tags.map((t) => (
                 <button
-                  key={i}
-                  onClick={() => { alert(`Demo trigger: Order via ${b}`); setBuyOpen(false); }}
-                  className="w-full p-3 rounded-xl bg-[#231d18] border border-[#c4a482]/30 text-white flex items-center justify-between text-xs hover:bg-[#302720]"
+                  key={t}
+                  type="button"
+                  onClick={() => setTag(t)}
+                  aria-pressed={tag === t}
+                  className={`min-h-10 rounded-full border px-4 text-xs font-semibold uppercase tracking-[0.14em] transition ${tag === t ? "border-[var(--s-fg)] bg-[var(--s-fg)] text-[var(--s-bg)]" : "border-[var(--s-border)] hover:border-[var(--s-fg)]"}`}
                 >
-                  <span>{b}</span>
-                  <ArrowRight size={14} className="text-[#c4a482]" />
+                  {t}
                 </button>
               ))}
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          <ul className="mt-10 divide-y divide-[var(--s-border)] border-y border-[var(--s-border)]">
+            {list.map((e, i) => (
+              <li
+                key={e.title}
+                className="group flex items-baseline gap-5 py-6 transition-colors hover:text-[var(--s-accent)] @3xl:gap-8"
+              >
+                <span className="w-8 text-sm tabular-nums text-[var(--s-muted)]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="flex-1 text-2xl leading-snug transition-transform duration-300 [font-family:var(--s-display)] group-hover:translate-x-2 @3xl:text-3xl">
+                  {e.title}
+                </span>
+                <span className="hidden text-xs uppercase tracking-[0.18em] text-[var(--s-muted)] @sm:block">
+                  {e.tag}
+                </span>
+                <span className="text-xs tabular-nums text-[var(--s-muted)]">{e.min} min</span>
+              </li>
+            ))}
+          </ul>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="poem">
+        <Wrap className="grid items-center gap-10 @3xl:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <Eyebrow>Poetry</Eyebrow>
+            <Display className="mt-4 text-4xl font-normal @3xl:text-6xl">
+              Hear it, line by line
+            </Display>
+            <p className="mt-5 max-w-sm text-base leading-8 text-[var(--s-muted)]">
+              Readers follow the words as they are spoken. A small touch that makes a poem feel like
+              an event.
+            </p>
+          </div>
+          <PoemPlayer />
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="room" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <Eyebrow>The reading room</Eyebrow>
+          <Display className="mt-4 max-w-2xl text-4xl font-normal @3xl:text-6xl">
+            Make the page yours
+          </Display>
+          <div className="mt-10">
+            <ReadingRoom />
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="club">
+        <Wrap className="grid gap-10 @3xl:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <Eyebrow>For book clubs</Eyebrow>
+            <Display className="mt-4 text-4xl font-normal @3xl:text-6xl">
+              Questions to argue about
+            </Display>
+          </div>
+          <div className="divide-y divide-[var(--s-border)] border-y border-[var(--s-border)]">
+            {questions.map((item, i) => {
+              const open = openQ === i;
+              return (
+                <div key={item.q}>
+                  <button
+                    type="button"
+                    onClick={() => setOpenQ(open ? null : i)}
+                    aria-expanded={open}
+                    className="flex w-full items-start justify-between gap-5 py-5 text-left"
+                  >
+                    <span className="text-xl leading-snug [font-family:var(--s-display)] @3xl:text-2xl">
+                      {item.q}
+                    </span>
+                    <ChevronDown
+                      size={20}
+                      className={`mt-1 shrink-0 text-[var(--s-accent)] transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                  <p
+                    className={`overflow-hidden text-sm leading-7 text-[var(--s-muted)] transition-all duration-500 ${open ? "max-h-40 pb-5 opacity-100" : "max-h-0 opacity-0"}`}
+                  >
+                    {item.a}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="invite" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <div className="mb-10 max-w-2xl">
+            <Eyebrow>Speaking & events</Eyebrow>
+            <Display className="mt-4 text-4xl font-normal @3xl:text-6xl">Invite the author</Display>
+            <p className="mt-4 text-base leading-8 text-[var(--s-muted)]">
+              For festivals, libraries, universities and reading groups.
+            </p>
+          </div>
+          <Invite />
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="letters">
+        <Wrap>
+          <Signup
+            title="Letters, now and then"
+            text="A short note when a new essay is published. No schedule, no noise."
+            cta="Subscribe"
+          />
+        </Wrap>
+      </Section>
+
+      <ConceptFooter author={AUTHOR} line="Literary author website concept" />
+      <Reader
+        open={reading}
+        onClose={() => setReading(false)}
+        title="Dust and Jasmine"
+        author={AUTHOR}
+        chapter="Opening"
+        paragraphs={excerpt}
+        onBuy={() => setBuying(true)}
+      />
+      <Retailers
+        open={buying}
+        onClose={() => setBuying(false)}
+        title={TITLE}
+        author={AUTHOR}
+        cover={COVER}
+      />
+    </Site>
   );
 }

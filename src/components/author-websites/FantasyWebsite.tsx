@@ -1,364 +1,540 @@
-import { brand } from "@/data/brand";
-import React, { useState } from "react";
-import { Shield, Sparkles, MapPin, BookOpen, ShoppingBag, Compass, Star, ChevronRight, Swords, Scroll, Check, ArrowRight } from "lucide-react";
-import type { MiniWebsiteProps } from "./types";
+import "@fontsource/cinzel/latin-500.css";
+import "@fontsource/cinzel/latin-700.css";
+import { useEffect, useState } from "react";
+import {
+  BookOpen,
+  Compass,
+  Crown,
+  Flame,
+  Moon,
+  ShoppingBag,
+  Sun,
+  Swords,
+  TreePine,
+  Waves,
+} from "lucide-react";
+import {
+  Book3D,
+  Btn,
+  ConceptFooter,
+  Display,
+  Eyebrow,
+  Nav,
+  Reader,
+  Retailers,
+  Section,
+  Signup,
+  Site,
+  Wrap,
+  jump,
+  type Theme,
+} from "./kit";
 
-export function FantasyWebsite({ onBackToPortfolio, onBookWebsiteService, viewportMode = "desktop" }: MiniWebsiteProps) {
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [selectedRealm, setSelectedRealm] = useState<"solaria" | "dusk" | "iron">("solaria");
-  const [newsletterSent, setNewsletterSent] = useState(false);
-  const [email, setEmail] = useState("");
+const ID = "fantasy";
+const COVER = "/images/covers/chronicles-of-the-solar-king.svg";
+const AUTHOR = "Kofi Mensah";
+const TITLE = "Chronicles of the Solar King";
 
-  const scrollTo = (id: string) => {
-    document.getElementById(`fantasy-${id}`)?.scrollIntoView({ behavior: "smooth" });
+const theme: Theme = {
+  bg: "#120b1c",
+  bg2: "#1c1229",
+  fg: "#f7ecdc",
+  muted: "#bfa9b6",
+  accent: "#e8ac3d",
+  accent2: "#e0835f",
+  card: "rgba(255,255,255,0.05)",
+  border: "rgba(232,172,61,0.26)",
+  on: "#1a1226",
+  display: "'Cinzel', Georgia, serif",
+  body: "'DM Sans Variable', system-ui, sans-serif",
+};
+
+const excerpt = [
+  "On the morning the sun failed to rise over Aurelia, the bells of the Gilded Court rang for a king who had not yet died.",
+  "Tamsin stood on the cold stair of the observatory and counted the hours the way her grandmother had taught her, by the breath, by the heartbeat, by the slow stiffening of her fingers. Seven hours past dawn. Seven hours of a sky the colour of old pewter.",
+  "“It will come back,” said the astronomer beside her, and she heard how carefully he did not say when.",
+  "Far below, in the throne room, the Solar King lay with his crown on his chest, and the crown, for the first time in four hundred years, had gone dark.",
+];
+
+const regions = [
+  {
+    id: "aurelia",
+    name: "Aurelia",
+    role: "The Sunlit Throne",
+    icon: Crown,
+    text: "A city of copper domes where the Solar King holds court. The crown here is more than a symbol: it is the engine of the day.",
+    d: "M255 150 L330 130 L375 175 L350 235 L275 245 L235 200 Z",
+  },
+  {
+    id: "veil",
+    name: "The Veil Forest",
+    role: "Home of the Moth Choirs",
+    icon: TreePine,
+    text: "A silver-leaved wood where it is always dusk. Travellers hear their own names sung by voices that are not there.",
+    d: "M95 140 L170 110 L215 160 L195 235 L120 255 L75 205 Z",
+  },
+  {
+    id: "ember",
+    name: "The Ember Marches",
+    role: "Frontier of the Fire Houses",
+    icon: Flame,
+    text: "Black glass plains and rivers of slow light. The Fire Houses forge sunsteel here, and tell no one how.",
+    d: "M395 190 L470 170 L520 220 L495 285 L420 295 L380 245 Z",
+  },
+  {
+    id: "ashen",
+    name: "The Ashen Reach",
+    role: "Where the Night Armies gather",
+    icon: Swords,
+    text: "A grey, wind-scoured north that has been waiting four hundred years for the sun to blink.",
+    d: "M215 40 L300 25 L360 60 L330 105 L255 115 L205 85 Z",
+  },
+  {
+    id: "tide",
+    name: "The Tidemark Isles",
+    role: "Harbours of the Salt Kings",
+    icon: Waves,
+    text: "Seventy islands, one fleet, and a treaty that holds only while the tide does.",
+    d: "M120 290 L190 275 L230 320 L200 365 L130 360 L95 325 Z",
+  },
+];
+
+const codex = {
+  Houses: [
+    {
+      icon: Sun,
+      t: "House Aurel",
+      d: "Keepers of the crown. They govern by daylight and break their fast at dawn.",
+    },
+    {
+      icon: Flame,
+      t: "House Cinder",
+      d: "Smiths of sunsteel. They trade in fire and secrets, in that order.",
+    },
+    {
+      icon: Moon,
+      t: "House Veyra",
+      d: "The night-born. Patient, soft-spoken, and always at the edge of the room.",
+    },
+  ],
+  Magic: [
+    {
+      icon: Sun,
+      t: "Dawnbinding",
+      d: "Drawing daylight into objects. It is strongest at noon and costs a memory.",
+    },
+    {
+      icon: Moon,
+      t: "Dusksong",
+      d: "Singing a place into stillness. Only the Moth Choirs have ever mastered it.",
+    },
+    {
+      icon: Flame,
+      t: "Emberwork",
+      d: "Shaping heat as if it were clay. Every smith carries the scars.",
+    },
+  ],
+  Timeline: [
+    {
+      icon: Crown,
+      t: "Year 0",
+      d: "The first king takes the crown and the sun rises on his word.",
+    },
+    { icon: Swords, t: "Year 212", d: "The Ember War ends with a treaty signed at midnight." },
+    { icon: Sun, t: "Year 400", d: "The crown goes dark. The sun does not rise." },
+  ],
+} as const;
+
+function useCountdown(days: number) {
+  const [target] = useState(() => Date.now() + days * 86_400_000);
+  const [left, setLeft] = useState(days * 86_400_000);
+  useEffect(() => {
+    const tick = () => setLeft(Math.max(0, target - Date.now()));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [target]);
+  const s = Math.floor(left / 1000);
+  return {
+    d: Math.floor(s / 86400),
+    h: Math.floor((s % 86400) / 3600),
+    m: Math.floor((s % 3600) / 60),
+    s: s % 60,
   };
+}
 
-  const realmDetails = {
-    solaria: {
-      name: "The Solar Citadel of Orah",
-      ruler: "High King Kwame V",
-      desc: "Perched atop volcanic basalt cliffs, the Solar Citadel harnesses raw solar plasma through towering crystal spires. The ancient seat of the Sunfire Dynasty.",
-      creed: "Where Light Prevails, Empires Endure.",
-    },
-    dusk: {
-      name: "The Obsidian Marches",
-      ruler: "Warlord Nayla Vance",
-      desc: "A sprawling shadowland shrouded in ash storms and subterranean glass caverns. Home to the exiled bloodline of eclipse sorcerers.",
-      creed: "From the Deepest Shadow, the Flame Awakens.",
-    },
-    iron: {
-      name: "The Iron Archipelago",
-      ruler: "Grand Admiral Tariq",
-      desc: "Ten thousand fortified floating galleons and ironclad fortress isles defending the eastern salt sea against deep abyss leviathans.",
-      creed: "Steel in Heart, Salt in Vein.",
-    },
-  };
+export function FantasyWebsite() {
+  const [reading, setReading] = useState(false);
+  const [buying, setBuying] = useState(false);
+  const [region, setRegion] = useState(regions[0]);
+  const [tab, setTab] = useState<keyof typeof codex>("Houses");
+  const clock = useCountdown(21);
+  const active = region ?? regions[0];
+  const ActiveIcon = active?.icon ?? Crown;
 
   return (
-    <div className="min-h-full bg-[#0d0604] text-[#fceee8] font-sans antialiased selection:bg-[#df8a6c] selection:text-[#180905]">
-      {/* Epic Header Announcement */}
-      <div className="bg-gradient-to-r from-[#3b1207] via-[#6d2711] to-[#3b1207] px-4 py-2 text-center text-xs font-serif font-bold tracking-[0.25em] text-[#fed7aa] border-b border-[#df8a6c]/30 flex items-center justify-center gap-2">
-        <Swords size={13} className="text-[#df8a6c]" />
-        <span>BOOK ONE OF THE SUNFIRE DYNASTY • NOW EXPANDED WITH COLLECTOR'S MAPS</span>
-        <Swords size={13} className="text-[#df8a6c]" />
-      </div>
+    <Site theme={theme} id={ID}>
+      <span id={`${ID}-top`} />
+      <Nav
+        site={ID}
+        name={AUTHOR}
+        sub="Epic fantasy"
+        links={[
+          ["map", "Realm map"],
+          ["codex", "Codex"],
+          ["excerpt", "Excerpt"],
+          ["court", "The Court"],
+        ]}
+        cta="Pre-order"
+        onCta={() => setBuying(true)}
+        mark={
+          <span className="grid size-10 shrink-0 place-items-center rounded-full border border-[var(--s-accent)]/60 bg-[var(--s-card)] text-[var(--s-accent)]">
+            <Sun size={18} aria-hidden="true" />
+          </span>
+        }
+      />
 
-      {/* Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[#df8a6c]/20 bg-[#0d0604]/90 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-lg bg-gradient-to-br from-[#df8a6c] to-[#7c260f] p-0.5 shadow-lg shadow-[#df8a6c]/20 flex items-center justify-center">
-            <div className="w-full h-full bg-[#180905] rounded-[6px] flex items-center justify-center font-serif text-[#fed7aa] font-bold text-lg">
-              KM
-            </div>
-          </div>
-          <div>
-            <span className="font-serif text-xl tracking-wider font-bold text-[#fff7ed]">Kofi Mensah</span>
-            <span className="block text-[10px] tracking-[0.25em] text-[#df8a6c] uppercase font-bold">Epic Fantasy Worlds</span>
-          </div>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-7 text-xs uppercase tracking-[0.2em] font-semibold text-[#fed7aa]/80">
-          <button onClick={() => scrollTo("hero")} className="hover:text-[#df8a6c] transition-colors">Chronicles</button>
-          <button onClick={() => scrollTo("map")} className="hover:text-[#df8a6c] transition-colors">Realm Atlas</button>
-          <button onClick={() => scrollTo("author")} className="hover:text-[#df8a6c] transition-colors">The Worldbuilder</button>
-          <button onClick={() => scrollTo("series")} className="hover:text-[#df8a6c] transition-colors">Books & Series</button>
-          <button onClick={() => scrollTo("codex")} className="hover:text-[#df8a6c] transition-colors">Fan Codex</button>
-        </nav>
-
-        <button
-          onClick={() => setBuyOpen(true)}
-          className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-[#df8a6c] to-[#9a3412] text-[#0d0604] hover:text-white font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-xl shadow-[#df8a6c]/20 flex items-center gap-1.5"
+      {/* Hero */}
+      <section className="relative overflow-hidden px-5 pb-20 pt-14 @3xl:px-10 @3xl:pb-28 @3xl:pt-20">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(55% 60% at 72% 42%, rgba(232,172,61,0.30), transparent 70%), radial-gradient(40% 40% at 5% 100%, rgba(224,131,95,0.2), transparent 70%)",
+          }}
+        />
+        {/* the dark sun */}
+        <div
+          aria-hidden="true"
+          className="absolute right-[-12%] top-1/2 size-[44rem] -translate-y-1/2 opacity-60 @3xl:right-[2%]"
         >
-          <Shield size={14} />
-          <span>Claim Hardcover</span>
-        </button>
-      </header>
-
-      {/* Hero Section */}
-      <section id="fantasy-hero" className="relative px-6 py-20 lg:py-28 overflow-hidden">
-        <div className="absolute inset-0 opacity-25 bg-[radial-gradient(ellipse_at_top,#df8a6c,transparent_70%)]" />
-        
-        <div className="max-w-6xl mx-auto grid md:grid-cols-12 gap-12 items-center relative z-10">
-          <div className="md:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-[#df8a6c]/15 border border-[#df8a6c]/40 text-[#df8a6c] text-xs uppercase tracking-[0.22em] font-bold">
-              <Sparkles size={13} />
-              The Sunfire Dynasty • Book I
-            </div>
-
-            <h1 className="font-serif text-4xl sm:text-6xl text-[#fff7ed] leading-[1.08] font-bold tracking-tight">
-              When the Sun King falls, only fire can claim the throne.
-            </h1>
-
-            <p className="text-[#e2c1b4] text-base sm:text-lg leading-relaxed max-w-xl">
-              A sprawling epic of celestial magic, warring merchant syndicates, and an exiled prince who must awaken the buried titan colossus before the eclipse consumes the mortal realm.
-            </p>
-
-            <div className="flex flex-wrap gap-4 pt-2">
-              <button
-                onClick={() => setBuyOpen(true)}
-                className="px-7 py-4 rounded-xl bg-gradient-to-r from-[#df8a6c] via-[#b84a22] to-[#7c260f] text-[#0d0604] hover:text-white font-bold text-sm uppercase tracking-wider shadow-2xl shadow-[#df8a6c]/30 hover:scale-[1.02] transition-transform flex items-center gap-2"
-              >
-                <Shield size={16} />
-                <span>Order Deluxe Hardcover</span>
-              </button>
-              <button
-                onClick={() => setSampleOpen(true)}
-                className="px-7 py-4 rounded-xl bg-[#210904] hover:bg-[#341108] border border-[#df8a6c]/40 text-[#fed7aa] font-semibold text-sm tracking-wide transition-colors flex items-center gap-2"
-              >
-                <BookOpen size={16} />
-                <span>Read Prologue & Map</span>
-              </button>
-            </div>
-
-            <div className="pt-4 flex items-center gap-5 text-xs text-[#d1a896]">
-              <span className="font-bold text-[#df8a6c]">#1 AMAZON BESTSELLER</span>
-              <span>•</span>
-              <span>"Tolkien's scope with fresh mythic energy." — Fantasy Chronicle</span>
-            </div>
-          </div>
-
-          {/* Book Presentation with Dramatic Glow */}
-          <div className="md:col-span-5 flex justify-center relative">
-            <div className="relative group">
-              <div className="absolute -inset-6 rounded-3xl bg-gradient-to-t from-[#df8a6c]/40 via-[#b84a22]/20 to-transparent blur-3xl group-hover:blur-4xl transition-all" />
-              <img
-                src="/images/covers/chronicles-of-the-solar-king.svg"
-                alt="Chronicles of the Solar King"
-                className="relative w-72 sm:w-84 rounded-2xl shadow-2xl border-2 border-[#df8a6c]/50 transform rotate-[1.5deg] group-hover:rotate-0 transition-transform duration-500"
+          <div className="absolute inset-0 [animation:s-spin_90s_linear_infinite]">
+            {Array.from({ length: 24 }).map((_, i) => (
+              <span
+                key={i}
+                className="absolute left-1/2 top-1/2 h-1/2 w-px origin-top bg-gradient-to-b from-[var(--s-accent)]/60 to-transparent"
+                style={{ transform: `rotate(${i * 15}deg)` }}
               />
-              <div className="absolute -bottom-5 -right-3 bg-[#1e0a05] border border-[#df8a6c]/60 px-4 py-2.5 rounded-xl text-xs font-serif text-[#fed7aa] shadow-2xl backdrop-blur-md">
-                ⚔️ Includes 4 Colored Foldout Maps
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Realm Atlas */}
-      <section id="fantasy-map" className="px-6 py-20 bg-[#160804] border-y border-[#df8a6c]/20">
-        <div className="max-w-5xl mx-auto text-center space-y-8">
-          <div>
-            <span className="text-xs uppercase tracking-[0.25em] text-[#df8a6c] font-bold">Interactive World Codex</span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#fff7ed] mt-1 font-bold">Explore the Three Mortal Realms</h2>
-            <p className="text-sm text-[#e2c1b4] max-w-xl mx-auto mt-2">
-              Select a territory to inspect its ruling house, strategic fortress, and founding creed.
-            </p>
-          </div>
-
-          <div className="flex justify-center gap-3">
-            {(["solaria", "dusk", "iron"] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setSelectedRealm(r)}
-                className={`px-5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all ${
-                  selectedRealm === r
-                    ? "bg-[#df8a6c] text-[#0d0604] border-[#df8a6c] shadow-lg shadow-[#df8a6c]/20"
-                    : "bg-[#240b05] text-[#fed7aa] border-[#df8a6c]/30 hover:border-[#df8a6c]"
-                }`}
-              >
-                {realmDetails[r].name.split(" ")[1]}
-              </button>
             ))}
           </div>
-
-          <div className="p-8 rounded-2xl bg-[#0d0604] border border-[#df8a6c]/40 text-left grid md:grid-cols-12 gap-8 items-center">
-            <div className="md:col-span-7 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-[#df8a6c] uppercase tracking-wider">
-                <Compass size={16} />
-                <span>{realmDetails[selectedRealm].ruler}</span>
-              </div>
-              <h3 className="font-serif text-2xl text-[#fff7ed] font-bold">{realmDetails[selectedRealm].name}</h3>
-              <p className="text-sm text-[#d6aea0] leading-relaxed">{realmDetails[selectedRealm].desc}</p>
-              <div className="p-3 rounded-lg bg-[#210904] border-l-2 border-[#df8a6c] text-xs font-serif italic text-[#fed7aa]">
-                "{realmDetails[selectedRealm].creed}"
-              </div>
-            </div>
-            <div className="md:col-span-5 p-6 rounded-xl bg-[#210904] border border-[#df8a6c]/20 text-center space-y-2">
-              <Scroll size={32} className="mx-auto text-[#df8a6c]" />
-              <h4 className="font-serif text-lg text-[#fff7ed] font-bold">Download Free Realm Map</h4>
-              <p className="text-xs text-[#d6aea0]">Get the 4K printable parchment cartography included in the deluxe edition.</p>
-              <button
-                onClick={() => alert("Demo Trigger: Realm cartography PDF download initiated!")}
-                className="mt-2 px-4 py-2 rounded-lg bg-[#df8a6c] text-[#0d0604] font-bold text-xs uppercase tracking-wider hover:bg-[#c97455] transition-colors"
-              >
-                Get 4K Map PDF
-              </button>
-            </div>
-          </div>
+          <div className="absolute inset-[22%] rounded-full border border-[var(--s-accent)]/50" />
+          <div className="absolute inset-[30%] rounded-full border border-[var(--s-accent)]/30" />
         </div>
-      </section>
-
-      {/* Author Biography */}
-      <section id="fantasy-author" className="px-6 py-20 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <div className="relative">
-              <div className="size-64 sm:size-76 rounded-2xl overflow-hidden border-2 border-[#df8a6c]/50 shadow-2xl bg-[#1e0a05]">
-                <img
-                  src="/images/authors/kofi-mensah.jpg"
-                  alt="Kofi Mensah"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-3 -left-3 bg-[#df8a6c] text-[#0d0604] px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-xl">
-                Accra & London
-              </div>
-            </div>
-          </div>
-
-          <div className="md:col-span-7 space-y-4 text-left">
-            <span className="text-xs uppercase tracking-[0.25em] text-[#df8a6c] font-bold">The Worldbuilder</span>
-            <h2 className="font-serif text-3xl sm:text-4xl text-[#fff7ed] font-bold">Kofi Mensah</h2>
-            <p className="text-sm sm:text-base text-[#e2c1b4] leading-relaxed">
-              Kofi Mensah is a worldbuilder and fantasy novelist whose epics fuse West African mythology, complex military strategy, and ancient astral cosmology. His debut novel achieved instant international acclaim, with translation rights sold in 14 countries.
-            </p>
-            <p className="text-sm sm:text-base text-[#e2c1b4] leading-relaxed">
-              Before writing full-time, Kofi worked as an architectural cartographer and game lore director. When not inventing magical alphabets, he mentors rising speculative fiction writers across the globe.
-            </p>
-            <div className="pt-2 flex items-center gap-6 text-xs text-[#fed7aa]">
-              <div><strong>6</strong> Full Novels</div>
-              <div><strong>1.2M</strong> Copies Sold</div>
-              <div><strong>2024</strong> Fantasy Award Winner</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* VIP Fan Club / Guild Dispatch */}
-      <section id="fantasy-codex" className="px-6 py-20 max-w-4xl mx-auto text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#2e0e06] to-[#140603] border border-[#df8a6c]/40 shadow-2xl relative">
-          <Shield size={36} className="mx-auto text-[#df8a6c]" />
-          <h2 className="font-serif text-3xl sm:text-4xl text-[#fff7ed] font-bold mt-2">Join the Order of the Sunfire</h2>
-          <p className="text-sm text-[#e2c1b4] max-w-md mx-auto mt-2 leading-relaxed">
-            Receive exclusive prequel short stories, high-res character art, and VIP access to future hardcover pre-order campaigns.
-          </p>
-
-          {newsletterSent ? (
-            <div className="mt-6 p-4 rounded-xl bg-[#210904] border border-[#df8a6c] text-[#fed7aa] text-sm flex items-center justify-center gap-2">
-              <Check size={18} className="text-[#df8a6c]" />
-              <span>Welcome to the Order. Check your dispatch scroll in your email.</span>
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (email) setNewsletterSent(true);
-              }}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mt-6"
+        <Wrap className="relative grid items-center gap-14 @3xl:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <Eyebrow>Book one of the Solar Throne cycle</Eyebrow>
+            <Display
+              as="h1"
+              className="mt-5 text-[clamp(2.3rem,7.4cqi,4.9rem)] font-bold uppercase leading-[1.05] tracking-[0.02em]"
             >
-              <input
-                type="email"
-                required
-                placeholder="Enter your email address..."
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-5 py-3 rounded-lg bg-[#0d0604] border border-[#df8a6c]/40 text-white placeholder:text-[#a37a6b] text-xs focus:outline-none focus:border-[#df8a6c]"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-lg bg-[#df8a6c] hover:bg-[#c97455] text-[#0d0604] text-xs font-bold uppercase tracking-wider transition-colors shadow-lg"
+              When the sun forgets its king
+            </Display>
+            <p className="mt-6 max-w-xl text-base leading-8 text-[var(--s-muted)] @3xl:text-lg">
+              Four hundred years of daylight rest on a single crown. Tonight it has gone dark, and a
+              girl who counts the hours must find out why before the night armies move.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => jump(ID, "map")}>
+                <Compass size={16} aria-hidden="true" /> Explore the realm
+              </Btn>
+              <Btn variant="outline" onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read the prologue
+              </Btn>
+            </div>
+            <div className="mt-10 inline-block rounded-3xl border border-[var(--s-border)] bg-[var(--s-card)] px-5 py-4 backdrop-blur">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[var(--s-accent)]">
+                Collector&rsquo;s hardcover launches in
+              </p>
+              <div
+                className="mt-2 flex gap-5 [font-family:var(--s-display)]"
+                role="timer"
+                aria-live="off"
               >
-                Swear Fealty
-              </button>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-10 border-t border-[#df8a6c]/20 bg-[#090302] text-center text-xs text-[#a37a6b] space-y-3">
-        <p>© 2026 Kofi Mensah. Sunfire Dynasty™ is a registered fantasy universe. Designed with {brand.name}.</p>
-        <p className="text-[11px] text-[#df8a6c]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
-      </footer>
-
-      {/* Interactive Sample Modal */}
-      {sampleOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#140603] border border-[#df8a6c]/60 max-w-2xl w-full max-h-[85vh] rounded-2xl p-6 sm:p-8 overflow-y-auto shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-[#df8a6c]/20 pb-4 mb-4">
-              <div>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#df8a6c] font-bold">Prologue Excerpt</span>
-                <h3 className="font-serif text-2xl text-[#fff7ed]">Chronicles of the Solar King — Chapter One</h3>
+                {(
+                  [
+                    ["d", "days"],
+                    ["h", "hrs"],
+                    ["m", "min"],
+                    ["s", "sec"],
+                  ] as const
+                ).map(([k, label]) => (
+                  <div key={k} className="text-center">
+                    <p className="text-3xl font-bold tabular-nums @3xl:text-4xl">
+                      {String(clock[k]).padStart(2, "0")}
+                    </p>
+                    <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--s-muted)]">
+                      {label}
+                    </p>
+                  </div>
+                ))}
               </div>
-              <button
-                onClick={() => setSampleOpen(false)}
-                className="size-8 rounded-lg bg-[#2e0e06] text-[#fed7aa] hover:text-white flex items-center justify-center"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="space-y-4 font-serif text-sm sm:text-base leading-relaxed text-[#f4dfd6]">
-              <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-[#df8a6c] first-letter:float-left first-letter:mr-3 first-letter:leading-none">
-                Before the fire died, the High King spoke to the basalt stone. He said that empires do not crumble under swords, but in the quiet spaces between solar eclipses.
-              </p>
-              <p>
-                From the summit of Orah, Prince Kael looked across the burning valley. A thousand war galleons sailed upon the dust winds, their sails dyed blood-orange against the descending dark.
-              </p>
-              <p>
-                "If the crown must burn," Kael whispered, grasping the pommel of his solar-forged blade, "then let it burn bright enough to blind the gods."
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#df8a6c]/20 flex justify-between items-center">
-              <span className="text-xs text-[#d6aea0]">540-Page Collector Edition</span>
-              <button
-                onClick={() => { setSampleOpen(false); setBuyOpen(true); }}
-                className="px-5 py-2.5 rounded-lg bg-[#df8a6c] text-[#0d0604] text-xs font-bold uppercase tracking-wider"
-              >
-                Order Deluxe Book
-              </button>
             </div>
           </div>
-        </div>
-      )}
+          <Book3D cover={COVER} title={TITLE} width={270} className="my-8" />
+        </Wrap>
+      </section>
 
-      {/* Interactive Buy Modal */}
-      {buyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#140603] border border-[#df8a6c]/60 max-w-md w-full rounded-2xl p-6 sm:p-8 shadow-2xl text-center">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs uppercase tracking-[0.2em] text-[#df8a6c] font-bold">Select Edition & Bookseller</span>
-              <button
-                onClick={() => setBuyOpen(false)}
-                className="size-8 rounded-lg bg-[#2e0e06] text-[#fed7aa] hover:text-white flex items-center justify-center"
+      {/* Realm map */}
+      <Section site={ID} id="map" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <Eyebrow>The realm of Aurelia</Eyebrow>
+          <Display className="mt-4 text-3xl font-bold uppercase @3xl:text-5xl">
+            Choose a land
+          </Display>
+          <div className="mt-10 grid gap-8 @3xl:grid-cols-[1.25fr_0.75fr]">
+            <div className="relative overflow-hidden rounded-[2rem] border border-[var(--s-border)] bg-[#241833] p-3">
+              <svg
+                viewBox="0 0 600 400"
+                role="group"
+                aria-label="Map of the realm"
+                className="h-auto w-full"
               >
-                ✕
-              </button>
-            </div>
-            <img
-              src="/images/covers/chronicles-of-the-solar-king.svg"
-              alt="Chronicles of the Solar King"
-              className="w-32 mx-auto rounded-xl shadow-xl mb-4 border border-[#df8a6c]/40"
-            />
-            <h3 className="font-serif text-xl text-[#fff7ed] font-bold">Chronicles of the Solar King</h3>
-            <p className="text-xs text-[#d6aea0] mb-6">Hardcover with Gold Foil Stamp & Sprayed Edges</p>
-
-            <div className="space-y-2.5 text-left">
-              {[
-                { name: "Amazon Hardcover & Kindle", tag: "Deluxe Foil Edition Available", color: "bg-[#240b05] hover:bg-[#341108]" },
-                { name: "Barnes & Noble Exclusive", tag: "Includes Bonus Chapter & Author Signature", color: "bg-[#240b05] hover:bg-[#341108]" },
-                { name: "Waterstones & Blackwell's", tag: "UK & European Collector Stock", color: "bg-[#240b05] hover:bg-[#341108]" },
-                { name: "Audible Audio Production", tag: "Full-Cast Narration with Orchestral Score", color: "bg-[#240b05] hover:bg-[#341108]" },
-              ].map((ret, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    alert(`Demo trigger: Redirecting to ${ret.name} preorder gateway.`);
-                    setBuyOpen(false);
-                  }}
-                  className={`w-full p-3.5 rounded-lg border border-[#df8a6c]/30 ${ret.color} text-white flex items-center justify-between transition-colors`}
+                <defs>
+                  <pattern id="fy-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+                    <path
+                      d="M28 0H0V28"
+                      fill="none"
+                      stroke="rgba(232,172,61,0.08)"
+                      strokeWidth="1"
+                    />
+                  </pattern>
+                  <radialGradient id="fy-sea" cx="50%" cy="45%" r="70%">
+                    <stop offset="0%" stopColor="#2c2142" />
+                    <stop offset="100%" stopColor="#150e22" />
+                  </radialGradient>
+                </defs>
+                <rect width="600" height="400" fill="url(#fy-sea)" />
+                <rect width="600" height="400" fill="url(#fy-grid)" />
+                <g
+                  strokeDasharray="3 6"
+                  stroke="rgba(232,172,61,0.35)"
+                  fill="none"
+                  strokeWidth="1.5"
                 >
-                  <div>
-                    <p className="text-xs font-bold text-[#fed7aa]">{ret.name}</p>
-                    <p className="text-[10px] text-[#df8a6c]">{ret.tag}</p>
-                  </div>
-                  <ArrowRight size={14} className="text-[#fed7aa]" />
+                  <path d="M300 190 C 250 170, 200 190, 160 190" />
+                  <path d="M335 195 C 390 200, 420 220, 440 235" />
+                  <path d="M300 130 C 295 110, 290 90, 285 75" />
+                  <path d="M270 245 C 240 270, 210 290, 175 305" />
+                </g>
+                {regions.map((r) => {
+                  const on = r.id === active?.id;
+                  return (
+                    <path
+                      key={r.id}
+                      d={r.d}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${r.name}: ${r.role}`}
+                      aria-pressed={on}
+                      onClick={() => setRegion(r)}
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setRegion(r)}
+                      strokeLinejoin="round"
+                      strokeWidth={on ? 14 : 10}
+                      stroke={on ? "#e8ac3d" : "#7a5f3a"}
+                      fill={on ? "#e8ac3d" : "#8e6f45"}
+                      fillOpacity={on ? 0.9 : 0.55}
+                      className="cursor-pointer outline-none transition-all duration-300 hover:fill-[#e0835f] hover:stroke-[#e0835f] focus-visible:stroke-white"
+                    />
+                  );
+                })}
+                {regions.map((r) => (
+                  <text
+                    key={r.id}
+                    x={
+                      r.id === "aurelia"
+                        ? 305
+                        : r.id === "veil"
+                          ? 145
+                          : r.id === "ember"
+                            ? 445
+                            : r.id === "ashen"
+                              ? 282
+                              : 160
+                    }
+                    y={
+                      r.id === "aurelia"
+                        ? 192
+                        : r.id === "veil"
+                          ? 188
+                          : r.id === "ember"
+                            ? 240
+                            : r.id === "ashen"
+                              ? 72
+                              : 322
+                    }
+                    textAnchor="middle"
+                    className="pointer-events-none select-none [font-family:var(--s-display)]"
+                    fontSize="13"
+                    fontWeight="700"
+                    fill="#1a1226"
+                  >
+                    {r.name.replace("The ", "")}
+                  </text>
+                ))}
+                <g
+                  transform="translate(540 350)"
+                  fill="none"
+                  stroke="rgba(232,172,61,0.7)"
+                  strokeWidth="1.5"
+                >
+                  <circle r="22" />
+                  <path d="M0 -30 L5 0 L0 30 L-5 0 Z" fill="rgba(232,172,61,0.6)" />
+                  <path d="M-30 0 L0 5 L30 0 L0 -5 Z" />
+                </g>
+              </svg>
+            </div>
+            <div
+              className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-7"
+              aria-live="polite"
+            >
+              <span className="grid size-12 place-items-center rounded-full bg-[var(--s-accent)] text-[var(--s-on)]">
+                <ActiveIcon size={22} aria-hidden="true" />
+              </span>
+              <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--s-accent2)]">
+                {active?.role}
+              </p>
+              <p className="mt-1 text-3xl font-bold uppercase [font-family:var(--s-display)]">
+                {active?.name}
+              </p>
+              <p className="mt-4 text-sm leading-7 text-[var(--s-muted)]">{active?.text}</p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {regions.map((r) => (
+                  <button
+                    key={r.id}
+                    type="button"
+                    onClick={() => setRegion(r)}
+                    className={`rounded-full border px-3 py-1.5 text-xs transition ${r.id === active?.id ? "border-[var(--s-accent)] bg-[var(--s-accent)] text-[var(--s-on)]" : "border-[var(--s-border)] hover:border-[var(--s-accent)]"}`}
+                  >
+                    {r.name.replace("The ", "")}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* Codex */}
+      <Section site={ID} id="codex">
+        <Wrap>
+          <div className="flex flex-col gap-6 @3xl:flex-row @3xl:items-end @3xl:justify-between">
+            <div>
+              <Eyebrow>The codex</Eyebrow>
+              <Display className="mt-4 text-3xl font-bold uppercase @3xl:text-5xl">
+                Lore for the long wait
+              </Display>
+            </div>
+            <div
+              role="tablist"
+              aria-label="Codex"
+              className="flex gap-1 rounded-full border border-[var(--s-border)] bg-[var(--s-card)] p-1"
+            >
+              {(Object.keys(codex) as (keyof typeof codex)[]).map((name) => (
+                <button
+                  key={name}
+                  role="tab"
+                  type="button"
+                  aria-selected={tab === name}
+                  onClick={() => setTab(name)}
+                  className={`min-h-10 rounded-full px-5 text-xs font-semibold uppercase tracking-[0.16em] transition ${tab === name ? "bg-[var(--s-accent)] text-[var(--s-on)]" : "text-[var(--s-muted)] hover:text-[var(--s-fg)]"}`}
+                >
+                  {name}
                 </button>
               ))}
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          <div role="tabpanel" className="mt-10 grid gap-4 @3xl:grid-cols-3">
+            {codex[tab].map(({ icon: Icon, t, d }) => (
+              <div
+                key={t}
+                className="group rounded-3xl border border-[var(--s-border)] bg-[var(--s-card)] p-7 transition duration-300 hover:-translate-y-1 hover:border-[var(--s-accent)]"
+              >
+                <Icon
+                  size={26}
+                  className="text-[var(--s-accent)] transition group-hover:scale-110"
+                  aria-hidden="true"
+                />
+                <p className="mt-5 text-xl font-bold uppercase [font-family:var(--s-display)]">
+                  {t}
+                </p>
+                <p className="mt-3 text-sm leading-7 text-[var(--s-muted)]">{d}</p>
+              </div>
+            ))}
+          </div>
+        </Wrap>
+      </Section>
+
+      {/* Excerpt */}
+      <Section site={ID} id="excerpt" className="bg-[var(--s-bg2)]">
+        <Wrap className="grid items-center gap-10 @3xl:grid-cols-[0.8fr_1.2fr]">
+          <div className="rounded-[2rem] border border-[var(--s-border)] bg-gradient-to-br from-[var(--s-accent)]/15 to-transparent p-8 text-center">
+            <Crown size={40} className="mx-auto text-[var(--s-accent)]" aria-hidden="true" />
+            <p className="mt-5 text-2xl font-bold uppercase leading-snug [font-family:var(--s-display)]">
+              &ldquo;The crown had gone dark.&rdquo;
+            </p>
+            <p className="mt-3 text-xs uppercase tracking-[0.22em] text-[var(--s-muted)]">
+              From the prologue
+            </p>
+          </div>
+          <div>
+            <p className="text-lg italic leading-9 text-[var(--s-fg)]/90">{excerpt[0]}</p>
+            <p className="mt-4 text-sm leading-8 text-[var(--s-muted)]">{excerpt[1]}</p>
+            <div className="mt-7 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read the prologue
+              </Btn>
+              <Btn variant="outline" onClick={() => setBuying(true)}>
+                <ShoppingBag size={16} aria-hidden="true" /> Pre-order the book
+              </Btn>
+            </div>
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="court">
+        <Wrap>
+          <Signup
+            title="Join the Sunlit Court"
+            text="Fan-club updates, first looks at maps and sketches, and early access to the collector's edition."
+            cta="Join the Court"
+          />
+        </Wrap>
+      </Section>
+
+      <Section
+        site={ID}
+        id="author"
+        className="border-t border-[var(--s-border)] bg-[var(--s-bg2)]"
+      >
+        <Wrap className="mx-auto max-w-3xl text-center">
+          <Eyebrow>About the author</Eyebrow>
+          <Display className="mt-3 text-3xl font-bold uppercase @3xl:text-5xl">{AUTHOR}</Display>
+          <p className="mt-5 text-base leading-8 text-[var(--s-muted)]">
+            Kofi builds worlds the way some people build boats: slowly, with maps, and with a quiet
+            fear of leaks. He writes fantasy rooted in West African storytelling and in a lifelong
+            love of night skies.
+          </p>
+        </Wrap>
+      </Section>
+
+      <ConceptFooter author={AUTHOR} line="Fantasy author website concept" />
+      <Reader
+        open={reading}
+        onClose={() => setReading(false)}
+        title="Prologue: The Dark Crown"
+        author={AUTHOR}
+        chapter="Prologue"
+        paragraphs={excerpt}
+        onBuy={() => setBuying(true)}
+      />
+      <Retailers
+        open={buying}
+        onClose={() => setBuying(false)}
+        title={TITLE}
+        author={AUTHOR}
+        cover={COVER}
+      />
+    </Site>
   );
 }

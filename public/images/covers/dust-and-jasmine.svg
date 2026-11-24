@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#f5d0b5" text-anchor="middle" letter-spacing="0.3em">
-        ★ NATIONAL POETRY AWARD WINNER ★
+        ★ A NOVEL IN FRAGMENTS ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#f5d0b5" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “Luminous, haunting, and intensely lyrical across every stanza.”
+        Three generations, one blue bowl, and a house that no longer exists.
       </text>
     </g>
 
@@ -99,7 +99,7 @@
         Dust and Jasmine
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="13" font-style="italic" fill="#fce7d8" text-anchor="middle" y="42">
-        Verses of Exile, Memory & Illuminated Light
+        Verses of Exile, Memory &amp; Illuminated Light
       </text>
     </g>
 
@@ -113,7 +113,7 @@
         Soraya Al-Mansoor
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="10" font-weight="500" fill="#fce7d8" text-anchor="middle" letter-spacing="0.12em" y="48">
-        Poetry & Literary Memoir
+        Poetry &amp; Literary Memoir
       </text>
     </g>
 

@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#c084fc" text-anchor="middle" letter-spacing="0.3em">
-        ★ BOOKTOK FANTASY FAVORITE ★
+        ★ A CLOCKWORK FANTASY ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#c084fc" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “A whirlwind adventure of airships, clockwork hearts, and rebellion.”
+        A talking pocket watch, a stopped clock, and a minute that should not exist.
       </text>
     </g>
 
@@ -99,7 +99,7 @@
         The Clockwork Kingdom
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="13" font-style="italic" fill="#e9d5ff" text-anchor="middle" y="42">
-        Cogs, Secrets & Golden Guilds
+        Cogs, Secrets &amp; Golden Guilds
       </text>
     </g>
 

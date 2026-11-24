@@ -59,7 +59,7 @@
     <!-- Spine Vertical Title -->
     <g transform="translate(34, 430) rotate(-90)">
       <text font-family="'DM Sans', sans-serif" font-size="11" font-weight="700" fill="#fb923c" letter-spacing="0.24em" text-anchor="middle">
-        THE DRAGON WHO LOST HIS SPARK • AMARA & LEO FOX
+        THE DRAGON WHO LOST HIS SPARK • AMARA &amp; LEO FOX
       </text>
     </g>
 
@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#fb923c" text-anchor="middle" letter-spacing="0.3em">
-        ★ CHILDREN'S CHOICE BOOK AWARD ★
+        ★ A PICTURE BOOK ADVENTURE ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#fb923c" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “A heartwarming bedtime journey beloved by children and parents alike.”
+        What happens when a dragon's sneeze runs out of sparks?
       </text>
     </g>
 
@@ -99,7 +99,7 @@
         The Dragon Who Lost His Spark
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="13" font-style="italic" fill="#ffedd5" text-anchor="middle" y="42">
-        An Enchanting Tale of Courage & Friendship
+        An Enchanting Tale of Courage &amp; Friendship
       </text>
     </g>
 
@@ -110,7 +110,7 @@
         AN ILLUSTRATED STORY BY
       </text>
       <text font-family="'Playfair Display', Georgia, serif" font-size="28" font-weight="700" fill="#ffffff" text-anchor="middle" y="28">
-        Amara & Leo Fox
+        Amara &amp; Leo Fox
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="10" font-weight="500" fill="#ffedd5" text-anchor="middle" letter-spacing="0.12em" y="48">
         Children's Picture Book

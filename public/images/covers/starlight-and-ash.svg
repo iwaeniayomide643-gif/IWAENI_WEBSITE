@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#f43f5e" text-anchor="middle" letter-spacing="0.3em">
-        ★ COLLECTOR'S SPECIAL EDITION ★
+        ★ A SPECIAL EDITION ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#f43f5e" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “A viral romantasy triumph of court intrigue and dark passion.”
+        A court of stars, and a love built on ashes.
       </text>
     </g>
 
@@ -99,7 +99,7 @@
         Starlight and Ash
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="13" font-style="italic" fill="#ffe4e6" text-anchor="middle" y="42">
-        Crowns, Shadows & Forbidden Passion
+        Crowns, Shadows &amp; Forbidden Passion
       </text>
     </g>
 

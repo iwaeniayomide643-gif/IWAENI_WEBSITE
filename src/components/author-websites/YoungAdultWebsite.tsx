@@ -1,262 +1,482 @@
-import { brand } from "@/data/brand";
-import React, { useState } from "react";
-import { Sparkles, Cog, Heart, BookOpen, ShoppingBag, Star, Check, ArrowRight, Zap, HelpCircle } from "lucide-react";
-import type { MiniWebsiteProps } from "./types";
+import "@fontsource-variable/bricolage-grotesque/index.css";
+import { useState, type CSSProperties } from "react";
+import { BookOpen, Check, Copy, RotateCcw, Sparkles } from "lucide-react";
+import {
+  Book3D,
+  Btn,
+  ConceptFooter,
+  Display,
+  Eyebrow,
+  Nav,
+  Reader,
+  Retailers,
+  Section,
+  Signup,
+  Site,
+  Wrap,
+  jump,
+  type Theme,
+} from "./kit";
 
-export function YoungAdultWebsite({ onBackToPortfolio, onBookWebsiteService, viewportMode = "desktop" }: MiniWebsiteProps) {
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [quizAnswer, setQuizAnswer] = useState<string | null>(null);
-  const [newsletterSent, setNewsletterSent] = useState(false);
-  const [email, setEmail] = useState("");
+const ID = "ya";
+const COVER = "/images/covers/the-clockwork-kingdom.svg";
+const AUTHOR = "Beatrix Sterling";
+const TITLE = "The Clockwork Kingdom";
 
-  const scrollTo = (id: string) => {
-    document.getElementById(`ya-${id}`)?.scrollIntoView({ behavior: "smooth" });
+const theme: Theme = {
+  bg: "#120f2b",
+  bg2: "#1b1646",
+  fg: "#fbf3ff",
+  muted: "#b9acd9",
+  accent: "#f472b6",
+  accent2: "#c084fc",
+  card: "rgba(255,255,255,0.06)",
+  border: "rgba(244,114,182,0.28)",
+  on: "#2a0a1d",
+  display: "'Bricolage Grotesque Variable', 'DM Sans Variable', system-ui, sans-serif",
+  body: "'DM Sans Variable', system-ui, sans-serif",
+};
+
+const excerpt = [
+  "The night the clock tower stopped, every bell in Cogsworth Academy rang at once, and Wren Calloway, who was not supposed to be on the roof, heard them from the best seat in the kingdom.",
+  "Below her, three hundred students poured into the courtyard in their nightclothes. Above her, the great brass hands of the tower hung at a minute that did not exist.",
+  "“Thirteen past twelve,” whispered a voice in her pocket, and Wren nearly fell off the roof. The pocket watch she had found that morning was talking.",
+];
+
+const guilds = [
+  {
+    name: "The Cogwrights",
+    color: "#fbbf24",
+    trait: "Makers and menders",
+    text: "You solve problems with your hands first and your words second. When something breaks, you are already reaching for the right tool.",
+  },
+  {
+    name: "The Aetherborn",
+    color: "#60a5fa",
+    trait: "Listeners and wanderers",
+    text: "You notice what everyone else walks past. Your best ideas arrive sideways, usually from a rooftop.",
+  },
+  {
+    name: "The Gearwardens",
+    color: "#f472b6",
+    trait: "Protectors and planners",
+    text: "You are the person people look for in a crisis. Loyal, steady, and secretly the one who holds the whole plan together.",
+  },
+  {
+    name: "The Chronists",
+    color: "#c084fc",
+    trait: "Keepers of secrets",
+    text: "You collect stories, dates and half-hidden clues. You always know how something began, which is exactly why you can see where it is going.",
+  },
+] as const;
+
+const questions = [
+  {
+    q: "The great clock tower stops at midnight. You...",
+    a: [
+      "Climb up and fix it",
+      "Listen for what the silence is saying",
+      "Gather everyone below and make a plan",
+      "Check what the last minute looked like",
+    ],
+  },
+  {
+    q: "Your best friend is in trouble. First move?",
+    a: [
+      "Build something that helps",
+      "Slip in by a side door",
+      "Stand right in front of them",
+      "Find out how it all started",
+    ],
+  },
+  {
+    q: "Favourite place in the Academy?",
+    a: ["The workshop", "The rooftop", "The great hall", "The archive"],
+  },
+  {
+    q: "Pick a tool for the journey.",
+    a: ["A spanner", "A compass", "A shield", "A pocket watch"],
+  },
+  {
+    q: "What would you never give up?",
+    a: ["My hands", "My curiosity", "My promises", "My memories"],
+  },
+] as const;
+
+const perks = [
+  {
+    n: "01",
+    t: "Clockwork magic",
+    d: "Every spell in the kingdom runs on gears, springs and borrowed minutes.",
+  },
+  { n: "02", t: "Four guilds", d: "Pick a side, or find out the side picked you." },
+  {
+    n: "03",
+    t: "A talking watch",
+    d: "It knows something about the thirteenth hour. It will not say what.",
+  },
+] as const;
+
+function Gear({
+  size,
+  teeth = 12,
+  className,
+  style,
+}: {
+  size: number;
+  teeth?: number;
+  className?: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <svg
+      viewBox="-50 -50 100 100"
+      width={size}
+      height={size}
+      className={className}
+      style={style}
+      aria-hidden="true"
+    >
+      <g fill="currentColor">
+        <circle r="30" />
+        {Array.from({ length: teeth }).map((_, i) => (
+          <rect
+            key={i}
+            x="-4"
+            y="-42"
+            width="8"
+            height="13"
+            rx="2"
+            transform={`rotate(${(360 / teeth) * i})`}
+          />
+        ))}
+      </g>
+      <circle r="13" fill="var(--s-bg)" />
+      <circle r="5" fill="currentColor" />
+    </svg>
+  );
+}
+
+function Quiz() {
+  const [step, setStep] = useState(0);
+  const [tally, setTally] = useState<number[]>([0, 0, 0, 0]);
+  const [copied, setCopied] = useState(false);
+  const done = step >= questions.length;
+  const winner = tally.indexOf(Math.max(...tally));
+  const guild = guilds[winner] ?? guilds[0];
+  const current = questions[Math.min(step, questions.length - 1)] ?? questions[0];
+
+  const pick = (index: number) => {
+    setTally((t) => t.map((v, i) => (i === index ? v + 1 : v)));
+    setStep((s) => s + 1);
+  };
+  const restart = () => {
+    setStep(0);
+    setTally([0, 0, 0, 0]);
+    setCopied(false);
+  };
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `I was sorted into ${guild.name} at Cogsworth Academy. Which guild are you?`,
+      );
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
   };
 
   return (
-    <div className="min-h-full bg-[#13091f] text-[#f5e8ff] font-sans antialiased selection:bg-[#c084fc] selection:text-[#13091f]">
-      {/* BookTok Viral Banner */}
-      <div className="bg-gradient-to-r from-[#9333ea] via-[#c084fc] to-[#db2777] py-2 px-4 text-center text-xs font-bold tracking-widest text-white uppercase flex items-center justify-center gap-2">
-        <Zap size={14} className="fill-current text-amber-300" />
-        <span>OVER 12 MILLION VIEWS ON BOOKTOK • THE CLOCKWORK KINGDOM IS OUT NOW</span>
-        <Zap size={14} className="fill-current text-amber-300" />
-      </div>
-
-      {/* Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[#c084fc]/20 bg-[#13091f]/95 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-gradient-to-br from-[#c084fc] to-[#db2777] flex items-center justify-center text-white font-bold">
-            <Cog size={18} className="animate-spin" />
+    <div className="mx-auto max-w-3xl rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-card)] p-6 @3xl:p-10">
+      {!done ? (
+        <div key={step} className="animate-in fade-in-0 slide-in-from-right-3 duration-500">
+          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-[var(--s-muted)]">
+            <span>
+              Question {step + 1} of {questions.length}
+            </span>
+            <span className="flex gap-1.5" aria-hidden="true">
+              {questions.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1.5 w-6 rounded-full transition-colors duration-500 ${i <= step ? "bg-[var(--s-accent)]" : "bg-white/15"}`}
+                />
+              ))}
+            </span>
           </div>
-          <div>
-            <span className="font-bold text-xl tracking-wider text-white">BEATRIX STERLING</span>
-            <span className="block text-[10px] tracking-widest text-[#c084fc] uppercase font-semibold">YA Steampunk Fantasy</span>
-          </div>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-bold text-[#e9d5ff]">
-          <button onClick={() => scrollTo("hero")} className="hover:text-[#c084fc] transition-colors">The Novel</button>
-          <button onClick={() => scrollTo("quiz")} className="hover:text-[#c084fc] transition-colors">Guild Quiz</button>
-          <button onClick={() => scrollTo("author")} className="hover:text-[#c084fc] transition-colors">Beatrix</button>
-          <button onClick={() => scrollTo("fanart")} className="hover:text-[#c084fc] transition-colors">BookTok VIP</button>
-        </nav>
-
-        <button
-          onClick={() => setBuyOpen(true)}
-          className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c084fc] to-[#db2777] text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-[#c084fc]/30 hover:scale-105 transition-transform"
-        >
-          Get the Book
-        </button>
-      </header>
-
-      {/* Hero Section */}
-      <section id="ya-hero" className="px-6 py-20 lg:py-28 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#c084fc]/20 border border-[#c084fc]/40 text-[#e9d5ff] text-xs font-bold uppercase tracking-wider">
-              <Sparkles size={13} />
-              BookTok Sensation
-            </div>
-            <h1 className="text-4xl sm:text-6xl text-white font-black tracking-tight leading-[1.05]">
-              Cogs, Secrets & Golden Guilds.
-            </h1>
-            <p className="text-sm sm:text-base text-[#d8b4fe] leading-relaxed max-w-lg">
-              In a floating sky-city powered by stolen lightning, a clockwork thief and a disgraced guild prince must pull off the heist of the century before their rebellion is crushed.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
+          <h3 className="mt-6 text-2xl font-bold leading-tight [font-family:var(--s-display)] @3xl:text-4xl">
+            {current.q}
+          </h3>
+          <div className="mt-7 grid gap-3 @sm:grid-cols-2">
+            {current.a.map((text, i) => (
               <button
-                onClick={() => setBuyOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-[#c084fc] to-[#db2777] text-white font-bold text-xs uppercase tracking-wider shadow-xl shadow-[#c084fc]/30 hover:scale-105 transition-transform"
+                key={text}
+                type="button"
+                onClick={() => pick(i)}
+                className="group flex min-h-16 items-center gap-4 rounded-2xl border border-[var(--s-border)] bg-[var(--s-bg)]/60 px-5 text-left text-sm font-medium transition duration-300 hover:-translate-y-1 hover:border-[var(--s-accent)] hover:bg-[var(--s-accent)]/10 active:scale-[0.98]"
               >
-                Order Special Edition
-              </button>
-              <button
-                onClick={() => setSampleOpen(true)}
-                className="px-6 py-3.5 rounded-full bg-[#200f36] border border-[#c084fc]/40 text-[#f5e8ff] text-xs font-bold uppercase tracking-wider hover:bg-[#2d164d] transition-colors"
-              >
-                Read Chapter One
-              </button>
-            </div>
-          </div>
-
-          <div className="md:col-span-5 flex justify-center">
-            <div className="relative group">
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-[#c084fc]/40 to-[#db2777]/40 blur-2xl group-hover:blur-3xl transition-all" />
-              <img
-                src="/images/covers/the-clockwork-kingdom.svg"
-                alt="The Clockwork Kingdom"
-                className="relative w-64 sm:w-76 rounded-2xl shadow-2xl border-2 border-[#c084fc]/50 transform rotate-[-2deg] group-hover:rotate-0 transition-transform duration-500"
-              />
-              <div className="absolute -bottom-3 -left-3 bg-[#240f3b] border border-[#c084fc]/60 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#e9d5ff] shadow-xl">
-                ★ 4.9 Stars • 15,000+ Ratings
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive Guild Quiz */}
-      <section id="ya-quiz" className="px-6 py-20 bg-[#1b0d2d] border-y border-[#c084fc]/20">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <HelpCircle size={32} className="mx-auto text-[#c084fc]" />
-          <h2 className="text-3xl sm:text-4xl text-white font-bold">Which Sky Guild Do You Belong To?</h2>
-          <p className="text-xs sm:text-sm text-[#d8b4fe]">Take the 10-second sorting test to discover your rank in New Aethelgard.</p>
-
-          <div className="grid sm:grid-cols-3 gap-3 text-left">
-            {[
-              { id: "clocksmith", name: "The Clocksmiths", desc: "Masters of automata, lockpicking, and forbidden steam mechanics." },
-              { id: "aeronaut", name: "The Sky Aeronauts", desc: "Fearless pilots who rule the storm currents and lightning harpoons." },
-              { id: "alchemist", name: "The Shadow Alchemists", desc: "Secret-keepers who distill poison and truth serums from ether." },
-            ].map((g) => (
-              <button
-                key={g.id}
-                onClick={() => setQuizAnswer(g.name)}
-                className={`p-5 rounded-2xl border transition-all text-left ${
-                  quizAnswer === g.name
-                    ? "bg-gradient-to-br from-[#9333ea] to-[#db2777] border-white text-white shadow-xl"
-                    : "bg-[#13091f] border-[#c084fc]/30 text-[#e9d5ff] hover:border-[#c084fc]"
-                }`}
-              >
-                <h3 className="font-bold text-base mb-1">{g.name}</h3>
-                <p className="text-xs text-[#d8b4fe] leading-relaxed">{g.desc}</p>
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-bold transition group-hover:bg-[var(--s-accent)] group-hover:text-[var(--s-on)]">
+                  {"ABCD"[i]}
+                </span>
+                {text}
               </button>
             ))}
           </div>
-
-          {quizAnswer && (
-            <div className="p-4 rounded-xl bg-[#2b1248] border border-[#c084fc] text-white text-xs font-bold animate-fade-in">
-              🎉 Congratulations! You have been initiated into <span className="text-[#c084fc]">{quizAnswer}</span>.
-            </div>
-          )}
         </div>
-      </section>
-
-      {/* Author Profile */}
-      <section id="ya-author" className="px-6 py-20 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <div className="size-64 sm:size-72 rounded-3xl overflow-hidden border-2 border-[#c084fc]/40 shadow-2xl bg-[#240f3b]">
-              <img
-                src="/images/authors/beatrix-sterling.jpg"
-                alt="Beatrix Sterling"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          <div className="md:col-span-7 space-y-4 text-left">
-            <span className="text-xs uppercase tracking-widest text-[#c084fc] font-bold">The Author</span>
-            <h2 className="text-3xl sm:text-4xl text-white font-bold">Beatrix Sterling</h2>
-            <p className="text-sm sm:text-base text-[#d8b4fe] leading-relaxed">
-              Beatrix Sterling writes high-octane Young Adult fantasy filled with witty banter, morally grey heroines, and inventive worldbuilding. Her TikTok community has grown to over 300,000 passionate book lovers.
-            </p>
-            <p className="text-sm sm:text-base text-[#d8b4fe] leading-relaxed">
-              When she isn't writing at odd hours, Beatrix collects antique skeleton keys and hosts live writing sprints on YouTube.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* BookTok VIP Club */}
-      <section id="ya-fanart" className="px-6 py-20 max-w-3xl mx-auto text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#2f144d] to-[#160a24] border border-[#c084fc]/40 shadow-2xl">
-          <Sparkles size={36} className="mx-auto text-[#c084fc]" />
-          <h2 className="text-3xl text-white font-bold mt-2">Join Beatrix's VIP ARC Squad</h2>
-          <p className="text-xs sm:text-sm text-[#d8b4fe] mt-2 max-w-md mx-auto leading-relaxed">
-            Get early digital review copies, exclusive character art, and first access to signed book boxes.
+      ) : (
+        <div className="animate-in fade-in-0 zoom-in-95 duration-500 text-center" role="status">
+          <span
+            className="mx-auto grid size-20 place-items-center rounded-full"
+            style={{ background: `${guild.color}22`, color: guild.color }}
+          >
+            <Gear size={48} className="[animation:s-spin_14s_linear_infinite]" />
+          </span>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--s-muted)]">
+            You belong to
           </p>
-
-          {newsletterSent ? (
-            <div className="mt-6 p-4 rounded-xl bg-[#13091f] border border-[#c084fc] text-[#e9d5ff] text-xs font-bold">
-              ✨ You're on the VIP ARC list! Check your inbox for your welcome pack.
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (email) setNewsletterSent(true);
-              }}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mt-6"
-            >
-              <input
-                type="email"
-                required
-                placeholder="reader@booktok.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-5 py-3 rounded-full bg-[#13091f] border border-[#c084fc]/30 text-white text-xs placeholder:text-[#8b5cf6] focus:outline-none focus:border-[#c084fc]"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-full bg-gradient-to-r from-[#c084fc] to-[#db2777] text-white text-xs font-bold uppercase tracking-wider shadow-lg"
-              >
-                Join ARC Squad
-              </button>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-8 border-t border-[#c084fc]/20 bg-[#0c0514] text-center text-xs text-[#8b5cf6] space-y-2">
-        <p>© 2026 Beatrix Sterling. The Clockwork Kingdom Series. Designed with {brand.name}.</p>
-        <p className="text-[11px] text-[#c084fc]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
-      </footer>
-
-      {/* Sample Modal */}
-      {sampleOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#1b0d2d] border border-[#c084fc] max-w-2xl w-full max-h-[85vh] rounded-3xl p-6 sm:p-8 overflow-y-auto shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-[#c084fc]/20 pb-3 mb-4">
-              <span className="text-xs uppercase tracking-widest text-[#c084fc] font-bold">Chapter One — The Sky Heist</span>
-              <button onClick={() => setSampleOpen(false)} className="size-7 rounded-full bg-[#2b1248] text-[#c084fc]">✕</button>
-            </div>
-            <div className="space-y-4 text-sm sm:text-base leading-relaxed text-[#f5e8ff]">
-              <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-[#c084fc] first-letter:float-left first-letter:mr-3 first-letter:leading-none">
-                Stealing an airship engine was easy. Escaping the Grand Inquisitor’s mechanical hounds while falling twelve thousand feet was slightly more complicated.
-              </p>
-              <p>
-                Aria hooked her brass grapple into the brass underbelly of the royal cruiser, grinning through the wind. "Rule number one of the Clocksmiths: never look down unless you're ready to jump."
-              </p>
-            </div>
-            <div className="mt-6 pt-4 border-t border-[#c084fc]/20 flex justify-end">
-              <button
-                onClick={() => { setSampleOpen(false); setBuyOpen(true); }}
-                className="px-5 py-2.5 rounded-full bg-gradient-to-r from-[#c084fc] to-[#db2777] text-white text-xs font-bold uppercase tracking-wider"
-              >
-                Order Book
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Buy Modal */}
-      {buyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#1b0d2d] border border-[#c084fc] max-w-md w-full rounded-2xl p-6 text-center">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs uppercase tracking-widest text-[#c084fc] font-bold">Order Your Copy</span>
-              <button onClick={() => setBuyOpen(false)} className="size-7 rounded-full bg-[#2b1248] text-[#c084fc]">✕</button>
-            </div>
-            <img src="/images/covers/the-clockwork-kingdom.svg" alt="The Clockwork Kingdom" className="w-28 mx-auto rounded shadow-xl mb-4 border border-[#c084fc]/40" />
-            <h3 className="text-xl text-white font-bold">The Clockwork Kingdom</h3>
-            <p className="text-xs text-[#d8b4fe] mb-4">Special Sprayed-Edge Edition Available</p>
-            <div className="space-y-2 text-left">
-              {["Barnes & Noble Special Sprayed Edges", "Amazon Hardcover & Paperback", "Bookshop.org Indie Support"].map((b, i) => (
-                <button
-                  key={i}
-                  onClick={() => { alert(`Demo trigger: Order via ${b}`); setBuyOpen(false); }}
-                  className="w-full p-3 rounded-xl bg-[#2b1248] border border-[#c084fc]/30 text-white flex items-center justify-between text-xs hover:bg-[#3d1a66]"
-                >
-                  <span className="font-bold">{b}</span>
-                  <ArrowRight size={14} className="text-[#c084fc]" />
-                </button>
-              ))}
-            </div>
+          <h3
+            className="mt-2 text-4xl font-extrabold [font-family:var(--s-display)] @3xl:text-6xl"
+            style={{ color: guild.color }}
+          >
+            {guild.name}
+          </h3>
+          <p className="mt-2 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--s-accent2)]">
+            {guild.trait}
+          </p>
+          <p className="mx-auto mt-5 max-w-lg text-base leading-8 text-[var(--s-muted)]">
+            {guild.text}
+          </p>
+          <div className="mt-8 flex flex-col justify-center gap-3 @sm:flex-row">
+            <Btn onClick={copy}>
+              {copied ? (
+                <Check size={16} aria-hidden="true" />
+              ) : (
+                <Copy size={16} aria-hidden="true" />
+              )}{" "}
+              {copied ? "Copied" : "Copy my result"}
+            </Btn>
+            <Btn variant="outline" onClick={restart}>
+              <RotateCcw size={16} aria-hidden="true" /> Take it again
+            </Btn>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function Claim() {
+  const [code, setCode] = useState("");
+  const [state, setState] = useState<"idle" | "error" | "ok">("idle");
+  return (
+    <form
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        setState(code.trim().length >= 6 ? "ok" : "error");
+      }}
+      className="mx-auto max-w-xl rounded-[2rem] border border-dashed border-[var(--s-accent)]/60 bg-[var(--s-card)] p-7 text-center @3xl:p-10"
+    >
+      <Sparkles size={28} className="mx-auto text-[var(--s-accent)]" aria-hidden="true" />
+      <h3 className="mt-4 text-3xl font-bold [font-family:var(--s-display)]">
+        Claim your pre-order goodies
+      </h3>
+      <p className="mt-2 text-sm leading-7 text-[var(--s-muted)]">
+        Enter the order number from your receipt to unlock the bonus.
+      </p>
+      <label htmlFor="ya-order" className="sr-only">
+        Order number
+      </label>
+      <input
+        id="ya-order"
+        value={code}
+        onChange={(e) => {
+          setCode(e.target.value);
+          setState("idle");
+        }}
+        placeholder="Order number"
+        aria-invalid={state === "error"}
+        className="mt-6 min-h-12 w-full rounded-full border border-[var(--s-border)] bg-[var(--s-bg)]/70 px-5 text-center text-sm text-[var(--s-fg)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-accent)]"
+      />
+      {state === "error" && (
+        <p role="alert" className="mt-2 text-xs text-[color-mix(in_oklab,#ff5d5d_70%,var(--s-fg))]">
+          That looks too short. Check the order number on your receipt.
+        </p>
+      )}
+      <Btn type="submit" className="mt-4 w-full @sm:w-auto">
+        Unlock the bonus
+      </Btn>
+      <p role="status" className="mt-4 min-h-5 text-xs text-[var(--s-muted)]">
+        {state === "ok"
+          ? "Website concept: on a real site the order would be checked and the bonus content unlocked here."
+          : ""}
+      </p>
+    </form>
+  );
+}
+
+export function YoungAdultWebsite() {
+  const [reading, setReading] = useState(false);
+  const [buying, setBuying] = useState(false);
+
+  return (
+    <Site theme={theme} id={ID}>
+      <span id={`${ID}-top`} />
+      <Nav
+        site={ID}
+        name={AUTHOR}
+        sub="Young adult fantasy"
+        links={[
+          ["quiz", "Guild quiz"],
+          ["academy", "The Academy"],
+          ["claim", "Pre-order"],
+          ["join", "Join"],
+        ]}
+        cta="Pre-order"
+        onCta={() => setBuying(true)}
+        mark={
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--s-accent)]/15 text-[var(--s-accent)]">
+            <Gear size={26} className="[animation:s-spin_12s_linear_infinite]" />
+          </span>
+        }
+      />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden px-5 pb-20 pt-14 @3xl:px-10 @3xl:pb-28 @3xl:pt-20">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(50% 55% at 80% 35%, rgba(244,114,182,0.30), transparent 70%), radial-gradient(45% 50% at 5% 90%, rgba(192,132,252,0.26), transparent 70%)",
+          }}
+        />
+        <Gear
+          size={340}
+          teeth={14}
+          className="absolute -left-24 top-28 text-[var(--s-accent2)]/15 [animation:s-spin_60s_linear_infinite]"
+        />
+        <Gear
+          size={220}
+          teeth={10}
+          className="absolute -right-10 bottom-0 text-[var(--s-accent)]/15 [animation:s-spin-rev_44s_linear_infinite]"
+        />
+        <Wrap className="relative grid items-center gap-14 @3xl:grid-cols-[1.15fr_0.85fr]">
+          <div>
+            <p className="inline-flex items-center gap-2 rounded-full bg-[var(--s-accent)]/15 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[var(--s-accent)]">
+              <Sparkles size={13} aria-hidden="true" /> Book one of the Cogsworth series
+            </p>
+            <Display
+              as="h1"
+              className="mt-6 text-[clamp(2.5rem,8.4cqi,5.8rem)] font-extrabold leading-[0.98] tracking-[-0.035em]"
+            >
+              The clock stopped at{" "}
+              <span className="bg-gradient-to-r from-[var(--s-accent)] to-[var(--s-accent2)] bg-clip-text text-transparent">
+                13:13.
+              </span>
+            </Display>
+            <p className="mt-6 max-w-xl text-base leading-8 text-[var(--s-muted)] @3xl:text-lg">
+              Wren Calloway found a pocket watch that talks, an academy powered by borrowed time,
+              and a minute that should not exist. Which guild would you have joined?
+            </p>
+            <div className="mt-8 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => jump(ID, "quiz")}>
+                <Sparkles size={16} aria-hidden="true" /> Find your guild
+              </Btn>
+              <Btn variant="outline" onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read chapter one
+              </Btn>
+            </div>
+          </div>
+          <Book3D cover={COVER} title={TITLE} width={250} className="my-8" />
+        </Wrap>
+      </section>
+
+      <Section site={ID} id="quiz" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <Eyebrow>Guild sorting</Eyebrow>
+            <Display className="mt-4 text-4xl font-extrabold @3xl:text-6xl">
+              Which guild is yours?
+            </Display>
+            <p className="mt-4 text-base text-[var(--s-muted)]">
+              Five questions. No wrong answers. Share your result with your friends.
+            </p>
+          </div>
+          <Quiz />
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="academy">
+        <Wrap>
+          <Eyebrow>Welcome to Cogsworth</Eyebrow>
+          <Display className="mt-4 text-4xl font-extrabold @3xl:text-6xl">
+            Three reasons to step inside
+          </Display>
+          <div className="mt-10 grid gap-4 @3xl:grid-cols-3">
+            {perks.map((p) => (
+              <div
+                key={p.n}
+                className="group rounded-3xl border border-[var(--s-border)] bg-[var(--s-card)] p-7 transition duration-300 hover:-translate-y-1.5 hover:border-[var(--s-accent)]"
+              >
+                <span className="text-5xl font-extrabold text-[var(--s-accent)]/40 transition group-hover:text-[var(--s-accent)] [font-family:var(--s-display)]">
+                  {p.n}
+                </span>
+                <p className="mt-4 text-2xl font-bold [font-family:var(--s-display)]">{p.t}</p>
+                <p className="mt-2 text-sm leading-7 text-[var(--s-muted)]">{p.d}</p>
+              </div>
+            ))}
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="claim" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <Claim />
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="join">
+        <Wrap>
+          <Signup
+            title="Join the guild newsletter"
+            text="Sneak peeks, character art, and the first look at book two."
+            cta="Count me in"
+          />
+        </Wrap>
+      </Section>
+
+      <Section
+        site={ID}
+        id="author"
+        className="border-t border-[var(--s-border)] bg-[var(--s-bg2)]"
+      >
+        <Wrap className="mx-auto max-w-3xl text-center">
+          <Eyebrow>About the author</Eyebrow>
+          <Display className="mt-3 text-3xl font-extrabold @3xl:text-5xl">{AUTHOR}</Display>
+          <p className="mt-5 text-base leading-8 text-[var(--s-muted)]">
+            Beatrix writes fast, funny, heart-first fantasy for readers who like their magic a
+            little mechanical. She keeps a broken clock on her desk &ldquo;for luck.&rdquo;
+          </p>
+        </Wrap>
+      </Section>
+
+      <ConceptFooter author={AUTHOR} line="Young adult author website concept" />
+      <Reader
+        open={reading}
+        onClose={() => setReading(false)}
+        title="Thirteen Past Twelve"
+        author={AUTHOR}
+        chapter="Chapter one"
+        paragraphs={excerpt}
+        onBuy={() => setBuying(true)}
+      />
+      <Retailers
+        open={buying}
+        onClose={() => setBuying(false)}
+        title={TITLE}
+        author={AUTHOR}
+        cover={COVER}
+      />
+    </Site>
   );
 }

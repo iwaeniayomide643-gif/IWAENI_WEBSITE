@@ -14,11 +14,21 @@ function previewsAllowed() {
   return !connection?.saveData;
 }
 
+/** Only devices that can hover (a mouse) need the clip loaded ahead of time. */
+function canHover() {
+  return (
+    typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches
+  );
+}
+
 /**
- * A silent preview that fills its thumbnail. It begins the moment the visitor hovers the
- * thumbnail's button (or tabs to it), loops quietly, and keeps playing after the pointer
- * leaves. Nothing is downloaded until the first hover. Place it right after the poster, inside
- * a relatively positioned, overflow-hidden box that sits within a <button>.
+ * A silent preview that fills its thumbnail.
+ *
+ * The clip is tiny (about 6 seconds, a few hundred KB). It is fetched in advance, as soon as the
+ * thumbnail is near the screen, so the moment the visitor hovers it starts at once, even on the
+ * live site where files must travel over the internet. It loops quietly and keeps playing after the
+ * pointer leaves. Place it right after the poster, inside a relatively positioned, overflow-hidden
+ * box that sits within a <button>.
  */
 export function PreviewVideo({
   trailer,
@@ -31,21 +41,39 @@ export function PreviewVideo({
   hint?: boolean;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [armed, setArmed] = useState(false);
+  const [near, setNear] = useState(false);
   const [visible, setVisible] = useState(false);
-  const src = trailer.videoSrc;
+  const src = trailer.videoPreview ?? trailer.videoSrc;
 
   useEffect(() => {
     const video = ref.current;
     const host = video?.closest("button");
     if (!video || !host || !src) return;
 
+    // 1. Load the clip ahead of time once the thumbnail is close to the screen.
+    let observer: IntersectionObserver | undefined;
+    if (canHover() && previewsAllowed()) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry?.isIntersecting) {
+            setNear(true);
+            observer?.disconnect();
+          }
+        },
+        { rootMargin: "500px" },
+      );
+      observer.observe(host);
+    }
+
+    // 2. Start it the moment the pointer arrives (or on keyboard focus).
     const begin = () => {
       if (!previewsAllowed()) return;
-      setArmed(true);
+      setNear(true);
       const current = ref.current;
-      // If it was started before (and paused by the limit), start it again.
-      if (current && current.src && current.paused) void current.play().catch(() => {});
+      if (!current) return;
+      // setNear may not have attached the source yet when the very first hover is instant
+      if (!current.src) current.src = new URL(src, window.location.href).href;
+      if (current.paused) void current.play().catch(() => {});
     };
     const onEnter = (event: PointerEvent) => {
       if (event.pointerType === "mouse") begin();
@@ -58,6 +86,7 @@ export function PreviewVideo({
     host.addEventListener("pointerenter", onEnter);
     host.addEventListener("focusin", onFocus);
     return () => {
+      observer?.disconnect();
       host.removeEventListener("pointerenter", onEnter);
       host.removeEventListener("focusin", onFocus);
       running.delete(video);
@@ -70,12 +99,11 @@ export function PreviewVideo({
     <>
       <video
         ref={ref}
-        src={armed ? src : undefined}
-        autoPlay={armed}
+        src={near ? src : undefined}
         muted
         loop
         playsInline
-        preload="none"
+        preload={near ? "auto" : "none"}
         disablePictureInPicture
         tabIndex={-1}
         aria-hidden="true"
@@ -92,7 +120,7 @@ export function PreviewVideo({
           }
         }}
         className={cn(
-          "pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
+          "pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
           visible ? "opacity-100" : "opacity-0",
           className,
         )}

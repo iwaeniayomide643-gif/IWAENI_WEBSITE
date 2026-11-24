@@ -77,7 +77,7 @@
   <!-- Studio Background -->
   <rect width="100%" height="100%" fill="url(#studioBg)"/>
 
-  <!-- Subtle Studio Horizon Line & Floor Reflection -->
+  <!-- Subtle Studio Horizon Line &amp; Floor Reflection -->
   <ellipse cx="350" cy="850" rx="280" ry="60" fill="#000000" fill-opacity="0.6" filter="blur(20px)"/>
 
   <!-- 3D BOOK ASSEMBLY -->
@@ -118,10 +118,10 @@
     <rect x="74" y="52" width="422" height="780" fill="none" stroke="url(#goldFoil)" stroke-width="1.2" stroke-opacity="0.55" rx="4"/>
     <rect x="80" y="58" width="410" height="768" fill="none" stroke="#38bdf8" stroke-width="0.6" stroke-opacity="0.2" rx="2"/>
 
-    <!-- TOP ACCOLADE & ENDORSEMENT BANNER -->
+    <!-- TOP ACCOLADE &amp; ENDORSEMENT BANNER -->
     <g transform="translate(284, 88)">
       <text font-family="'DM Sans', -apple-system, sans-serif" font-size="9" font-weight="700" fill="url(#goldFoil)" text-anchor="middle" letter-spacing="0.3em">
-        ★ WALL STREET JOURNAL & FINANCIAL TIMES BESTSELLER ★
+        ★ A FOUNDER&apos;S PLAYBOOK ★
       </text>
       <line x1="-150" y1="12" x2="150" y2="12" stroke="url(#goldFoil)" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -129,10 +129,10 @@
     <!-- CRITICAL PRAISE QUOTE -->
     <g transform="translate(284, 132)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#e2e8f0" text-anchor="middle">
-        “The definitive architecture for building category-defining platforms.”
+        A practical playbook for finding your first customers.
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="8.5" font-weight="600" fill="#93c5fd" text-anchor="middle" letter-spacing="0.14em" y="16">
-        — MARCUS STERLING, MANAGING PARTNER AT APEX VENTURES
+        A PRACTICAL GUIDE FOR FIRST-TIME FOUNDERS
       </text>
     </g>
 
@@ -142,7 +142,7 @@
       <circle cx="0" cy="0" r="88" fill="#081424" fill-opacity="0.85" stroke="url(#goldFoil)" stroke-width="1.5" stroke-opacity="0.75"/>
       <circle cx="0" cy="0" r="76" fill="none" stroke="#38bdf8" stroke-width="0.8" stroke-opacity="0.3" stroke-dasharray="4,3"/>
       
-      <!-- Coordinate Axis & Geometric Diamonds -->
+      <!-- Coordinate Axis &amp; Geometric Diamonds -->
       <line x1="-88" y1="0" x2="88" y2="0" stroke="url(#goldFoil)" stroke-width="0.7" stroke-opacity="0.4"/>
       <line x1="0" y1="-88" x2="0" y2="88" stroke="url(#goldFoil)" stroke-width="0.7" stroke-opacity="0.4"/>
       
@@ -173,7 +173,7 @@
       </g>
     </g>
 
-    <!-- SUBTITLE & DESCRIPTIVE HOOK -->
+    <!-- SUBTITLE &amp; DESCRIPTIVE HOOK -->
     <g transform="translate(284, 595)">
       <line x1="-120" y1="-14" x2="120" y2="-14" stroke="url(#goldFoil)" stroke-width="1" stroke-opacity="0.35"/>
       <text font-family="'DM Sans', sans-serif" font-size="11.5" font-weight="600" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.06em">
@@ -193,10 +193,10 @@
         Marcos Valdés
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="500" fill="#fae8b4" text-anchor="middle" letter-spacing="0.12em" y="48">
-        Founder &amp; Managing Partner, Valdés Capital
+        Author of Zero to Market
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="8.5" font-style="italic" fill="#94a3b8" text-anchor="middle" y="64">
-        Foreword by Elena Rostova • Stanford Business School
+        From first idea to first customers
       </text>
     </g>
 

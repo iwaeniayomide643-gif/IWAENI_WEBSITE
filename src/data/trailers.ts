@@ -21,6 +21,8 @@ export interface Trailer {
   videoSrc: string | null;
   /** The sharp 1080p copy, when we have one. Chosen for big screens on a good connection. */
   videoHd: string | null;
+  /** Tiny silent clip for the hover preview (loaded ahead of time). */
+  videoPreview: string | null;
   /** A real frame from the local video, used as the still everywhere (falls back to Google Drive's frame). */
   poster: string | null;
   /** Older stand-in still from the original data. No longer shown, because it did not match the videos. */
@@ -54,6 +56,7 @@ const featured: Trailer = {
   youtubeId: youtubeIds["featured"] ?? null,
   videoSrc: localVideos["featured"]?.src ?? null,
   videoHd: localVideos["featured"]?.hd ?? null,
+  videoPreview: localVideos["featured"]?.preview ?? null,
   poster: localVideos["featured"]?.poster ?? null,
   fallbackPoster: null,
 };
@@ -76,6 +79,7 @@ export const trailers: Trailer[] = [
       youtubeId: youtubeIds[t.id] ?? null,
       videoSrc: localVideos[t.id]?.src ?? null,
       videoHd: localVideos[t.id]?.hd ?? null,
+      videoPreview: localVideos[t.id]?.preview ?? null,
       poster: localVideos[t.id]?.poster ?? null,
       fallbackPoster: t.thumbnail,
     };

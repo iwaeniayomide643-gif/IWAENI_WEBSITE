@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#4ade80" text-anchor="middle" letter-spacing="0.3em">
-        ★ SPECIAL OPERATIONS THRILLER ★
+        ★ A TECHNO-THRILLER ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#4ade80" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “Heart-pounding pacing with authentic cyber forensics.”
+        A forensic analyst finds her own signature in eleven missing seconds.
       </text>
     </g>
 
@@ -99,7 +99,7 @@
         Terminal Protocol
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="13" font-style="italic" fill="#bbf7d0" text-anchor="middle" y="42">
-        Classified Ops & Encrypted Surveillance
+        Classified Ops &amp; Encrypted Surveillance
       </text>
     </g>
 

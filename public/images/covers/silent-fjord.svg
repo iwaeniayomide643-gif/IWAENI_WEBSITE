@@ -73,7 +73,7 @@
     <!-- Top Genre / Edition Badge -->
     <g transform="translate(284, 90)">
       <text font-family="'DM Sans', sans-serif" font-size="9.5" font-weight="700" fill="#94a3b8" text-anchor="middle" letter-spacing="0.3em">
-        ★ SCANDINAVIAN CRIME PRIZE ★
+        ★ A NORDIC CRIME NOVEL ★
       </text>
       <line x1="-140" y1="14" x2="140" y2="14" stroke="#94a3b8" stroke-width="0.8" stroke-opacity="0.4"/>
     </g>
@@ -81,7 +81,7 @@
     <!-- Praise Hook -->
     <g transform="translate(284, 138)">
       <text font-family="'Playfair Display', Georgia, serif" font-size="11" font-style="italic" fill="#f1f5f9" text-anchor="middle">
-        “Chilling, atmospheric, and impossible to put down.”
+        A cold case, a silent fjord, and a witness who will not speak.
       </text>
     </g>
 
@@ -113,7 +113,7 @@
         Linnea Lindqvist
       </text>
       <text font-family="'DM Sans', sans-serif" font-size="10" font-weight="500" fill="#cbd5e1" text-anchor="middle" letter-spacing="0.12em" y="48">
-        Nordic Crime & Thriller
+        Nordic Crime &amp; Thriller
       </text>
     </g>
 

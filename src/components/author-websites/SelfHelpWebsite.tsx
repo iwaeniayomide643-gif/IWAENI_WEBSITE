@@ -1,230 +1,515 @@
-import { brand } from "@/data/brand";
-import React, { useState } from "react";
-import { CheckCircle2, Target, Zap, Clock, BookOpen, ShoppingBag, Star, Check, ArrowRight, Activity } from "lucide-react";
-import type { MiniWebsiteProps } from "./types";
+import "@fontsource-variable/bricolage-grotesque/index.css";
+import { useEffect, useState } from "react";
+import { BookOpen, Pause, Play, RotateCcw, Timer } from "lucide-react";
+import {
+  Book3D,
+  Btn,
+  ConceptFooter,
+  Display,
+  Eyebrow,
+  Nav,
+  Reader,
+  Retailers,
+  Section,
+  Signup,
+  Site,
+  Wrap,
+  jump,
+  type Theme,
+} from "./kit";
 
-export function SelfHelpWebsite({ onBackToPortfolio, onBookWebsiteService, viewportMode = "desktop" }: MiniWebsiteProps) {
-  const [sampleOpen, setSampleOpen] = useState(false);
-  const [buyOpen, setBuyOpen] = useState(false);
-  const [focusScore, setFocusScore] = useState<number | null>(null);
-  const [newsletterSent, setNewsletterSent] = useState(false);
-  const [email, setEmail] = useState("");
+const ID = "selfhelp";
+const COVER = "/images/covers/mastering-focus.svg";
+const AUTHOR = "Julian O’Reilly";
+const TITLE = "Mastering Focus";
 
-  const scrollTo = (id: string) => {
-    document.getElementById(`self-${id}`)?.scrollIntoView({ behavior: "smooth" });
+const theme: Theme = {
+  bg: "#f2faf6",
+  bg2: "#e0f1e8",
+  fg: "#0f2a22",
+  muted: "#52695f",
+  accent: "#0b8a5d",
+  accent2: "#2f6fdd",
+  card: "rgba(15,42,34,0.045)",
+  border: "rgba(15,42,34,0.16)",
+  on: "#ffffff",
+  display: "'Bricolage Grotesque Variable', 'DM Sans Variable', system-ui, sans-serif",
+  body: "'DM Sans Variable', system-ui, sans-serif",
+};
+
+const excerpt = [
+  "Focus is not a gift some people are born with. It is a way of arranging a day so that the next right thing is obvious.",
+  "Most of us do not lack willpower. We lack a clear first task, a quiet place to start, and a kind way of coming back after we drift.",
+  "This book is built around those three things. Take the first one today: before you close this page, write down the one task that would make tomorrow a good day.",
+];
+
+const areas = [
+  {
+    key: "Distraction",
+    q: "I can work for 30 minutes without checking my phone.",
+    tip: "Put your phone in another room for one 25-minute block. Notice how hard it feels, then try again tomorrow.",
+  },
+  {
+    key: "Energy",
+    q: "I have steady energy through the afternoon.",
+    tip: "Move for five minutes before your hardest task, and drink some water before the next coffee.",
+  },
+  {
+    key: "Planning",
+    q: "I know my one most important task before the day starts.",
+    tip: "Write tomorrow's single task tonight, on paper, where it will be the first thing you see.",
+  },
+  {
+    key: "Space",
+    q: "My workspace helps me concentrate.",
+    tip: "Clear your desk of everything except what the task needs. Put the rest in a box for later.",
+  },
+  {
+    key: "Rhythm",
+    q: "I start work at roughly the same time each day.",
+    tip: "Choose a fixed start time and attach it to something you already do, like your first cup of tea.",
+  },
+  {
+    key: "Return",
+    q: "I return to the task calmly after being interrupted.",
+    tip: "When you are interrupted, write down exactly where you stopped. It makes coming back easy and kind.",
+  },
+] as const;
+
+function Radar({ values }: { values: number[] }) {
+  const c = 150;
+  const r = 105;
+  const point = (i: number, v: number) => {
+    const angle = (Math.PI * 2 * i) / areas.length - Math.PI / 2;
+    return [c + Math.cos(angle) * r * (v / 5), c + Math.sin(angle) * r * (v / 5)] as const;
   };
+  const poly = values.map((v, i) => point(i, v).join(",")).join(" ");
+  return (
+    <svg
+      viewBox="0 0 300 300"
+      className="mx-auto h-auto w-full max-w-sm"
+      role="img"
+      aria-label="Radar chart of your six focus areas"
+    >
+      {[1, 2, 3, 4, 5].map((ring) => (
+        <polygon
+          key={ring}
+          points={areas.map((_, i) => point(i, ring).join(",")).join(" ")}
+          fill="none"
+          stroke="rgba(15,42,34,0.14)"
+        />
+      ))}
+      {areas.map((a, i) => {
+        const [x, y] = point(i, 5);
+        const [lx, ly] = point(i, 6.1);
+        return (
+          <g key={a.key}>
+            <line x1={c} y1={c} x2={x} y2={y} stroke="rgba(15,42,34,0.14)" />
+            <text
+              x={lx}
+              y={ly}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="11"
+              fontWeight="600"
+              fill="#52695f"
+            >
+              {a.key}
+            </text>
+          </g>
+        );
+      })}
+      <polygon
+        points={poly}
+        fill="rgba(11,138,93,0.22)"
+        stroke="#0b8a5d"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        style={{ transition: "all 0.5s ease" }}
+      />
+      {values.map((v, i) => {
+        const [x, y] = point(i, v);
+        return (
+          <circle
+            key={areas[i]?.key}
+            cx={x}
+            cy={y}
+            r="4.5"
+            fill="#0b8a5d"
+            style={{ transition: "all 0.5s ease" }}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+function FocusCheck() {
+  const [values, setValues] = useState<number[]>(() => areas.map(() => 3));
+  const total = Math.round((values.reduce((a, b) => a + b, 0) / (areas.length * 5)) * 100);
+  const lowest = values.indexOf(Math.min(...values));
+  const weak = areas[lowest] ?? areas[0];
+  return (
+    <div className="grid items-center gap-8 @3xl:grid-cols-[1.1fr_0.9fr]">
+      <div className="space-y-5">
+        {areas.map((a, i) => (
+          <div
+            key={a.key}
+            className="rounded-2xl border border-[var(--s-border)] bg-[var(--s-bg)] p-5"
+          >
+            <label htmlFor={`sh-${i}`} className="text-sm font-medium leading-snug">
+              {a.q}
+            </label>
+            <div className="mt-3 flex items-center gap-4">
+              <span className="w-14 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--s-muted)]">
+                Rarely
+              </span>
+              <input
+                id={`sh-${i}`}
+                type="range"
+                min={1}
+                max={5}
+                step={1}
+                value={values[i] ?? 3}
+                onChange={(e) =>
+                  setValues((p) => p.map((v, j) => (j === i ? Number(e.target.value) : v)))
+                }
+                className="h-2 flex-1 accent-[var(--s-accent)]"
+              />
+              <span className="w-14 text-right text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--s-muted)]">
+                Often
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div
+        className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-bg)] p-6 @3xl:p-8"
+        aria-live="polite"
+      >
+        <Radar values={values} />
+        <p className="mt-4 text-center text-5xl font-extrabold tabular-nums [font-family:var(--s-display)]">
+          {total}
+          <span className="text-xl text-[var(--s-muted)]">%</span>
+        </p>
+        <p className="mt-1 text-center text-xs uppercase tracking-[0.2em] text-[var(--s-muted)]">
+          Your focus picture today
+        </p>
+        <div className="mt-5 rounded-2xl bg-[var(--s-accent)]/10 p-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--s-accent)]">
+            Start here: {weak.key}
+          </p>
+          <p className="mt-2 text-sm leading-7">{weak.tip}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Sprint() {
+  const options = [5, 15, 25] as const;
+  const [minutes, setMinutes] = useState<(typeof options)[number]>(5);
+  const [left, setLeft] = useState(5 * 60);
+  const [running, setRunning] = useState(false);
+  const total = minutes * 60;
+  const finished = left === 0;
+
+  useEffect(() => {
+    if (!running) return;
+    const id = window.setInterval(() => setLeft((s) => Math.max(0, s - 1)), 1000);
+    return () => window.clearInterval(id);
+  }, [running]);
+  useEffect(() => {
+    if (left === 0) setRunning(false);
+  }, [left]);
+
+  const choose = (m: (typeof options)[number]) => {
+    setMinutes(m);
+    setLeft(m * 60);
+    setRunning(false);
+  };
+  const mm = String(Math.floor(left / 60)).padStart(2, "0");
+  const ss = String(left % 60).padStart(2, "0");
+  const circumference = 2 * Math.PI * 88;
+  return (
+    <div className="mx-auto max-w-md rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-bg)] p-7 text-center @3xl:p-9">
+      <div
+        className="inline-flex rounded-full border border-[var(--s-border)] p-1"
+        role="group"
+        aria-label="Sprint length"
+      >
+        {options.map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => choose(m)}
+            aria-pressed={minutes === m}
+            className={`min-h-10 rounded-full px-5 text-sm font-semibold transition ${minutes === m ? "bg-[var(--s-accent)] text-[var(--s-on)]" : "text-[var(--s-muted)] hover:text-[var(--s-fg)]"}`}
+          >
+            {m} min
+          </button>
+        ))}
+      </div>
+      <div className="relative mx-auto mt-7 size-56">
+        <svg viewBox="0 0 200 200" className="size-full -rotate-90" aria-hidden="true">
+          <circle
+            cx="100"
+            cy="100"
+            r="88"
+            fill="none"
+            stroke="rgba(15,42,34,0.1)"
+            strokeWidth="10"
+          />
+          <circle
+            cx="100"
+            cy="100"
+            r="88"
+            fill="none"
+            stroke="var(--s-accent)"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference * (left / total)}
+            style={{ transition: "stroke-dashoffset 1s linear" }}
+          />
+        </svg>
+        <div className="absolute inset-0 grid place-items-center">
+          <div>
+            <p
+              className="text-5xl font-extrabold tabular-nums [font-family:var(--s-display)]"
+              role="timer"
+              aria-live="off"
+            >
+              {mm}:{ss}
+            </p>
+            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-[var(--s-muted)]">
+              {finished ? "Done" : running ? "Focus" : "Ready"}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-7 flex justify-center gap-3">
+        <Btn onClick={() => (finished ? choose(minutes) : setRunning((r) => !r))}>
+          {running ? <Pause size={16} aria-hidden="true" /> : <Play size={16} aria-hidden="true" />}{" "}
+          {finished ? "Again" : running ? "Pause" : "Start sprint"}
+        </Btn>
+        <Btn variant="outline" onClick={() => choose(minutes)} aria-label="Reset the timer">
+          <RotateCcw size={16} aria-hidden="true" />
+        </Btn>
+      </div>
+      <p role="status" className="mt-5 min-h-5 text-sm text-[var(--s-muted)]">
+        {finished ? "Well done. Stand up, stretch, and take a short break." : ""}
+      </p>
+    </div>
+  );
+}
+
+function Chain() {
+  const [habit, setHabit] = useState("Ten minutes of quiet reading");
+  const [days, setDays] = useState<boolean[]>(() => Array.from({ length: 14 }, (_, i) => i < 3));
+  const best = days.reduce<{ best: number; run: number }>(
+    (acc, d) => {
+      const run = d ? acc.run + 1 : 0;
+      return { best: Math.max(acc.best, run), run };
+    },
+    { best: 0, run: 0 },
+  ).best;
+  return (
+    <div className="rounded-[2rem] border border-[var(--s-border)] bg-[var(--s-bg)] p-7 @3xl:p-9">
+      <label
+        htmlFor="sh-habit"
+        className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--s-muted)]"
+      >
+        My habit
+      </label>
+      <input
+        id="sh-habit"
+        value={habit}
+        onChange={(e) => setHabit(e.target.value.slice(0, 48))}
+        className="mt-2 min-h-12 w-full rounded-full border border-[var(--s-border)] bg-[var(--s-bg2)] px-5 text-base font-semibold outline-none transition focus:border-[var(--s-accent)]"
+      />
+      <div className="mt-6 grid grid-cols-7 gap-2.5" role="group" aria-label="Fourteen day chain">
+        {days.map((on, i) => (
+          <button
+            key={i}
+            type="button"
+            aria-pressed={on}
+            aria-label={`Day ${i + 1}`}
+            onClick={() => setDays((p) => p.map((v, j) => (j === i ? !v : v)))}
+            className={`grid aspect-square place-items-center rounded-xl text-xs font-bold transition duration-300 active:scale-90 ${on ? "bg-[var(--s-accent)] text-[var(--s-on)] shadow-[0_8px_18px_-8px_var(--s-accent)]" : "border border-[var(--s-border)] text-[var(--s-muted)] hover:border-[var(--s-accent)]"}`}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+      <p className="mt-5 text-sm text-[var(--s-muted)]" aria-live="polite">
+        Longest chain:{" "}
+        <strong className="text-[var(--s-fg)]">
+          {best} {best === 1 ? "day" : "days"}
+        </strong>
+        . Missing a day is fine. Start the chain again tomorrow.
+      </p>
+    </div>
+  );
+}
+
+export function SelfHelpWebsite() {
+  const [reading, setReading] = useState(false);
+  const [buying, setBuying] = useState(false);
 
   return (
-    <div className="min-h-full bg-[#0a1916] text-[#e6f4f1] font-sans antialiased selection:bg-[#34d399] selection:text-[#0a1916]">
-      {/* High-Impact Announcement */}
-      <div className="bg-[#13332c] border-b border-[#34d399]/30 py-2.5 px-6 text-center text-xs tracking-widest text-[#a7f3d0] uppercase font-bold flex items-center justify-center gap-2">
-        <Target size={14} className="text-[#34d399]" />
-        <span>THE #1 WALL STREET JOURNAL BESTSELLER ON HABIT MASTERY & TIME RECLAMATION</span>
-        <Target size={14} className="text-[#34d399]" />
-      </div>
+    <Site theme={theme} id={ID}>
+      <span id={`${ID}-top`} />
+      <Nav
+        site={ID}
+        name={AUTHOR}
+        sub="Focus & habits"
+        links={[
+          ["check", "Focus check"],
+          ["sprint", "Focus sprint"],
+          ["chain", "Habit chain"],
+          ["friday", "Newsletter"],
+        ]}
+        cta="Get the book"
+        onCta={() => setBuying(true)}
+        mark={
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--s-accent)] text-[var(--s-on)]">
+            <Timer size={19} aria-hidden="true" />
+          </span>
+        }
+      />
 
-      {/* Navigation */}
-      <header className="sticky top-0 z-30 border-b border-[#34d399]/20 bg-[#0a1916]/95 backdrop-blur-md px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-[#13332c] border border-[#34d399] flex items-center justify-center text-[#34d399]">
-            <Zap size={18} />
-          </div>
+      {/* Hero */}
+      <section className="relative overflow-hidden px-5 pb-20 pt-14 @3xl:px-10 @3xl:pb-28 @3xl:pt-20">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(50% 55% at 80% 40%, rgba(11,138,93,0.20), transparent 70%), radial-gradient(40% 40% at 0% 0%, rgba(47,111,221,0.14), transparent 70%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-[6%] top-1/2 size-[34rem] -translate-y-1/2 rounded-full border border-[var(--s-accent)]/25 [animation:s-pulse-ring_6s_ease-in-out_infinite]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute right-[14%] top-1/2 size-[22rem] -translate-y-1/2 rounded-full border border-[var(--s-accent)]/30 [animation:s-pulse-ring_6s_ease-in-out_infinite_1.2s]"
+        />
+        <Wrap className="relative grid items-center gap-14 @3xl:grid-cols-[1.15fr_0.85fr]">
           <div>
-            <span className="font-bold text-lg text-white">Dr. Julian O'Reilly</span>
-            <span className="block text-[10px] tracking-widest text-[#34d399] uppercase font-bold">Habit Engineering Lab</span>
-          </div>
-        </div>
-
-        <nav className="hidden md:flex items-center gap-6 text-xs uppercase tracking-wider font-bold text-[#a7f3d0]">
-          <button onClick={() => scrollTo("hero")} className="hover:text-white transition-colors">The Method</button>
-          <button onClick={() => scrollTo("diagnostic")} className="hover:text-white transition-colors">Focus Test</button>
-          <button onClick={() => scrollTo("bio")} className="hover:text-white transition-colors">About Julian</button>
-          <button onClick={() => scrollTo("newsletter")} className="hover:text-white transition-colors">7-Day Challenge</button>
-        </nav>
-
-        <button
-          onClick={() => setBuyOpen(true)}
-          className="px-5 py-2.5 rounded-full bg-[#34d399] hover:bg-[#10b981] text-[#0a1916] font-black text-xs uppercase tracking-wider transition-all duration-300 shadow-lg shadow-[#34d399]/25"
-        >
-          Claim Your Copy
-        </button>
-      </header>
-
-      {/* Hero Section */}
-      <section id="self-hero" className="px-6 py-20 lg:py-28 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-7 space-y-6 text-left">
-            <span className="text-xs uppercase tracking-widest text-[#34d399] font-bold">Break Through Mental Fog</span>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl text-white font-black leading-tight tracking-tight">
-              Mastering Focus in a World of Noise.
-            </h1>
-            <p className="text-sm sm:text-base text-[#bbf7d0] leading-relaxed max-w-lg">
-              Reclaim 3 hours of lost daily productivity with the proven 4-pillar attentional framework used by Fortune 500 executives and Olympic athletes.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <button
-                onClick={() => setBuyOpen(true)}
-                className="px-7 py-4 rounded-full bg-[#34d399] text-[#0a1916] font-black text-xs uppercase tracking-wider hover:bg-[#10b981] transition-transform hover:scale-105 shadow-xl shadow-[#34d399]/30"
-              >
-                Buy Mastering Focus Now
-              </button>
-              <button
-                onClick={() => scrollTo("diagnostic")}
-                className="px-7 py-4 rounded-full bg-[#13332c] border border-[#34d399]/40 text-white text-xs font-bold uppercase tracking-wider hover:bg-[#1e4e43] transition-colors"
-              >
-                Take Free 2-Min Focus Test
-              </button>
-            </div>
-          </div>
-
-          <div className="md:col-span-5 flex justify-center">
-            <div className="relative group">
-              <div className="absolute -inset-4 rounded-3xl bg-[#34d399]/20 blur-2xl group-hover:blur-3xl transition-all" />
-              <img
-                src="/images/covers/mastering-focus.svg"
-                alt="Mastering Focus"
-                className="relative w-64 sm:w-76 rounded-2xl shadow-2xl border-2 border-[#34d399]/40"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Interactive 2-Minute Focus Diagnostic */}
-      <section id="self-diagnostic" className="px-6 py-20 bg-[#0f2420] border-y border-[#34d399]/20">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <Activity size={32} className="mx-auto text-[#34d399]" />
-          <h2 className="text-3xl sm:text-4xl text-white font-bold">Calculate Your Focus Leaks</h2>
-          <p className="text-xs sm:text-sm text-[#a7f3d0]">How many times an hour do you unconsciously switch tabs or check your smartphone?</p>
-
-          <div className="grid sm:grid-cols-3 gap-3 text-center font-bold text-xs uppercase tracking-wider">
-            {[
-              { label: "1 to 3 Times", score: 85, tag: "High Focus Discipline" },
-              { label: "4 to 8 Times", score: 58, tag: "Moderate Attention Fragment" },
-              { label: "9+ Times", score: 32, tag: "Severe Digital Exhaustion" },
-            ].map((btn, i) => (
-              <button
-                key={i}
-                onClick={() => setFocusScore(btn.score)}
-                className="p-5 rounded-2xl bg-[#0a1916] border border-[#34d399]/30 hover:border-[#34d399] text-white space-y-1 transition-all"
-              >
-                <div className="text-sm">{btn.label}</div>
-                <div className="text-[10px] text-[#34d399]">{btn.tag}</div>
-              </button>
-            ))}
-          </div>
-
-          {focusScore !== null && (
-            <div className="p-6 rounded-2xl bg-[#13332c] border border-[#34d399] text-white space-y-2 animate-fade-in">
-              <span className="text-xs text-[#34d399] uppercase font-bold">Your Current Diagnostic Score</span>
-              <div className="text-4xl font-black">{focusScore} / 100</div>
-              <p className="text-xs text-[#bbf7d0] max-w-md mx-auto">
-                {focusScore > 70
-                  ? "You have solid baseline habits. Chapter 4 will help you reach elite hyperfocus states."
-                  : "You are experiencing chronic context switching. Chapter 2's Dopamine Detox protocol will restore 2+ hours daily."}
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Author Bio */}
-      <section id="self-bio" className="px-6 py-20 max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-12 gap-10 items-center">
-          <div className="md:col-span-5 flex justify-center">
-            <div className="size-64 sm:size-72 rounded-3xl overflow-hidden border-2 border-[#34d399]/40 p-2 bg-[#0f2420] shadow-2xl">
-              <img
-                src="/images/authors/dr-julian-oreilly.jpg"
-                alt="Dr. Julian O'Reilly"
-                className="w-full h-full object-cover rounded-2xl"
-              />
-            </div>
-          </div>
-          <div className="md:col-span-7 space-y-4 text-left">
-            <span className="text-xs uppercase tracking-widest text-[#34d399] font-bold">Behavioral Scientist & Coach</span>
-            <h2 className="text-3xl sm:text-4xl text-white font-bold">Dr. Julian O'Reilly</h2>
-            <p className="text-sm sm:text-base text-[#bbf7d0] leading-relaxed">
-              Dr. Julian O'Reilly has trained over 40,000 knowledge workers, startup founders, and graduate researchers in systematic habit modification and deep cognitive ergonomics.
-            </p>
-            <p className="text-sm sm:text-base text-[#bbf7d0] leading-relaxed">
-              His podcast <em>The Focus Lab</em> is ranked among the top 10 productivity shows worldwide.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 7-Day Focus Challenge Newsletter */}
-      <section id="self-newsletter" className="px-6 py-20 max-w-3xl mx-auto text-center">
-        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-b from-[#13332c] to-[#0a1916] border border-[#34d399]/40 shadow-2xl">
-          <Clock size={32} className="mx-auto text-[#34d399]" />
-          <h2 className="text-3xl text-white font-bold mt-2">Join the Free 7-Day Focus Challenge</h2>
-          <p className="text-xs sm:text-sm text-[#bbf7d0] mt-2 max-w-md mx-auto leading-relaxed">
-            One 3-minute morning habit experiment delivered daily. Join over 85,000 disciplined professionals.
-          </p>
-
-          {newsletterSent ? (
-            <div className="mt-6 p-4 rounded-xl bg-[#0a1916] border border-[#34d399] text-[#34d399] text-xs font-bold">
-              ✓ Day 1 Challenge activated! Check your inbox to begin tomorrow morning.
-            </div>
-          ) : (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (email) setNewsletterSent(true);
-              }}
-              className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mt-6"
+            <Eyebrow>A calmer way to get things done</Eyebrow>
+            <Display
+              as="h1"
+              className="mt-5 text-[clamp(2.6rem,8.6cqi,6rem)] font-extrabold leading-[0.98] tracking-[-0.04em]"
             >
-              <input
-                type="email"
-                required
-                placeholder="professional@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-full bg-[#0a1916] border border-[#34d399]/30 text-white text-xs placeholder:text-[#387565] focus:outline-none focus:border-[#34d399]"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 rounded-full bg-[#34d399] hover:bg-[#10b981] text-[#0a1916] text-xs font-black uppercase tracking-wider transition-colors shadow-lg"
-              >
-                Start Challenge
-              </button>
-            </form>
-          )}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-8 border-t border-[#34d399]/20 bg-[#050f0d] text-center text-xs text-[#387565] space-y-2">
-        <p>© 2026 Dr. Julian O'Reilly. Mastering Focus™. Designed with {brand.name}.</p>
-        <p className="text-[11px] text-[#34d399]">PORTFOLIO DEMO WEBSITE CONCEPT • CRAFTED WITH MADELINE JOY</p>
-      </footer>
-
-      {/* Buy Modal */}
-      {buyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0a1916] border border-[#34d399] max-w-md w-full rounded-2xl p-6 text-center">
-            <div className="flex justify-between items-center mb-4">
-              <span className="text-xs uppercase tracking-widest text-[#34d399] font-bold">Select Format</span>
-              <button onClick={() => setBuyOpen(false)} className="size-7 rounded-lg bg-[#13332c] text-[#34d399]">✕</button>
-            </div>
-            <img src="/images/covers/mastering-focus.svg" alt="Mastering Focus" className="w-28 mx-auto rounded shadow-xl mb-4 border border-[#34d399]/40" />
-            <h3 className="text-xl text-white font-bold">Mastering Focus</h3>
-            <p className="text-xs text-[#bbf7d0] mb-4">Paperback, Kindle, Audible & Printable Journal</p>
-            <div className="space-y-2 text-left">
-              {["Amazon Prime Delivery", "Audible Audiobook (Narrated by Author)", "Barnes & Noble"].map((b, i) => (
-                <button
-                  key={i}
-                  onClick={() => { alert(`Demo trigger: Order via ${b}`); setBuyOpen(false); }}
-                  className="w-full p-3 rounded-lg bg-[#13332c] border border-[#34d399]/30 text-white flex items-center justify-between text-xs hover:bg-[#1e4e43]"
-                >
-                  <span className="font-bold">{b}</span>
-                  <ArrowRight size={14} className="text-[#34d399]" />
-                </button>
-              ))}
+              Do one thing. <span className="text-[var(--s-accent)]">Then the next.</span>
+            </Display>
+            <p className="mt-6 max-w-xl text-base leading-8 text-[var(--s-muted)] @3xl:text-lg">
+              Mastering Focus is a kind, practical guide to clearing the noise, choosing your one
+              task, and finding your way back when you drift.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 @sm:flex-row">
+              <Btn onClick={() => jump(ID, "check")}>Take the focus check</Btn>
+              <Btn variant="outline" onClick={() => setReading(true)}>
+                <BookOpen size={16} aria-hidden="true" /> Read a chapter
+              </Btn>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+          <Book3D cover={COVER} title={TITLE} width={250} className="my-8" />
+        </Wrap>
+      </section>
+
+      <Section site={ID} id="check" className="bg-[var(--s-bg2)]">
+        <Wrap>
+          <Eyebrow>Two-minute check</Eyebrow>
+          <Display className="mt-4 text-3xl font-extrabold @3xl:text-5xl">
+            Where does your focus leak?
+          </Display>
+          <p className="mt-3 max-w-xl text-sm text-[var(--s-muted)]">
+            Slide each answer, and watch the picture change.
+          </p>
+          <div className="mt-10">
+            <FocusCheck />
+          </div>
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="sprint">
+        <Wrap className="grid items-center gap-10 @3xl:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <Eyebrow>Try it now</Eyebrow>
+            <Display className="mt-4 text-3xl font-extrabold @3xl:text-5xl">
+              Start with a short sprint
+            </Display>
+            <p className="mt-4 max-w-md text-base leading-8 text-[var(--s-muted)]">
+              Pick one task. Set the timer. Nothing else matters until it rings. The first five
+              minutes are the hardest, so start small.
+            </p>
+          </div>
+          <Sprint />
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="chain" className="bg-[var(--s-bg2)]">
+        <Wrap className="grid items-center gap-10 @3xl:grid-cols-[0.9fr_1.1fr]">
+          <div>
+            <Eyebrow>Make it stick</Eyebrow>
+            <Display className="mt-4 text-3xl font-extrabold @3xl:text-5xl">
+              Build a fourteen-day chain
+            </Display>
+            <p className="mt-4 max-w-md text-base leading-8 text-[var(--s-muted)]">
+              Name one small habit, then tap a day each time you do it. Seeing the chain grow is
+              more motivating than it sounds.
+            </p>
+          </div>
+          <Chain />
+        </Wrap>
+      </Section>
+
+      <Section site={ID} id="friday">
+        <Wrap>
+          <Signup
+            title="Focus Friday"
+            text="One short idea, one small experiment, every Friday morning. Read it in two minutes."
+            cta="Send me Focus Friday"
+          />
+        </Wrap>
+      </Section>
+
+      <Section
+        site={ID}
+        id="author"
+        className="border-t border-[var(--s-border)] bg-[var(--s-bg2)]"
+      >
+        <Wrap className="mx-auto max-w-3xl text-center">
+          <Eyebrow>About the author</Eyebrow>
+          <Display className="mt-3 text-3xl font-extrabold @3xl:text-5xl">{AUTHOR}</Display>
+          <p className="mt-5 text-base leading-8 text-[var(--s-muted)]">
+            Julian writes about attention, habits and the small, repeatable things that make a good
+            day. He believes focus should feel more like a quiet room than a battle.
+          </p>
+        </Wrap>
+      </Section>
+
+      <ConceptFooter author={AUTHOR} line="Self-help author website concept" />
+      <Reader
+        open={reading}
+        onClose={() => setReading(false)}
+        title="The One Task"
+        author={AUTHOR}
+        chapter="Chapter one"
+        paragraphs={excerpt}
+        onBuy={() => setBuying(true)}
+      />
+      <Retailers
+        open={buying}
+        onClose={() => setBuying(false)}
+        title={TITLE}
+        author={AUTHOR}
+        cover={COVER}
+      />
+    </Site>
   );
 }
