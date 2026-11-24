@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { trailers } from "@/data/trailers";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/motion";
 import { Poster } from "./Poster";
+import { PreviewVideo } from "./PreviewVideo";
 
 interface TrailerReelProps {
   onPlay: (index: number) => void;
@@ -217,6 +218,7 @@ export function TrailerReel({ onPlay, onOrder }: TrailerReelProps) {
                 >
                   <span className="relative block aspect-video overflow-hidden rounded-2xl border border-glass-border bg-black shadow-[0_24px_70px_rgba(8,3,8,0.6)] transition-colors duration-300 group-hover:border-glass-highlight">
                     <Poster trailer={trailer} width={900} className="zoom-photo" />
+                    <PreviewVideo trailer={trailer} className="zoom-photo" hint />
                     <span
                       className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-transparent"
                       aria-hidden="true"

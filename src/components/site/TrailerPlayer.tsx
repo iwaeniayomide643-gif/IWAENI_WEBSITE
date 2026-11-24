@@ -3,7 +3,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Play, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { embedUrl, trailers, watchUrl } from "@/data/trailers";
+import { embedUrl, trailers, watchUrl, type Trailer } from "@/data/trailers";
+import { wantsHd } from "@/lib/quality";
 import { Poster } from "./Poster";
 
 interface TrailerPlayerProps {
@@ -14,19 +15,127 @@ interface TrailerPlayerProps {
   onOrder: () => void;
 }
 
+/**
+ * Plays a trailer from the site's own files, with sound on. If the browser refuses to start
+ * playback with sound (iPhones and some other browsers do), a big "Tap to play with sound"
+ * button appears instead of leaving the visitor with a silent or frozen video.
+ */
+function LocalPlayer({
+  trailer,
+  src,
+  onReady,
+  onFail,
+}: {
+  trailer: Trailer;
+  src: string;
+  onReady: () => void;
+  onFail: () => void;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [needsTap, setNeedsTap] = useState(false);
+  const [soundOff, setSoundOff] = useState(false);
+  const [buffering, setBuffering] = useState(false);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    video.muted = false;
+    video.volume = 1;
+    video.play().catch(() => setNeedsTap(true));
+  }, []);
+
+  const playWithSound = () => {
+    const video = ref.current;
+    if (!video) return;
+    video.muted = false;
+    video.volume = 1;
+    setNeedsTap(false);
+    setSoundOff(false);
+    video.play().catch(() => setNeedsTap(true));
+  };
+
+  return (
+    <>
+      <video
+        ref={ref}
+        src={src}
+        poster={trailer.poster ?? undefined}
+        controls
+        autoPlay
+        playsInline
+        preload="auto"
+        aria-label={trailer.title}
+        onCanPlay={onReady}
+        onWaiting={() => setBuffering(true)}
+        onPlaying={() => {
+          setBuffering(false);
+          setNeedsTap(false);
+        }}
+        onVolumeChange={(e) => setSoundOff(e.currentTarget.muted || e.currentTarget.volume === 0)}
+        onError={onFail}
+        className="absolute inset-0 h-full w-full bg-black object-contain"
+      />
+      {buffering && !needsTap && (
+        <span
+          className="pointer-events-none absolute left-1/2 top-1/2 size-10 -translate-x-1/2 -translate-y-1/2 animate-spin rounded-full border-2 border-gold border-t-transparent"
+          role="status"
+          aria-label="Buffering"
+        />
+      )}
+      {needsTap && (
+        <button
+          type="button"
+          onClick={playWithSound}
+          className="absolute inset-0 grid place-items-center bg-ink/45 backdrop-blur-[2px]"
+        >
+          <span className="flex flex-col items-center gap-3">
+            <span className="grid size-20 place-items-center rounded-full bg-foreground text-ink shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
+              <Play className="ml-1 size-8 fill-current" aria-hidden="true" />
+            </span>
+            <span className="font-mono text-xs uppercase tracking-[0.2em] text-foreground">
+              Tap to play with sound
+            </span>
+          </span>
+        </button>
+      )}
+      {soundOff && !needsTap && (
+        <button
+          type="button"
+          onClick={playWithSound}
+          className="absolute left-3 top-3 rounded-full border border-glass-border bg-ink/80 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-foreground"
+        >
+          Sound off · tap to turn on
+        </button>
+      )}
+    </>
+  );
+}
+
 export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: TrailerPlayerProps) {
   const trailer = index === null ? undefined : trailers[index];
   const [loaded, setLoaded] = useState(false);
-  const [videoFailed, setVideoFailed] = useState(false);
+  // "auto" = best copy for this device, "sd" = the lighter copy, "embed" = Google Drive / YouTube
+  const [tier, setTier] = useState<"auto" | "sd" | "embed">("auto");
+  const [hd] = useState(() => wantsHd());
   const opener = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setLoaded(false);
-    setVideoFailed(false);
+    setTier("auto");
   }, [trailer?.id]);
 
-  // Our own file plays first. If it cannot, the embedded player takes over.
-  const playLocal = Boolean(trailer?.videoSrc) && !videoFailed;
+  // Our own files play first (sharp HD on a big screen, light copy otherwise).
+  // If a file cannot load, step down: HD, then the light copy, then the embedded player.
+  const localSrc = (() => {
+    if (!trailer || tier === "embed") return null;
+    if (tier === "auto" && hd && trailer.videoHd) return trailer.videoHd;
+    return trailer.videoSrc;
+  })();
+  const playLocal = Boolean(localSrc);
+  const onLocalFail = () => {
+    setLoaded(false);
+    setTier((t) => (t === "auto" && hd && trailer?.videoHd && trailer.videoSrc ? "sd" : "embed"));
+  };
 
   const step = (direction: 1 | -1) => {
     if (index === null) return;
@@ -56,26 +165,26 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
           }}
           onKeyDown={onKeyDown}
           onClick={(event) => event.target === event.currentTarget && onClose()}
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:p-6 lg:items-center"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 pt-20 outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 sm:p-6 sm:pt-24 lg:pt-6"
         >
+          {/* Always on screen, even when the window is taller than the display and you scroll. */}
+          <Dialog.Close asChild>
+            <Button
+              variant="glass"
+              aria-label="Close trailer"
+              className="fixed right-3 top-3 z-[60] min-h-12 gap-2 rounded-full border-glass-highlight bg-ink/90 px-5 text-sm font-semibold shadow-[0_10px_40px_rgba(0,0,0,0.65)] backdrop-blur-md sm:right-6 sm:top-5"
+            >
+              <X size={20} aria-hidden="true" /> Close
+            </Button>
+          </Dialog.Close>
           {trailer && index !== null && (
-            <div className="glass-panel w-full max-w-6xl rounded-3xl p-3 sm:p-5 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-6">
+            <div className="glass-panel my-auto w-full max-w-6xl animate-in rounded-3xl p-3 duration-300 fade-in-0 zoom-in-95 sm:p-5 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:gap-6">
               <div className="min-w-0">
-                <div className="mb-3 flex items-center justify-between gap-3 pl-1">
+                <div className="mb-3 pl-1">
                   <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-gold sm:text-xs">
                     Sample trailer · {String(index + 1).padStart(2, "0")} /{" "}
                     {String(trailers.length).padStart(2, "0")}
                   </p>
-                  <Dialog.Close asChild>
-                    <Button
-                      variant="glass"
-                      size="icon"
-                      aria-label="Close trailer"
-                      className="size-11"
-                    >
-                      <X size={20} aria-hidden="true" />
-                    </Button>
-                  </Dialog.Close>
                 </div>
 
                 <div className="relative aspect-video overflow-hidden rounded-2xl border border-glass-border bg-black">
@@ -96,22 +205,13 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
                       </span>
                     </div>
                   )}
-                  {playLocal && trailer.videoSrc ? (
-                    <video
-                      key={trailer.id}
-                      src={trailer.videoSrc}
-                      poster={trailer.poster ?? undefined}
-                      controls
-                      autoPlay
-                      playsInline
-                      preload="auto"
-                      aria-label={trailer.title}
-                      onCanPlay={() => setLoaded(true)}
-                      onError={() => {
-                        setLoaded(false);
-                        setVideoFailed(true);
-                      }}
-                      className="absolute inset-0 h-full w-full bg-black object-contain"
+                  {playLocal && localSrc ? (
+                    <LocalPlayer
+                      key={`${trailer.id}-${localSrc}`}
+                      trailer={trailer}
+                      src={localSrc}
+                      onReady={() => setLoaded(true)}
+                      onFail={onLocalFail}
                     />
                   ) : (
                     <iframe

@@ -52,7 +52,7 @@ export function Services({ onChoose }: ServicesProps) {
     <section
       id="services"
       aria-labelledby="services-title"
-      className="relative z-10 scroll-mt-20 px-4 py-20 sm:px-6 sm:py-28"
+      className="cv-auto relative z-10 scroll-mt-20 px-4 py-20 sm:px-6 sm:py-28"
     >
       <div className="mx-auto max-w-7xl">
         <SectionHeading

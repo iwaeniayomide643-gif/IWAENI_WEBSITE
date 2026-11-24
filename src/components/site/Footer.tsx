@@ -4,7 +4,7 @@ import { scrollToId } from "@/lib/motion";
 
 export function Footer() {
   return (
-    <footer className="relative z-10 border-t border-border px-4 pb-28 pt-14 sm:px-6 lg:pb-12">
+    <footer className="cv-auto relative z-10 border-t border-border px-4 pb-28 pt-14 sm:px-6 lg:pb-12">
       <div className="mx-auto flex max-w-7xl flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="font-display text-5xl leading-none sm:text-6xl">{brand.name}</p>

@@ -10,6 +10,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import dmSansUrl from "@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url";
+import instrumentSerifUrl from "@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { brand } from "../data/brand";
 
@@ -79,31 +81,31 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: `${brand.name} — Book Trailers & Author Services` },
-      { name: "description", content: "Cinematic book trailers, author websites, formatting, editing and launch promotion that help authors present, promote and grow their books." },
+      {
+        name: "description",
+        content:
+          "Cinematic book trailers, author websites, formatting, editing and launch promotion that help authors present, promote and grow their books.",
+      },
       { name: "author", content: brand.name },
       { property: "og:title", content: `${brand.name} — Book Trailers & Author Services` },
       { property: "og:description", content: brand.tagline },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    scripts: [
-      {
-        // Lets the hero animate in without a flash. Skipped when the visitor prefers reduced motion.
-        children:
-          "try{if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion-ok')}catch(e){}",
-      },
-    ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
       },
-      // Trailers and their stills come from Google Drive; opening the connection early saves time.
-      { rel: "preconnect", href: "https://drive.google.com" },
-      { rel: "preconnect", href: "https://www.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" },
+      // The two fonts used on the first screen load straight away, from this site.
+      {
+        rel: "preload",
+        as: "font",
+        type: "font/woff2",
+        href: instrumentSerifUrl,
+        crossOrigin: "anonymous",
+      },
+      { rel: "preload", as: "font", type: "font/woff2", href: dmSansUrl, crossOrigin: "anonymous" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "icon", href: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { rel: "icon", href: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },

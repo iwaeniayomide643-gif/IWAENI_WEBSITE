@@ -1,20 +1,33 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Check, Mail, MessageCircle, Send } from "lucide-react";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/data/brand";
 import { allServiceNames } from "@/data/services";
 import { cn } from "@/lib/utils";
 
-const schema = z.object({
-  name: z.string().trim().min(2, "Please enter your name.").max(100),
-  email: z.string().trim().email("Please enter a valid email.").max(255),
-  bookTitle: z.string().trim().max(150),
-  service: z.string().min(1, "Please choose a service."),
-  message: z.string().trim().min(10, "Please share a little more about your book.").max(1500),
-});
+interface Values {
+  name: string;
+  email: string;
+  bookTitle: string;
+  service: string;
+  message: string;
+}
 
-type Values = z.infer<typeof schema>;
+/** The validation library is only needed when someone presses send, so it loads on demand. */
+const loadZod = () => import("zod");
+
+async function validate(input: unknown) {
+  const { z } = await loadZod();
+  return z
+    .object({
+      name: z.string().trim().min(2, "Please enter your name.").max(100),
+      email: z.string().trim().email("Please enter a valid email.").max(255),
+      bookTitle: z.string().trim().max(150),
+      service: z.string().min(1, "Please choose a service."),
+      message: z.string().trim().min(10, "Please share a little more about your book.").max(1500),
+    })
+    .safeParse(input);
+}
 
 const hasEmail = brand.contact.email.trim() !== "";
 const hasWhatsApp = brand.contact.whatsapp.trim() !== "";
@@ -97,10 +110,10 @@ export function Contact({ service, onServiceChange }: ContactProps) {
 
   const delivers = hasEmail || hasWhatsApp;
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = Object.fromEntries(new FormData(event.currentTarget));
-    const result = schema.safeParse({ ...data, service });
+    const result = await validate({ ...data, service });
     if (!result.success) {
       const next: Partial<Record<keyof Values, string>> = {};
       for (const issue of result.error.issues) {
@@ -124,7 +137,7 @@ export function Contact({ service, onServiceChange }: ContactProps) {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className="relative z-10 scroll-mt-20 px-4 py-20 sm:px-6 sm:py-28"
+      className="cv-auto relative z-10 scroll-mt-20 px-4 py-20 sm:px-6 sm:py-28"
     >
       <div className="mx-auto max-w-7xl">
         <div className="glass-panel grid grid-cols-1 gap-10 rounded-[2rem] p-6 sm:p-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14 lg:p-14">

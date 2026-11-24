@@ -3,6 +3,7 @@ import { authorWebsites } from "@/data/authorWebsites";
 import { formattedWorks } from "@/data/formattedWorks";
 import { trailers } from "@/data/trailers";
 import { Poster } from "./Poster";
+import { PreviewVideo } from "./PreviewVideo";
 import { SectionHeading } from "./SectionHeading";
 
 interface PortfolioProps {
@@ -70,7 +71,7 @@ export function Portfolio({ onOpenTrailers, onOpenFormatted, onOpenWebsites }: P
     <section
       id="portfolio"
       aria-labelledby="portfolio-title"
-      className="relative z-10 scroll-mt-20 px-4 py-20 sm:px-6 sm:py-28"
+      className="cv-auto relative z-10 scroll-mt-20 px-4 py-20 sm:px-6 sm:py-28"
     >
       <div className="mx-auto max-w-7xl">
         <SectionHeading
@@ -91,6 +92,7 @@ export function Portfolio({ onOpenTrailers, onOpenFormatted, onOpenWebsites }: P
             media={
               <>
                 {still && <Poster trailer={still} width={900} className="zoom-photo" />}
+                {still && <PreviewVideo trailer={still} className="zoom-photo" hint />}
                 <span
                   className="absolute inset-0 bg-gradient-to-t from-ink/60 to-transparent"
                   aria-hidden="true"

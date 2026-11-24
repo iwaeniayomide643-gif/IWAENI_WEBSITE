@@ -2,6 +2,7 @@ import { ArrowDownRight, ArrowUpRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trailers, type Trailer } from "@/data/trailers";
 import { Poster } from "./Poster";
+import { PreviewVideo } from "./PreviewVideo";
 
 interface FeaturedTrailerProps {
   onPlay: (index: number) => void;
@@ -82,6 +83,7 @@ export function FeaturedTrailer({ onPlay, onSeeMore, onOrder }: FeaturedTrailerP
             className="group relative z-10 block aspect-video w-full overflow-hidden rounded-[1.6rem] border border-glass-border bg-black text-left shadow-[0_40px_120px_rgba(8,3,8,0.75)] transition-[transform,border-color] duration-500 hover:-translate-y-0.5 hover:border-glass-highlight"
           >
             <Poster trailer={featured} width={1280} className="zoom-photo" />
+            <PreviewVideo trailer={featured} className="zoom-photo" hint />
             <span
               className="absolute inset-0 bg-gradient-to-t from-ink/70 via-transparent to-ink/30"
               aria-hidden="true"
