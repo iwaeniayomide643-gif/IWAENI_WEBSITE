@@ -1,5 +1,5 @@
 import { ArrowUp } from "lucide-react";
-import { brand, nav } from "@/data/brand";
+import { brand, nav, prettyPhone } from "@/data/brand";
 import { scrollToId } from "@/lib/motion";
 
 export function Footer() {
@@ -10,6 +10,26 @@ export function Footer() {
           <p className="font-display text-5xl leading-none sm:text-6xl">{brand.name}</p>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
             {brand.tagline}
+          </p>
+          <p className="mt-4 flex flex-wrap gap-x-5 text-sm">
+            {brand.contact.whatsapp && (
+              <a
+                href={`https://wa.me/${brand.contact.whatsapp.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <span className="link-draw">WhatsApp {prettyPhone(brand.contact.whatsapp)}</span>
+              </a>
+            )}
+            {brand.contact.email && (
+              <a
+                href={`mailto:${brand.contact.email}`}
+                className="inline-flex min-h-11 items-center text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <span className="link-draw">{brand.contact.email}</span>
+              </a>
+            )}
           </p>
         </div>
 

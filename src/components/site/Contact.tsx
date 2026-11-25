@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from "react";
-import { Check, Mail, MessageCircle, Send } from "lucide-react";
+import { Check, Mail, MessageCircle, Phone, Send, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { brand } from "@/data/brand";
+import { brand, prettyPhone } from "@/data/brand";
 import { allServiceNames } from "@/data/services";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +62,67 @@ const openWhatsApp = (v: Values) => {
 interface ContactProps {
   service: string;
   onServiceChange: (service: string) => void;
+}
+
+/** Ways to reach me without filling in the form. Each one only shows when its detail is set in brand.ts. */
+function DirectContact() {
+  const digits = brand.contact.whatsapp.replace(/\D/g, "");
+  const phone = prettyPhone(digits);
+  const items: {
+    icon: LucideIcon;
+    label: string;
+    value: string;
+    href: string;
+    external?: boolean;
+  }[] = [];
+  if (hasWhatsApp) {
+    items.push({
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: phone,
+      href: `https://wa.me/${digits}?text=${encodeURIComponent(`Hi ${brand.name}, I'd like to order a book trailer.`)}`,
+      external: true,
+    });
+    items.push({ icon: Phone, label: "Call", value: phone, href: `tel:+${digits}` });
+  }
+  if (hasEmail) {
+    items.push({
+      icon: Mail,
+      label: "Email",
+      value: brand.contact.email,
+      href: `mailto:${brand.contact.email}`,
+    });
+  }
+  if (items.length === 0) return null;
+
+  return (
+    <div className="mt-8">
+      <p className="mb-3 font-mono text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        Or reach me directly
+      </p>
+      <ul className="grid gap-3">
+        {items.map(({ icon: Icon, label, value, href, external }) => (
+          <li key={label}>
+            <a
+              href={href}
+              {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              className="group flex min-h-14 items-center gap-4 rounded-2xl border border-glass-border bg-glass px-4 py-2 transition-colors hover:border-gold"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gold/15 text-gold transition-colors group-hover:bg-gold group-hover:text-ink">
+                <Icon size={18} aria-hidden="true" />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {label}
+                </span>
+                <span className="block truncate text-base">{value}</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 const control =
@@ -152,6 +213,7 @@ export function Contact({ service, onServiceChange }: ContactProps) {
               Tell me where your book is now, and where you want it to go. If you want a trailer,
               choose &ldquo;Book Trailers&rdquo; in the list.
             </p>
+            <DirectContact />
           </div>
 
           {sent ? (
