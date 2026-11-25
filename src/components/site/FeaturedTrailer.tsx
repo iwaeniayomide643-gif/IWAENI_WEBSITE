@@ -100,8 +100,10 @@ export function FeaturedTrailer({ onPlay, onSeeMore, onOrder }: FeaturedTrailerP
               </span>
             </span>
             <span className="absolute inset-x-0 bottom-0 flex h-9 items-center justify-center bg-black/85 sm:h-11">
-              <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-foreground/70 sm:text-[11px]">
-                Press play
+              <span className="truncate px-4 font-mono text-[10px] uppercase tracking-[0.28em] text-foreground/70 sm:text-[11px]">
+                {featured.titled
+                  ? `${featured.title}${featured.author ? ` · ${featured.author}` : ""}`
+                  : "Press play"}
               </span>
             </span>
 

@@ -1,9 +1,24 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Play, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Play,
+  Search,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { embedUrl, trailers, watchUrl, type Trailer } from "@/data/trailers";
+import {
+  bookSearchUrl,
+  embedUrl,
+  hostName,
+  trailers,
+  watchUrl,
+  type Trailer,
+} from "@/data/trailers";
 import { wantsHd } from "@/lib/quality";
 import { Poster } from "./Poster";
 
@@ -124,10 +139,11 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
     setTier("auto");
   }, [trailer?.id]);
 
-  // Our own files play first (sharp HD on a big screen, light copy otherwise).
-  // If a file cannot load, step down: HD, then the light copy, then the embedded player.
+  // A trailer with a Vimeo link plays from Vimeo. Otherwise our own files play first (sharp HD on
+  // a big screen, light copy otherwise). If a file cannot load, step down: HD, then the light copy,
+  // then the embedded player.
   const localSrc = (() => {
-    if (!trailer || tier === "embed") return null;
+    if (!trailer || tier === "embed" || trailer.vimeoId) return null;
     if (tier === "auto" && hd && trailer.videoHd) return trailer.videoHd;
     return trailer.videoSrc;
   })();
@@ -199,7 +215,7 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
                     >
                       <span className="size-11 animate-spin rounded-full border-2 border-gold border-t-transparent" />
                       <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/80 sm:text-xs">
-                        {playLocal || trailer.youtubeId
+                        {playLocal || trailer.vimeoId || trailer.youtubeId
                           ? "Loading trailer"
                           : "Loading from Google Drive. This can be slow"}
                       </span>
@@ -234,12 +250,33 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
                     <Dialog.Title className="font-display text-3xl leading-tight sm:text-4xl">
                       {trailer.title}
                     </Dialog.Title>
+                    {trailer.subtitle && (
+                      <p className="mt-1 text-base italic leading-snug text-foreground/80 sm:text-lg">
+                        {trailer.subtitle}
+                      </p>
+                    )}
                     <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.16em] text-gold sm:text-xs">
-                      {trailer.genre}
+                      {trailer.author ? `Book trailer · by ${trailer.author}` : trailer.genre}
                     </p>
                     <Dialog.Description className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                       {trailer.description}
                     </Dialog.Description>
+                    {trailer.titled && (
+                      <a
+                        href={bookSearchUrl(trailer)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-glass-border bg-glass px-4 text-sm transition-colors hover:border-gold"
+                      >
+                        <Search size={15} className="text-gold" aria-hidden="true" />
+                        Search this book
+                        <ExternalLink
+                          size={13}
+                          className="text-muted-foreground"
+                          aria-hidden="true"
+                        />
+                      </a>
+                    )}
                   </div>
                   <div className="flex shrink-0 gap-2">
                     <Button
@@ -271,7 +308,7 @@ export function TrailerPlayer({ index, onIndexChange, onClose, onOrder }: Traile
                     rel="noopener noreferrer"
                     className="link-draw inline-flex min-h-11 items-center gap-2 self-start text-sm text-muted-foreground hover:text-foreground sm:self-auto"
                   >
-                    Video not playing? Open it in {trailer.youtubeId ? "YouTube" : "Google Drive"}{" "}
+                    Video not playing? Open it in {hostName(trailer)}{" "}
                     <ExternalLink size={14} aria-hidden="true" />
                   </a>
                 </div>

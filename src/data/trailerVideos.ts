@@ -1,19 +1,28 @@
 /**
- * FASTER PLAYBACK (optional, recommended).
+ * HOSTING THE FULL TRAILERS ON VIMEO OR YOUTUBE (optional).
  *
- * Trailers play from Google Drive by default. Drive's embedded player is slow to
- * start and needs a second press of its own play button.
+ * By default each trailer plays from this website's own files (public/videos), with Google Drive
+ * only as a last-resort backup. To play a trailer from Vimeo instead (adaptive streaming, so it
+ * starts quickly even on a slow connection), upload it to Vimeo and paste its link below, next to
+ * the trailer's id (the ids are the file names in public/videos; the first one is "featured").
  *
- * To make a trailer play instantly, with sound, inside the site:
- *   1. Upload the video to YouTube (set visibility to "Unlisted").
- *   2. Copy the video ID from its link. For https://www.youtube.com/watch?v=AbC123xyz
- *      the ID is AbC123xyz.
- *   3. Paste it below, next to the trailer's id (ids are in bookLaunchProjects.ts;
- *      the first one on the site is "featured").
+ * VIMEO
+ *   1. Upload the video to Vimeo. In its Privacy settings, keep it embeddable (Public, or a
+ *      setting that lets it play on other websites).
+ *   2. Copy the video's link from your browser, for example https://vimeo.com/123456789
+ *      (or https://vimeo.com/123456789/ab12cd34ef if the video is unlisted).
+ *   3. Paste the whole link below. The site reads the number and the hash for you.
  *
- * Example:
- *   "trailer-02-whispers-gilded-coast": "AbC123xyz",
+ *   Example:
+ *     "trailer-02-whispers-gilded-coast": "https://vimeo.com/123456789",
  *
- * Any trailer without an entry keeps playing from Google Drive.
+ * YOUTUBE
+ *   Upload as "Unlisted", then paste only the video ID (for https://www.youtube.com/watch?v=AbC123xyz
+ *   the ID is AbC123xyz). Vimeo wins if a trailer has both.
+ *
+ * Any trailer without an entry keeps playing from this website's own files.
+ * The short hover previews on the thumbnails always stay on the website, so they start at once.
  */
+export const vimeoIds: Record<string, string> = {};
+
 export const youtubeIds: Record<string, string> = {};

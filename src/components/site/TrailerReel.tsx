@@ -241,7 +241,7 @@ export function TrailerReel({ onPlay, onOrder }: TrailerReelProps) {
                     {trailer.title}
                   </span>
                   <span className="mt-1.5 block font-mono text-[11px] uppercase tracking-[0.16em] text-gold line-clamp-1">
-                    {trailer.genre}
+                    {trailer.author ? `by ${trailer.author}` : trailer.genre}
                   </span>
                 </button>
               </li>
