@@ -18,12 +18,15 @@ const reel = trailers
   .slice(FIRST, FIRST + COUNT)
   .map((trailer, i) => ({ trailer, index: FIRST + i }));
 
-const PIN_QUERY = "(min-width: 1024px) and (prefers-reduced-motion: no-preference)";
+const PIN_QUERY = "(prefers-reduced-motion: no-preference)";
+
+/** On a phone the strip moves a little faster than the scroll, so a short swipe shows the next trailers. */
+const scrollShare = () => (window.innerWidth < 1024 ? 0.7 : 1);
 
 /**
- * Dealt moment: a film strip. On desktop the section pins and the strip slides
- * sideways as you scroll. On phones, tablets and reduced motion it is a normal
- * swipeable strip with arrow buttons.
+ * Dealt moment: a film strip. On every screen size the section pins and the strip slides
+ * sideways as you scroll, so visitors see all the trailers without swiping. With reduced
+ * motion it is a normal swipeable strip with arrow buttons.
  */
 export function TrailerReel({ onPlay, onOrder }: TrailerReelProps) {
   const section = useRef<HTMLElement>(null);
@@ -64,7 +67,7 @@ export function TrailerReel({ onPlay, onOrder }: TrailerReelProps) {
           scrollTrigger: {
             trigger: sec,
             start: "top top",
-            end: () => `+=${distance()}`,
+            end: () => `+=${distance() * scrollShare()}`,
             pin: true,
             scrub: 0.6,
             anticipatePin: 1,
@@ -132,7 +135,7 @@ export function TrailerReel({ onPlay, onOrder }: TrailerReelProps) {
       id="reel"
       ref={section}
       aria-labelledby="reel-title"
-      className="relative z-10 flex flex-col justify-center py-20 sm:py-24 lg:min-h-svh lg:py-0"
+      className="relative z-10 flex min-h-svh flex-col justify-center py-0 motion-reduce:min-h-0 motion-reduce:py-20 motion-reduce:sm:py-24"
     >
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -161,7 +164,7 @@ export function TrailerReel({ onPlay, onOrder }: TrailerReelProps) {
             </p>
             {pinned ? (
               <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-gold">
-                Keep scrolling <ArrowRight size={14} aria-hidden="true" />
+                Scroll on <ArrowRight size={14} aria-hidden="true" />
               </p>
             ) : (
               <div className="flex gap-2">

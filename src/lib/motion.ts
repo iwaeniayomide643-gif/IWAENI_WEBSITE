@@ -8,6 +8,8 @@ let registered = false;
 export function registerGsap() {
   if (registered || typeof window === "undefined") return;
   gsap.registerPlugin(ScrollTrigger, useGSAP);
+  // Phone address bars grow and shrink while scrolling; do not re-measure pinned sections each time.
+  ScrollTrigger.config({ ignoreMobileResize: true });
   registered = true;
 }
 

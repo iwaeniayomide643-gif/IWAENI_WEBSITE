@@ -89,7 +89,7 @@ function previewsAllowed() {
   return !connection?.saveData;
 }
 
-/** Only devices that can hover (a mouse) need the clip loaded ahead of time. */
+/** Devices with a mouse can hover; phones and tablets cannot, so their previews play on their own. */
 function canHover() {
   return (
     typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches
@@ -130,7 +130,8 @@ export function PreviewVideo({
 
     // 1. Load the clip ahead of time once the thumbnail is close to the screen.
     let observer: IntersectionObserver | undefined;
-    if (canHover() && previewsAllowed()) {
+    let player: IntersectionObserver | undefined;
+    if (previewsAllowed()) {
       observer = new IntersectionObserver(
         ([entry]) => {
           if (entry?.isIntersecting) {
@@ -138,9 +139,29 @@ export function PreviewVideo({
             observer?.disconnect();
           }
         },
-        { rootMargin: "500px" },
+        { rootMargin: canHover() ? "500px" : "300px" },
       );
       observer.observe(host);
+
+      // Phones and tablets cannot hover, so the preview plays by itself (silently, as browsers
+      // require) while most of the thumbnail is on screen, and pauses when it scrolls away.
+      if (!canHover()) {
+        player = new IntersectionObserver(
+          ([entry]) => {
+            const current = ref.current;
+            if (!entry || !current) return;
+            if (entry.intersectionRatio >= 0.6) {
+              if (!current.src) current.src = new URL(src, window.location.href).href;
+              current.muted = true;
+              void current.play().catch(() => {});
+            } else {
+              current.pause();
+            }
+          },
+          { threshold: [0, 0.6] },
+        );
+        player.observe(host);
+      }
     }
 
     // 2. Start it, with sound, the moment the pointer arrives (or on keyboard focus).
@@ -215,6 +236,7 @@ export function PreviewVideo({
     host.addEventListener("click", mute);
     return () => {
       observer?.disconnect();
+      player?.disconnect();
       host.removeEventListener("pointerenter", onEnter);
       host.removeEventListener("pointerleave", end);
       host.removeEventListener("focusin", onFocus);
